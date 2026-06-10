@@ -1,73 +1,86 @@
-// app/hooks/useAuth.ts
-'use client'
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
-import type { User } from '@supabase/supabase-js';
 
-export interface UserProfile {
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+
+interface UserProfile {
   id: string;
-  email?: string;
-  full_name?: string | null;
-  avatar_url?: string | null;
-  role?: 'client' | 'trainer' | 'admin';
-  bio?: string | null;
+  full_name: string;
+  email: string;
+  role: "client" | "trainer" | "admin";
+  avatar_url?: string;
+  bio?: string;
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
   const supabase = createClient();
+  const router = useRouter();
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  // Initialize auth state
   useEffect(() => {
     let mounted = true;
-    const init = async () => {
+    let subscription: any;
+
+    const initializeAuth = async () => {
       try {
-        setLoading(true);
-        const {
-          data: { user: currentUser },
-        } = await supabase.auth.getUser();
-        if (!mounted) return;
-        setUser(currentUser ?? null);
-
-        if (currentUser) {
-          const { data, error: profileError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', currentUser.id)
-            .single();
-
-          if (profileError) throw profileError;
-          setProfile(data);
+        // Get current session
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            // Fetch user profile
+            const { data: profileData } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", session.user.id)
+              .single();
+            
+            setProfile(profileData);
+          }
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Auth init error');
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Auth init error");
+        }
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
-    init();
+    initializeAuth();
 
-    const { subscription } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        const current = session?.user ?? null;
-        setUser(current);
-        if (current) {
-          const { data } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', current.id)
-            .single();
-          setProfile(data ?? null);
-        } else {
-          setProfile(null);
+    // Listen for auth state changes
+    const { data } = supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, session: Session | null) => {
+        if (mounted) {
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            const { data: profileData } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", session.user.id)
+              .single();
+            
+            setProfile(profileData);
+          } else {
+            setProfile(null);
+          }
         }
       }
     );
+
+    subscription = data?.subscription;
 
     return () => {
       mounted = false;
@@ -75,84 +88,97 @@ export function useAuth() {
     };
   }, [supabase]);
 
+  // Sign up
   const signUp = async (
     email: string,
     password: string,
     fullName: string,
-    role: 'client' | 'trainer' = 'client'
+    role: "client" | "trainer" = "client"
   ) => {
     try {
-      setError(null);
-      const { data, error } = await supabase.auth.signUp({
+      setError("");
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (authError) throw authError;
 
-      if (data.user) {
-        const { error: profileError } = await supabase.from('users').insert([
-          {
-            id: data.user.id,
-            email,
-            full_name: fullName,
-            role,
-          },
-        ]);
+      if (authData.user) {
+        // Create user profile
+        const { error: profileError } = await supabase
+          .from("users")
+          .insert([
+            {
+              id: authData.user.id,
+              email,
+              full_name: fullName,
+              role,
+            },
+          ]);
+
         if (profileError) throw profileError;
       }
-      return data;
+
+      return authData;
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Signup failed';
-      setError(message);
+      const errorMsg = err instanceof Error ? err.message : "Signup failed";
+      setError(errorMsg);
       throw err;
     }
   };
 
+  // Sign in
   const signIn = async (email: string, password: string) => {
     try {
-      setError(null);
+      setError("");
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+
       if (error) throw error;
       return data;
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Sign in failed';
-      setError(message);
+      const errorMsg = err instanceof Error ? err.message : "Sign in failed";
+      setError(errorMsg);
       throw err;
     }
   };
 
+  // Sign out
   const signOut = async () => {
     try {
-      setError(null);
+      setError("");
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       setUser(null);
       setProfile(null);
-      router.push('/');
+      router.push("/");
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Sign out failed';
-      setError(message);
+      const errorMsg = err instanceof Error ? err.message : "Sign out failed";
+      setError(errorMsg);
       throw err;
     }
   };
 
+  // Update profile
   const updateProfile = async (updates: Partial<UserProfile>) => {
     try {
-      setError(null);
-      if (!user) throw new Error('No user logged in');
+      if (!user) throw new Error("Not authenticated");
+      
       const { error } = await supabase
-        .from('users')
+        .from("users")
         .update(updates)
-        .eq('id', user.id);
+        .eq("id", user.id);
+
       if (error) throw error;
-      setProfile((p) => (p ? { ...p, ...updates } : p));
+      
+      setProfile({ ...profile, ...updates } as UserProfile);
+      return profile;
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Update failed';
-      setError(message);
+      const errorMsg = err instanceof Error ? err.message : "Update failed";
+      setError(errorMsg);
       throw err;
     }
   };
@@ -166,6 +192,5 @@ export function useAuth() {
     signIn,
     signOut,
     updateProfile,
-    isAuthenticated: !!user,
   };
 }

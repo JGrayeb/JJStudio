@@ -1,45 +1,46 @@
+// Follow this setup guide to integrate the Deno language server with your editor:
+// https://deno.land/manual/getting_started/setup_your_environment
+// This enables autocomplete, go to definition, etc.
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// Setup type definitions for built-in Supabase Runtime APIs
+import "@supabase/functions-js/edge-runtime.d.ts";
+import { withSupabase } from "@supabase/server";
 
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+console.log("Hello from Functions!");
 
-serve(async (req) => {
-  try {
-    const { coachName, coachEmail, clientName, sessionTime } = await req.json();
+// This endpoint uses 'publishable' | 'secret' access, apiKey is required.
+// Use publishable for Client-facing, key-validated endpoints
+// Use secret for Server-to-server, internal calls
+export default {
+  fetch: withSupabase({ auth: ["publishable", "secret"] }, async (req, ctx) => {
+    // Called by another service with a secret key
+    // ctx.supabaseAdmin bypasses RLS — use for privileged operations
+    /*
+    if (ctx.authMode === "secret") {
+      const { user_id } = await req.json();
+      const { data } = await ctx.supabaseAdmin.auth.admin.getUserById(user_id);
 
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: "JJ Studio <notifications@jjstudio.com>",
-        to: [coachEmail],
-        subject: `⚠️ ${clientName} is late for their session`,
-        html: `
-          <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto;">
-            <h2 style="color: #1a1a1a;">Session Late Notification</h2>
-            <p>Hi <strong>${coachName}</strong>,</p>
-            <p>Your client <strong>${clientName}</strong> has not checked in for their <strong>${sessionTime}</strong> session.</p>
-            <p>You may want to follow up with them.</p>
-            <br/>
-            <p style="color: #888; font-size: 12px;">— JJ Studio Automated Notifications</p>
-          </div>
-        `,
-      }),
+      return Response.json({
+        email: data?.user?.email,
+      });
+    }
+    */
+
+    const { name } = await req.json();
+
+    return Response.json({
+      message: `Hello ${name}!`,
     });
+  }),
+};
 
-    const data = await res.json();
+/* To invoke locally:
 
-    return new Response(JSON.stringify({ success: true, data }), {
-      headers: { "Content-Type": "application/json" },
-      status: 200,
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: error.message }), {
-      headers: { "Content-Type": "application/json" },
-      status: 500,
-    });
-  }
-});
+  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
+  2. Make an HTTP request:
+
+  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/coach-late-notification' \
+    --header 'apiKey: sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH' \
+    --data '{"name":"Functions"}'
+
+*/
