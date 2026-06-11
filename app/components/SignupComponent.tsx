@@ -9,7 +9,8 @@ export default function SignupComponent() {
   const router = useRouter();
 
   const [email, setEmail] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'client' | 'trainer'>('client');
   const [loading, setLoading] = useState(false);
@@ -21,6 +22,8 @@ export default function SignupComponent() {
     setError(null);
     setLoading(true);
     try {
+      // Combine first and last name for the hook
+      const fullName = `${firstName} ${lastName}`.trim();
       await signUp(email, password, fullName, role);
       setSuccess(true);
       setTimeout(() => router.push('/login'), 1600);
@@ -57,10 +60,19 @@ export default function SignupComponent() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs text-white/60 uppercase tracking-widest mb-2 block">Full name</label>
+            <label className="text-xs text-white/60 uppercase tracking-widest mb-2 block">First name</label>
             <div className="relative">
               <User className="absolute left-3 top-3 text-white/30" size={18} />
-              <input value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="John Doe"
+              <input value={firstName} onChange={(e) => setFirstName(e.target.value)} required placeholder="John"
+                className="w-full pl-12 py-3 bg-white/5 border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none" />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs text-white/60 uppercase tracking-widest mb-2 block">Last name</label>
+            <div className="relative">
+              <User className="absolute left-3 top-3 text-white/30" size={18} />
+              <input value={lastName} onChange={(e) => setLastName(e.target.value)} required placeholder="Doe"
                 className="w-full pl-12 py-3 bg-white/5 border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none" />
             </div>
           </div>
