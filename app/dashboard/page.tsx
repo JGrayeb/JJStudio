@@ -8,7 +8,7 @@ import { useAuth } from '@/app/hooks/useAuth';
 
 export default function DashboardPage() {
   const supabase = createClient();
-  const { user, profile, signOut, loading: authLoading } = useAuth();
+  const { user, userProfile, signOut, loading: authLoading } = useAuth();
   const router = useRouter();
 
   const [trainers, setTrainers] = useState<any[]>([]);
@@ -95,7 +95,7 @@ export default function DashboardPage() {
       <header className="bg-black border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black">Welcome, {profile?.full_name ?? 'User'}</h1>
+            <h1 className="text-2xl font-black">Welcome, {userProfile?.first_name && userProfile?.last_name ? `${userProfile.first_name} ${userProfile.last_name}` : 'User'}</h1>
             <p className="text-sm text-white/50">Book sessions with our trainers</p>
           </div>
           <div className="flex items-center gap-4">

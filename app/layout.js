@@ -8,7 +8,7 @@ export const metadata = {
   openGraph: {
     title: "JJStudio — Trust The Process",
     description: "Your first class is on us. No commitment. Just show up.",
-    url: "https://jjstudio.com",
+    url: "https://jjstudio.mx",
     siteName: "JJStudio",
     images: [
       {

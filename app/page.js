@@ -56,8 +56,8 @@ export default function Home() {
               </div>
               <span className={`text-xs font-bold tracking-widest transition-colors ${lang === "en" ? "text-white" : "text-white/30"}`}>EN</span>
             </button>
-            <a href="#contact"
-              className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all duration-200 hover:-translate-y-0.5">
+              <a href="/signup"
+                className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all duration-200 hover:-translate-y-0.5">
               {t.nav.register}
             </a>
           </div>
@@ -323,7 +323,7 @@ export default function Home() {
           </h2>
           <p className="text-lg mb-4 max-w-md mx-auto text-white/40">{t.cta.sub}</p>
           <p className="text-xs uppercase tracking-widest mb-10 text-white/25">{t.cta.location}</p>
-          <a href="#contact" className="bg-red-900 hover:bg-red-800 text-white text-sm font-bold tracking-widest uppercase px-12 py-5 inline-block transition-all hover:-translate-y-0.5">
+          <a href="/signup" className="bg-red-900 hover:bg-red-800 text-white text-sm font-bold tracking-widest uppercase px-12 py-5 inline-block transition-all hover:-translate-y-0.5">
             {t.cta.btn}
           </a>
         </div>
@@ -349,14 +349,20 @@ export default function Home() {
                   <p className="text-sm text-white/65">{t.contact.hoursVal2}</p>
                 </div>
                 <div>
-                  <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.email}</p>
-                  <p className="text-sm text-white/65">{t.contact.emailVal}</p>
+                    <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.email}</p>
+                    <a href="mailto:administracion@jjstudio.mx" className="text-sm text-white/65 hover:text-white transition-colors">
+                       administracion@jjstudio.mx
+                 </a>
                 </div>
                 <div>
                   <p className="text-xs tracking-widest uppercase mb-2 text-white/25">{t.contact.follow}</p>
                   <div className="flex gap-4">
-                    {["Instagram", "TikTok", "Facebook"].map(s => (
-                      <a key={s} href="#" className="text-xs tracking-widest uppercase text-white/35 hover:text-white transition-colors">{s}</a>
+                   {[
+                     { name: "Instagram", url: "https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" },
+                    { name: "TikTok", url: "https://tiktok.com/@yourhandle" },
+                    { name: "WhatsApp", url: "https://wa.me/5213318373447" },
+                      ].map(link => (
+                        <a key={link.name} href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-white/35 hover:text-white transition-colors">{link.name}</a>
                     ))}
                   </div>
                 </div>
@@ -434,7 +440,7 @@ export default function Home() {
               )}
               {formState === "error" && (
                 <div className="border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/40 tracking-wide text-center">
-                  Something went wrong. Try emailing us at hello@jjstudio.com
+                  Something went wrong. Try emailing us at administracion@jjstudio.mx
                 </div>
               )}
             </form>
