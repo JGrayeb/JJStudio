@@ -112,11 +112,11 @@ export default function ClientDashboard() {
   };
 
   const handleBrowseClasses = () => {
-    router.push('/app/classes');
+    router.push('/classes');
   };
 
   const handleViewBookings = () => {
-    router.push('/app/bookings');
+    router.push('/bookings');
   };
 
   if (loading) {
