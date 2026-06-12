@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { LogOut, BookOpen, Users, TrendingUp, AlertCircle, Award, Clock, Zap } from 'lucide-react';
+import { LogOut, BookOpen, Users, TrendingUp, AlertCircle, Award, Clock, Zap, Mail, Check } from 'lucide-react';
 
 type UserStats = {
   classesThisMonth: number;
@@ -36,6 +36,7 @@ export default function ClientDashboard() {
   const router = useRouter();
   const supabase = createClient();
   const [user, setUser] = useState<any>(null);
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [stats, setStats] = useState<UserStats>({
     classesThisMonth: 0,
     progressToGoal: 0,
@@ -46,6 +47,8 @@ export default function ClientDashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
 
   useEffect(() => {
     const getUser = async () => {
@@ -56,6 +59,11 @@ export default function ClientDashboard() {
           return;
         }
         setUser(user);
+        
+        // ✅ CHECK IF EMAIL IS VERIFIED
+        const emailConfirmedAt = user.user_metadata?.email_confirmed_at || user.confirmed_at;
+        setIsEmailVerified(!!emailConfirmedAt);
+        
         await fetchDashboardStats(user.id);
         setLoading(false);
       } catch (err) {
@@ -67,6 +75,32 @@ export default function ClientDashboard() {
 
     getUser();
   }, [router, supabase]);
+
+  // ✅ RESEND VERIFICATION EMAIL
+  const handleResendVerification = async () => {
+    if (!user?.email) return;
+    
+    setResendLoading(true);
+    try {
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: user.email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/signup`,
+        },
+      });
+
+      if (resendError) throw resendError;
+      
+      setVerificationSent(true);
+      setTimeout(() => setVerificationSent(false), 5000); // Clear message after 5s
+    } catch (err) {
+      console.error('Resend error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to resend verification email');
+    } finally {
+      setResendLoading(false);
+    }
+  };
 
   const fetchDashboardStats = async (userId: string) => {
     try {
@@ -99,7 +133,7 @@ export default function ClientDashboard() {
       }
       console.log('✅ Bookings fetched:', bookings);
 
-      // ✅ STEP 2: Get all coaches for the classes (separate query)
+      // ✅ STEP 2: Get all coaches for the classes
       const classIds = [...new Set(bookings?.map((b: any) => b.classes?.id).filter(Boolean) || [])];
       console.log('🔍 Class IDs:', classIds);
 
@@ -213,7 +247,7 @@ export default function ClientDashboard() {
         }
       });
 
-      // ✅ Find favorite coach (using our coachMap)
+      // ✅ Find favorite coach
       const coachCount = new Map<string, number>();
       bookings?.forEach((b: any) => {
         const classId = b.classes?.id;
@@ -292,6 +326,49 @@ export default function ClientDashboard() {
           </h1>
           <div className="h-1.5 w-20 bg-gradient-to-r from-red-800 via-red-600 to-red-500" style={{ boxShadow: '0 0 10px #C41E3A' }} />
         </div>
+
+        {/* ✅ EMAIL VERIFICATION BANNER */}
+        {!isEmailVerified && (
+          <div className="mb-8 bg-yellow-900/30 border-2 border-yellow-700 rounded-lg p-6" style={{ boxShadow: '0 0 15px rgba(234, 179, 8, 0.2)' }}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <Mail size={32} className="text-yellow-500 flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="text-white font-black text-lg uppercase tracking-wide mb-2">Account Not Verified</h3>
+                  <p className="text-yellow-200 font-semibold mb-4">
+                    Verify your email to register your data and gain full access to your packages.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleResendVerification}
+                disabled={resendLoading}
+                className="bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 text-white px-6 py-3 rounded font-bold uppercase tracking-wide transition flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+                style={{ boxShadow: '0 0 10px rgba(234, 179, 8, 0.3)' }}
+              >
+                {resendLoading ? (
+                  <>
+                    <div className="animate-spin">⏳</div>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Mail size={18} />
+                    Verify Now
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Verification Sent Message */}
+            {verificationSent && (
+              <div className="mt-4 p-3 bg-green-900/40 border border-green-700 rounded flex items-center gap-2">
+                <Check size={20} className="text-green-400" />
+                <p className="text-green-300 font-semibold">✓ Verification email sent! Check your inbox.</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (
