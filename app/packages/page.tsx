@@ -62,33 +62,38 @@ export default function PackagesPage() {
 };
 
   const handlePurchasePackage = async (packageId: string) => {
-    try {
-      setPurchasingId(packageId);
-      setError(null);
+  try {
+    setPurchasingId(packageId);
+    setError(null);
 
-      // In a real app, you'd integrate Stripe/payment here
-      // For now, we'll just create the user_package record
-      const { error: insertError } = await supabase
-        .from('user_packages')
-        .insert([
-          {
-            user_id: user.id,
-            package_id: packageId,
-            created_at: new Date().toISOString(),
-          },
-        ]);
+    console.log('Attempting purchase with:', { userId: user.id, packageId }); // ✅ DEBUG
 
-      if (insertError) throw insertError;
+    const { error: insertError, data } = await supabase
+      .from('user_packages')
+      .insert([
+        {
+          user_id: user.id,
+          package_id: packageId,
+          created_at: new Date().toISOString(),
+        },
+      ]);
 
-      alert('✅ Package purchased successfully!');
-      router.push('/dashboard/client');
-    } catch (err) {
-      console.error('Purchase error:', err);
-      setError('Failed to purchase package. Please try again.');
-    } finally {
-      setPurchasingId(null);
+    console.log('Insert response:', { error: insertError, data }); // ✅ DEBUG
+
+    if (insertError) {
+      console.error('Insert error details:', insertError); // ✅ DEBUG
+      throw insertError;
     }
-  };
+
+    alert('✅ Package purchased successfully!');
+    router.push('/dashboard/client');
+  } catch (err) {
+    console.error('Purchase error:', err); // ✅ DEBUG
+    setError('Failed to purchase package. Please try again.');
+  } finally {
+    setPurchasingId(null);
+  }
+};
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
