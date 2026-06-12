@@ -12,40 +12,18 @@ export default function PasswordReset() {
   const [newPassword, setNewPassword] = useState('');
 
   useEffect(() => {
-    const handleRecovery = async () => {
+    const checkSession = async () => {
       try {
-        // Get hash from URL (Supabase sends recovery tokens in #)
-        const hash = window.location.hash.substring(1);
-        
-        if (!hash) {
-          setError('No recovery token found');
+        // Check if a session already exists (Supabase sets it automatically)
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError || !session) {
+          setError('Invalid or expired reset link. Please request a new one.');
           setLoading(false);
           return;
         }
 
-        // Parse the hash params
-        const params = new URLSearchParams(hash);
-        const accessToken = params.get('access_token');
-        const type = params.get('type');
-
-        if (!accessToken || type !== 'recovery') {
-          setError('Invalid or expired reset link');
-          setLoading(false);
-          return;
-        }
-
-        // Set the session with the recovery token
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: '', // Recovery tokens don't have refresh tokens
-        });
-
-        if (sessionError) {
-          setError('Failed to verify recovery link: ' + sessionError.message);
-          setLoading(false);
-          return;
-        }
-
+        // Session exists, user can reset password
         setLoading(false);
       } catch (err) {
         setError('An error occurred: ' + String(err));
@@ -53,14 +31,14 @@ export default function PasswordReset() {
       }
     };
 
-    handleRecovery();
+    checkSession();
   }, [supabase]);
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newPassword) {
-      setError('Please enter a new password');
+    if (!newPassword || newPassword.length < 6) {
+      setError('Password must be at least 6 characters');
       return;
     }
 
@@ -74,15 +52,20 @@ export default function PasswordReset() {
         return;
       }
 
-      // Password updated successfully
-      router.push('/login?message=Password+updated+successfully');
+      // Success
+      await supabase.auth.signOut();
+      router.push('/login?message=Password+updated.+Please+sign+in.');
     } catch (err) {
       setError('An error occurred: ' + String(err));
     }
   };
 
   if (loading) {
-    return <div>Verifying reset link...</div>;
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white">Verifying reset link...</div>
+      </div>
+    );
   }
 
   return (
@@ -91,7 +74,7 @@ export default function PasswordReset() {
         <h1 className="text-2xl font-bold text-white mb-4">Reset Password</h1>
         
         {error && (
-          <div className="bg-red-900 text-red-200 p-3 rounded mb-4">
+          <div className="bg-red-900 text-red-200 p-3 rounded mb-4 text-sm">
             {error}
           </div>
         )}
@@ -107,7 +90,8 @@ export default function PasswordReset() {
           />
           <button
             type="submit"
-            className="w-full bg-red-700 text-white font-bold py-2 px-4 rounded hover:bg-red-800"
+            disabled={loading}
+            className="w-full bg-red-700 text-white font-bold py-2 px-4 rounded hover:bg-red-800 disabled:opacity-50"
           >
             Update Password
           </button>
