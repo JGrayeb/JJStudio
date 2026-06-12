@@ -6,11 +6,20 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get('code');
   const type = searchParams.get('type');
 
-  // If it's a password reset, redirect to password-reset page
+  // If it's a password reset, exchange the code for a session
   if (type === 'recovery' && code) {
-    return NextResponse.redirect(
-      new URL(`/password-reset?code=${code}`, request.url)
-    );
+    const supabase = await createClient();
+    
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    
+    if (error) {
+      return NextResponse.redirect(
+        new URL(`/password-reset?error=${encodeURIComponent(error.message)}`, request.url)
+      );
+    }
+    
+    // Redirect to password reset page (session is now active)
+    return NextResponse.redirect(new URL('/password-reset', request.url));
   }
 
   // Handle normal sign-up/sign-in flow

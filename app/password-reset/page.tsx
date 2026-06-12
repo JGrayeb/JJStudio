@@ -68,26 +68,6 @@ function PasswordResetContent() {
     );
   }
 
-  if (!code) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-        <div className="w-full max-w-md">
-          <div className="bg-black border-2 border-red-700 rounded-lg p-8 text-center" style={{ boxShadow: '0 0 30px rgba(196, 30, 58, 0.3)' }}>
-            <h1 className="text-2xl font-black text-white mb-4" style={{ fontWeight: 800 }}>INVALID LINK</h1>
-            <p className="text-gray-400 mb-6">This password reset link is invalid or has expired.</p>
-            <a
-              href="/forgot-password"
-              className="inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded font-bold uppercase tracking-wide transition"
-              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.3)' }}
-            >
-              Request New Link
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <style>{`
