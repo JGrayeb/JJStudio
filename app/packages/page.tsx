@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { LogOut, AlertCircle, Check, Zap } from 'lucide-react';
+import { LogOut, AlertCircle, Check, Zap, Coffee } from 'lucide-react';
 
 type Package = {
   id: string;
@@ -12,6 +12,7 @@ type Package = {
   class_credits: number;
   expires_days: number;
   price: number;
+  beverage_points: number;
 };
 
 export default function PackagesPage() {
@@ -78,7 +79,7 @@ export default function PackagesPage() {
 
       if (insertError) throw insertError;
 
-      alert('Package purchased successfully!');
+      alert('✅ Package purchased successfully!');
       router.push('/dashboard/client');
     } catch (err) {
       console.error('Purchase error:', err);
@@ -148,11 +149,11 @@ export default function PackagesPage() {
 
         {/* Packages Grid */}
         {packages.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {packages.map((pkg, index) => (
               <div
                 key={pkg.id}
-                className={`relative bg-black border-2 rounded-lg p-8 transition transform hover:scale-105 ${
+                className={`relative bg-black border-2 rounded-lg p-6 transition transform hover:scale-105 flex flex-col ${
                   index === 1
                     ? 'border-red-500 ring-2 ring-red-600/50'
                     : 'border-red-700'
@@ -161,50 +162,67 @@ export default function PackagesPage() {
               >
                 {/* Popular Badge */}
                 {index === 1 && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-4 py-1 rounded-full text-sm font-bold uppercase">
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase">
                     Most Popular
                   </div>
                 )}
 
-                {/* Package Header */}
-                <div className="mb-8">
-                  <h2 className="text-3xl font-black text-white mb-2">{pkg.name}</h2>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-black text-red-600">${pkg.price}</span>
-                    <span className="text-gray-400 font-bold">USD</span>
-                  </div>
+                {/* Package Name */}
+                <h2 className="text-2xl font-black text-white mb-2">{pkg.name}</h2>
+
+                {/* Price */}
+                <div className="flex items-baseline gap-1 mb-6">
+                  <span className="text-4xl font-black text-red-600">${pkg.price.toLocaleString('es-MX')}</span>
+                  <span className="text-gray-400 font-bold text-sm">MXN</span>
                 </div>
 
-                {/* Package Details */}
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-center gap-3">
-                    <Zap size={20} className="text-red-600" />
+                {/* Details */}
+                <div className="space-y-3 flex-1 mb-6">
+                  {/* Class Credits */}
+                  <div className="flex items-center gap-2">
+                    <Zap size={18} className="text-red-600" />
                     <div>
-                      <p className="text-gray-400 text-sm">Class Credits</p>
-                      <p className="text-2xl font-black text-white">{pkg.class_credits}</p>
+                      <p className="text-gray-400 text-xs uppercase font-bold">Class Credits</p>
+                      <p className="text-xl font-black text-white">
+                        {pkg.class_credits === 999 ? '∞ Unlimited' : pkg.class_credits}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 pt-4 border-t border-gray-700">
-                    <Check size={20} className="text-green-500" />
-                    <p className="text-gray-300">
+                  {/* Expiration */}
+                  <div className="flex items-center gap-2 pt-2 border-t border-gray-700">
+                    <Check size={18} className="text-green-500" />
+                    <p className="text-sm text-gray-300">
                       Valid for <span className="font-bold text-white">{pkg.expires_days} days</span>
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <Check size={20} className="text-green-500" />
-                    <p className="text-gray-300">
-                      <span className="font-bold text-white">${(pkg.price / pkg.class_credits).toFixed(2)}</span> per class
-                    </p>
-                  </div>
+                  {/* Price Per Class */}
+                  {pkg.class_credits !== 999 && (
+                    <div className="flex items-center gap-2">
+                      <Check size={18} className="text-green-500" />
+                      <p className="text-sm text-gray-300">
+                        <span className="font-bold text-white">${(pkg.price / pkg.class_credits).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</span> per class
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Beverage Points */}
+                  {pkg.beverage_points > 0 && (
+                    <div className="flex items-center gap-2 pt-2 border-t border-gray-700">
+                      <Coffee size={18} className="text-orange-500" />
+                      <p className="text-sm text-gray-300">
+                        <span className="font-bold text-white">{pkg.beverage_points}</span> Beverage Points
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Purchase Button */}
                 <button
                   onClick={() => handlePurchasePackage(pkg.id)}
                   disabled={purchasingId === pkg.id}
-                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-700 text-white font-bold py-3 px-4 rounded uppercase tracking-wide transition"
+                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-700 text-white font-bold py-3 px-4 rounded uppercase tracking-wide transition text-sm"
                   style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.3)' }}
                 >
                   {purchasingId === pkg.id ? 'Processing...' : 'Get This Package'}
@@ -213,13 +231,13 @@ export default function PackagesPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-black border-2 border-red-700 rounded-lg p-8 text-center">
+          <div className="bg-black border-2 border-red-700 rounded-lg p-8 text-center mb-12">
             <p className="text-gray-400">No packages available</p>
           </div>
         )}
 
         {/* Info Section */}
-        <div className="mt-16 bg-black border-2 border-red-700 rounded-lg p-8" style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}>
+        <div className="bg-black border-2 border-red-700 rounded-lg p-8" style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}>
           <h3 className="text-2xl font-black text-white mb-6">WHY JJSTUDIO?</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
