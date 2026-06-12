@@ -162,7 +162,7 @@ export default function PackagesPage() {
                 style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
               >
                 {/* Popular Badge */}
-                {index === 1 && (
+                {index === 2 && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase">
                     Most Popular
                   </div>

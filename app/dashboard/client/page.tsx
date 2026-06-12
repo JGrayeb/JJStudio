@@ -4,13 +4,20 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { LogOut, BookOpen, Users, TrendingUp, AlertCircle, Award } from 'lucide-react';
+import { LogOut, BookOpen, Users, TrendingUp, AlertCircle, Award, Clock, Zap } from 'lucide-react';
 
 type UserStats = {
   classesThisMonth: number;
-  progressToGoal: number; // 0-100
+  progressToGoal: number;
   favoriteClass: { name: string; count: number } | null;
   favoriteCoach: { name: string; count: number } | null;
+  activePackages: Array<{
+    id: string;
+    name: string;
+    classCredits: number;
+    expiresIn: number;
+    expiryDate: string;
+  }>;
 };
 
 const CLASS_CATEGORIES = [
@@ -32,6 +39,7 @@ export default function ClientDashboard() {
     progressToGoal: 0,
     favoriteClass: null,
     favoriteCoach: null,
+    activePackages: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,9 +82,41 @@ export default function ClientDashboard() {
 
       if (bookingsError) throw bookingsError;
 
+      // Fetch all user packages with expiration info
+      const { data: packagesData, error: pkgError } = await supabase
+        .from('user_packages')
+        .select('id, created_at, packages(name, class_credits, expire_days)')
+        .eq('user_id', userId);
+
+      if (pkgError) throw pkgError;
+
       // Calculate stats
       const classesThisMonth = bookings?.length || 0;
-      const progressToGoal = Math.min((classesThisMonth / 8) * 100, 100); // 8 classes = 80% goal
+      const progressToGoal = Math.min((classesThisMonth / 8) * 100, 100);
+
+      // Filter active packages and sort by expiration (soonest first)
+      const activePackages = packagesData
+        ?.map((pkg: any) => {
+          const createdDate = new Date(pkg.created_at);
+          const expiryDate = new Date(
+            createdDate.getTime() + pkg.packages.expire_days * 24 * 60 * 60 * 1000
+          );
+          const daysRemaining = Math.ceil(
+            (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+          );
+
+          return {
+            id: pkg.id,
+            name: pkg.packages.name,
+            classCredits: pkg.packages.class_credits,
+            expiresIn: daysRemaining,
+            expiryDate: expiryDate.toLocaleDateString(),
+            isExpired: daysRemaining <= 0,
+          };
+        })
+        .filter((pkg: any) => !pkg.isExpired && pkg.classCredits > 0) // Filter expired or 0 credits
+        .sort((a: any, b: any) => a.expiresIn - b.expiresIn) // Sort by expiration date
+        || [];
 
       // Find favorite class
       const classCount = new Map<string, number>();
@@ -115,6 +155,7 @@ export default function ClientDashboard() {
         progressToGoal,
         favoriteClass,
         favoriteCoach,
+        activePackages,
       });
     } catch (err) {
       console.error('Stats error:', err);
@@ -175,6 +216,49 @@ export default function ClientDashboard() {
           </div>
         )}
 
+        {/* Active Packages Section */}
+        {stats.activePackages.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-black text-white mb-6 uppercase">Your Active Packages</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {stats.activePackages.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className={`bg-black border-2 rounded-lg p-4 ${
+                    pkg.expiresIn <= 3
+                      ? 'border-yellow-600 ring-2 ring-yellow-600/30'
+                      : 'border-red-700'
+                  }`}
+                  style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="text-lg font-black text-white">{pkg.name}</h3>
+                      <p className="text-sm text-gray-400">
+                        {pkg.classCredits === 999 ? '∞ Unlimited' : pkg.classCredits} credits
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Zap size={16} className="text-red-600" />
+                      <span className="text-red-600 font-bold">{pkg.classCredits === 999 ? '∞' : pkg.classCredits}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-2 bg-gray-900 rounded">
+                    <Clock size={16} className={pkg.expiresIn <= 3 ? 'text-yellow-500' : 'text-gray-400'} />
+                    <div>
+                      <p className="text-xs text-gray-400">Expires in</p>
+                      <p className={`font-bold text-sm ${pkg.expiresIn <= 3 ? 'text-yellow-500' : 'text-white'}`}>
+                        {pkg.expiresIn} day{pkg.expiresIn !== 1 ? 's' : ''} ({pkg.expiryDate})
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Main Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           {/* Classes This Month */}
@@ -204,7 +288,6 @@ export default function ClientDashboard() {
             <p className="text-6xl font-black text-white mt-3" style={{ fontWeight: 800 }}>
               {Math.round(stats.progressToGoal)}%
             </p>
-            {/* Progress Bar */}
             <div className="mt-4 w-full bg-gray-800 rounded-full h-2 overflow-hidden">
               <div
                 className="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-500"
