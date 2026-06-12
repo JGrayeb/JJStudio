@@ -74,10 +74,10 @@ export default function ClientDashboard() {
 
     console.log('🔍 Fetching dashboard stats for user:', userId);
 
-    // ✅ FIXED: coaches is nested inside classes, not at top level
+    // ✅ SIMPLIFIED: Only fetch classes, no coaches yet
     const { data: bookings, error: bookingsError } = await supabase
       .from('class_bookings')
-      .select('id, attended, classes(name, focus, coaches(name))')
+      .select('id, attended, classes(name, focus)')
       .eq('user_id', userId)
       .gte('signed_up_at', monthStart.toISOString())
       .lte('signed_up_at', monthEnd.toISOString())
@@ -87,31 +87,30 @@ export default function ClientDashboard() {
       console.error('❌ Bookings error:', bookingsError);
       throw new Error(`Bookings fetch failed: ${bookingsError.message}`);
     }
-    console.log('✅ Bookings fetched:', bookings?.length || 0);
+    console.log('✅ Bookings fetched:', bookings);
 
     // ✅ Fetch all user_packages
     const { data: packagesData, error: pkgError } = await supabase
       .from('user_packages')
-      .select('id, created_at, expires_at, class_credits_remaining')
+      .select('id, created_at, expires_at, class_credits_remaining, package_id')
       .eq('user_id', userId);
 
-    console.log('🔍 Raw packages query result:', { packagesData, pkgError });
     if (pkgError) {
       console.error('❌ Packages error:', pkgError);
       throw new Error(`Packages fetch failed: ${pkgError.message}`);
     }
+    console.log('✅ Packages fetched:', packagesData);
 
     // ✅ Fetch packages info separately
     let packagesWithMeta: any[] = [];
     if (packagesData && packagesData.length > 0) {
-      const packageIds = packagesData.map((p: any) => p.id);
+      const packageIds = packagesData.map((p: any) => p.package_id);
       
       const { data: pkgMeta, error: metaError } = await supabase
         .from('packages')
         .select('id, name, class_credits, expire_days')
         .in('id', packageIds);
 
-      console.log('🔍 Package metadata:', { pkgMeta, metaError });
       if (metaError) {
         console.error('❌ Package metadata error:', metaError);
         throw new Error(`Package metadata failed: ${metaError.message}`);
@@ -178,32 +177,15 @@ export default function ClientDashboard() {
       }
     });
 
-    // ✅ FIXED: Access coach through classes relationship
-    const coachCount = new Map<string, number>();
-    bookings?.forEach((b: any) => {
-      const coachName = b.classes?.coaches?.name || 'Unknown';
-      coachCount.set(coachName, (coachCount.get(coachName) || 0) + 1);
-    });
-
-    let favoriteCoach: { name: string; count: number } | null = null;
-    let maxCoachCount = 0;
-    coachCount.forEach((count, name) => {
-      if (count > maxCoachCount) {
-        maxCoachCount = count;
-        favoriteCoach = { name, count };
-      }
-    });
-
     setStats({
       classesThisMonth,
       progressToGoal,
       favoriteClass,
-      favoriteCoach,
+      favoriteCoach: null, // ❌ Disabled for now - coach relationship doesn't exist
       activePackages,
     });
   } catch (err: any) {
     console.error('❌ FULL STATS ERROR:', err);
-    console.error('Error message:', err.message);
     setError(`Failed to load dashboard stats: ${err.message}`);
   }
 };
