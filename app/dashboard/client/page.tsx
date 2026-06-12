@@ -9,6 +9,7 @@ import { LogOut, BookOpen, Users, TrendingUp, AlertCircle, Award, Clock, Zap } f
 type UserStats = {
   classesThisMonth: number;
   progressToGoal: number;
+  goalTarget: number;
   favoriteClass: { name: string; count: number } | null;
   favoriteCoach: { name: string; count: number } | null;
   activePackages: Array<{
@@ -38,6 +39,7 @@ export default function ClientDashboard() {
   const [stats, setStats] = useState<UserStats>({
     classesThisMonth: 0,
     progressToGoal: 0,
+    goalTarget: 0,
     favoriteClass: null,
     favoriteCoach: null,
     activePackages: [],
@@ -110,10 +112,8 @@ export default function ClientDashboard() {
 
         if (ccError) {
           console.error('⚠️ Class coaches error (non-critical):', ccError);
-          // Don't throw - continue without coach data
         } else {
           console.log('✅ Class coaches fetched:', classCoaches);
-          // Build a map of class_id -> coach_name
           classCoaches?.forEach((cc: any) => {
             const coachName = cc.coaches?.name || 'Unknown';
             coachMap.set(cc.class_id, coachName);
@@ -156,9 +156,13 @@ export default function ClientDashboard() {
 
       console.log('✅ Combined package data:', packagesWithMeta);
 
-      // Calculate stats
+      // ✅ CALCULATE STATS WITH CORRECT GOAL
       const classesThisMonth = bookings?.length || 0;
-      const progressToGoal = Math.min((classesThisMonth / 8) * 100, 100);
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const goalTarget = Math.ceil(daysInMonth * 0.8); // 80% of days in month
+      const progressToGoal = Math.min((classesThisMonth / goalTarget) * 100, 100);
+
+      console.log(`📊 Stats: ${classesThisMonth} / ${goalTarget} classes (${daysInMonth} days in month)`);
 
       // Map packages
       const filteredPackages =
@@ -231,6 +235,7 @@ export default function ClientDashboard() {
       setStats({
         classesThisMonth,
         progressToGoal,
+        goalTarget,
         favoriteClass,
         favoriteCoach,
         activePackages,
@@ -406,7 +411,9 @@ export default function ClientDashboard() {
             <div className="flex items-center justify-between mb-6">
               <TrendingUp size={40} className="text-red-600" style={{ filter: 'drop-shadow(0 0 8px #C41E3A)' }} />
             </div>
-            <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">Reach 80% for a reward</p>
+            <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">
+              Reach {stats.goalTarget} classes for a reward
+            </p>
             <p className="text-6xl font-black text-white mt-3" style={{ fontWeight: 800 }}>
               {Math.round(stats.progressToGoal)}%
             </p>
@@ -417,7 +424,7 @@ export default function ClientDashboard() {
               />
             </div>
             <p className="text-sm text-gray-400 mt-3">
-              {8 - stats.classesThisMonth} more classes to reach your goal
+              {Math.max(0, stats.goalTarget - stats.classesThisMonth)} more classes to reach your goal
             </p>
           </div>
         </div>
