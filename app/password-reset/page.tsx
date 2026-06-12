@@ -1,9 +1,10 @@
+
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { Eye, EyeOff, Loader, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Loader, CheckCircle, AlertCircle } from 'lucide-react';
 
 function PasswordResetContent() {
   const router = useRouter();
@@ -11,22 +12,48 @@ function PasswordResetContent() {
   const supabase = createClient();
 
   const code = searchParams.get('code');
+  const errorParam = searchParams.get('error');
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(errorParam || '');
   const [resetSuccess, setResetSuccess] = useState(false);
+  const [sessionValid, setSessionValid] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  // Check if user has a valid session after callback
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session) {
+          setSessionValid(true);
+        } else if (!code && !errorParam) {
+          // No session and no recovery code/error = user accessed page directly
+          setError('Invalid or expired reset link. Please request a new password reset.');
+        }
+      } catch (err) {
+        console.error('Session check failed:', err);
+        setError('Session verification failed. Please try again.');
+      } finally {
+        setCheckingSession(false);
+      }
+    };
+
+    checkSession();
+  }, [code, errorParam]);
 
   const isPasswordValid = password.length >= 8;
   const isPasswordMatch = password === confirmPassword && password.length > 0;
-  const isFormValid = isPasswordValid && isPasswordMatch && !isLoading;
+  const isFormValid = isPasswordValid && isPasswordMatch && !isLoading && sessionValid;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid || !code) return;
+    if (!isFormValid) return;
 
     try {
       setError('');
@@ -43,6 +70,10 @@ function PasswordResetContent() {
       }
 
       setResetSuccess(true);
+      
+      // Sign out after password reset
+      await supabase.auth.signOut();
+      
       setTimeout(() => {
         router.push('/login');
       }, 2000);
@@ -52,6 +83,47 @@ function PasswordResetContent() {
       setIsLoading(false);
     }
   };
+
+  // Show loading state while checking session
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <div className="w-full max-w-md text-center">
+          <div className="bg-black border-2 border-red-700 rounded-lg shadow-2xl p-8" style={{ boxShadow: '0 0 30px rgba(196, 30, 58, 0.25)' }}>
+            <Loader size={48} className="text-red-600 animate-spin mx-auto mb-4" style={{ filter: 'drop-shadow(0 0 10px #C41E3A)' }} />
+            <p className="text-gray-400 font-semibold">Verifying reset link...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show invalid session error
+  if (!sessionValid && errorParam) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <div className="w-full max-w-md text-center">
+          <div className="bg-black border-2 border-red-700 rounded-lg shadow-2xl p-8" style={{ boxShadow: '0 0 30px rgba(196, 30, 58, 0.25)' }}>
+            <AlertCircle size={64} className="text-red-600 mx-auto mb-6" style={{ filter: 'drop-shadow(0 0 10px #C41E3A)' }} />
+            <h1 className="text-2xl font-black text-white mb-4" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>INVALID RESET LINK</h1>
+            <p className="text-red-400 mb-6 font-semibold">{errorParam}</p>
+            <a
+              href="/forgot-password"
+              className="inline-block px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded transition uppercase tracking-wide"
+              style={{
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                boxShadow: '0 0 20px rgba(196, 30, 58, 0.3)',
+                fontFamily: 'Montserrat, sans-serif',
+              }}
+            >
+              Request New Reset
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (resetSuccess) {
     return (
