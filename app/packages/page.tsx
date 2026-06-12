@@ -10,9 +10,9 @@ type Package = {
   id: string;
   name: string;
   class_credits: number;
-  expires_days: number;
-  price: number;
-  beverage_points: number;
+  expire_days: number;  
+  price_mxn: number;  
+  beverage_credits: number; 
 };
 
 export default function PackagesPage() {
@@ -47,18 +47,19 @@ export default function PackagesPage() {
 
   const fetchPackages = async () => {
     try {
-      const { data, error: fetchError } = await supabase
-        .from('packages')
-        .select('*')
-        .order('class_credits', { ascending: true });
+        const { data, error: fetchError } = await supabase
+          .from('packages')
+         .select('*')
+          .eq('active', true)  // ✅ Only fetch active packages
+          .order('class_credits', { ascending: true });
 
-      if (fetchError) throw fetchError;
-      setPackages(data || []);
-    } catch (err) {
-      console.error('Fetch error:', err);
-      setError('Failed to fetch packages');
-    }
-  };
+     if (fetchError) throw fetchError;
+        setPackages(data || []);
+  } catch (err) {
+    console.error('Fetch error:', err);
+    setError('Failed to fetch packages');
+  }
+};
 
   const handlePurchasePackage = async (packageId: string) => {
     try {
@@ -172,7 +173,7 @@ export default function PackagesPage() {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-4xl font-black text-red-600">${pkg.price.toLocaleString('es-MX')}</span>
+                  <span className="text-4xl font-black text-red-600">${pkg.price_mxn.toLocaleString('es-MX')}</span>
                   <span className="text-gray-400 font-bold text-sm">MXN</span>
                 </div>
 
@@ -193,7 +194,7 @@ export default function PackagesPage() {
                   <div className="flex items-center gap-2 pt-2 border-t border-gray-700">
                     <Check size={18} className="text-green-500" />
                     <p className="text-sm text-gray-300">
-                      Valid for <span className="font-bold text-white">{pkg.expires_days} days</span>
+                      Valid for <span className="font-bold text-white">{pkg.expire_days} days</span>
                     </p>
                   </div>
 
@@ -202,17 +203,17 @@ export default function PackagesPage() {
                     <div className="flex items-center gap-2">
                       <Check size={18} className="text-green-500" />
                       <p className="text-sm text-gray-300">
-                        <span className="font-bold text-white">${(pkg.price / pkg.class_credits).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</span> per class
+                        <span className="font-bold text-white">${(pkg.price_mxn / pkg.class_credits).toLocaleString('es-MX', { maximumFractionDigits: 0 })}</span> per class
                       </p>
                     </div>
                   )}
 
                   {/* Beverage Points */}
-                  {pkg.beverage_points > 0 && (
+                  {pkg.beverage_credits > 0 && (
                     <div className="flex items-center gap-2 pt-2 border-t border-gray-700">
                       <Coffee size={18} className="text-orange-500" />
                       <p className="text-sm text-gray-300">
-                        <span className="font-bold text-white">{pkg.beverage_points}</span> Beverage Points
+                        <span className="font-bold text-white">{pkg.beverage_credits}</span> Beverage Points
                       </p>
                     </div>
                   )}
