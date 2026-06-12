@@ -1,96 +1,103 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import { useRouter } from 'next/navigation';
-import { Loader, AlertCircle } from 'lucide-react';
 
-export default function PasswordResetPage() {
-  const supabase = createClient();
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
+import { LogOut, Calendar, Users, Zap } from 'lucide-react';
+
+export default function TrainerDashboard() {
   const router = useRouter();
-  const [newPassword, setNewPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<'idle' | 'success' | 'error' | 'in-progress'>('idle');
-  const [error, setError] = useState<string | null>(null);
-  const [hasToken, setHasToken] = useState(false);
+  const supabase = createClient();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Some Supabase flows provide an access_token or type=recovery param in URL.
-    // If the redirect includes ?type=recovery&access_token=..., you may need to try:
-    // supabase.auth.setSession({ access_token, refresh_token }) or call supabase.auth.getSessionFromUrl()
-    // For now detect presence of tokens and show appropriate UI.
-    const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get('access_token') || params.get('token');
-    const type = params.get('type');
-    if (accessToken || type === 'recovery') {
-      setHasToken(true);
-    } else {
-      setHasToken(false);
-    }
-  }, []);
-
-  const submitNewPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      // Attempt to update the user's password using the session established by the recovery link
-      // supabase-js v2: supabase.auth.updateUser({ password: newPassword })
-      // If your flow requires exchanging a code first, you may need to call supabase.auth.getSessionFromUrl()
-      // Try v2 flow:
-      // @ts-ignore
-      if (typeof supabase.auth.updateUser === 'function') {
-        // @ts-ignore
-        const { data, error } = await supabase.auth.updateUser({ password: newPassword });
-        if (error) throw error;
-        setStatus('success');
-        setTimeout(() => router.push('/login'), 1800);
-      } else {
-        throw new Error('Password reset flow needs to be configured for your Supabase client version.');
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/login');
+        return;
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to reset password');
-      setStatus('error');
-    } finally {
+      setUser(user);
       setLoading(false);
-    }
+    };
+    getUser();
+  }, [router, supabase]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
   };
 
-  if (!hasToken) {
+  if (loading) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center p-6">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-black">Password reset</h1>
-          <p className="mt-3 text-sm text-white/50">We sent you a password reset link. Please check your email and follow the link. If it redirected here with a token, you'll be able to set a new password below.</p>
-          <div className="mt-6">
-            <a href="/forgot-password" className="px-4 py-2 bg-red-900 rounded">Resend reset email</a>
+      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin mb-4">
+            <div className="w-16 h-16 border-4 border-red-900 border-t-red-600 rounded-full mx-auto" />
           </div>
+          <p className="text-white font-bold">Loading...</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
-        <h1 className="text-2xl font-black mb-4">Set a new password</h1>
-        <form onSubmit={submitNewPassword} className="space-y-4">
+    <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+      <nav className="bg-black border-b-2 border-red-700" style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}>
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div>
-            <label className="text-xs text-white/60 uppercase tracking-widest mb-2 block">New password</label>
-            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className="w-full px-3 py-3 bg-white/5 border border-white/10 rounded text-white" />
+            <span className="text-white font-black text-xl">JJ</span>
+            <span className="text-red-600 font-black text-xl" style={{ textShadow: '0 0 8px #C41E3A' }}>STUDIO</span>
           </div>
-
-          {error && (
-            <div className="flex gap-3 p-3 bg-white/5 border border-red-900/30 rounded">
-              <AlertCircle size={18} className="text-red-800" />
-              <div className="text-xs text-red-800">{error}</div>
-            </div>
-          )}
-
-          <button type="submit" disabled={loading} className="w-full py-3 text-xs font-bold uppercase tracking-widest text-white rounded" style={{ backgroundColor: '#800000', opacity: loading ? 0.85 : 1 }}>
-            {loading ? <Loader className="animate-spin" size={16} /> : 'Set new password'}
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold uppercase tracking-wide flex items-center gap-2 transition"
+            style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.3)' }}
+          >
+            <LogOut size={18} /> Logout
           </button>
-        </form>
+        </div>
+      </nav>
+
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="mb-12">
+          <h1 className="text-5xl font-black text-white mb-2" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>TRAINER DASHBOARD</h1>
+          <div className="h-1.5 w-20 bg-gradient-to-r from-red-800 via-red-600 to-red-500" style={{ boxShadow: '0 0 10px #C41E3A' }} />
+          <p className="text-gray-400 mt-4 font-semibold">Welcome, {user?.email}</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {[
+            { icon: Users, label: 'My Clients', value: '0' },
+            { icon: Calendar, label: 'Scheduled Classes', value: '0' },
+            { icon: Zap, label: 'This Month', value: '0' },
+          ].map((stat, idx) => (
+            <div
+              key={idx}
+              className="bg-black border-2 border-red-700 rounded-lg p-6"
+              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <stat.icon size={32} className="text-red-600" />
+              </div>
+              <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">{stat.label}</p>
+              <p className="text-4xl font-black text-white mt-2" style={{ fontWeight: 800 }}>{stat.value}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-black border-2 border-red-700 rounded-lg p-8" style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}>
+          <h2 className="text-2xl font-black text-white mb-6" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>YOUR CLASSES</h2>
+          <p className="text-gray-400">No classes scheduled yet. Create your first class!</p>
+          <button
+            className="mt-6 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded font-bold uppercase tracking-wide transition"
+            style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.3)' }}
+          >
+            Schedule Class
+          </button>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

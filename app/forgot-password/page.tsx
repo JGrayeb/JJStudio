@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
         </form>
 
         <div className="mt-6 text-center text-sm text-white/40">
-          Remembered your password? <Link href="/login"><a className="font-bold" style={{ color: '#800000' }}>Sign in</a></Link>
+            Remembered your password? <Link href="/login" className="font-bold" style={{ color: '#800000' }}>Sign in</Link>
         </div>
       </div>
     </main>
