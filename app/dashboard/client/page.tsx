@@ -4,24 +4,34 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { LogOut, Zap, Dumbbell, Coffee, Calendar, AlertCircle, BookOpen } from 'lucide-react';
+import { LogOut, BookOpen, Users, TrendingUp, AlertCircle, Award } from 'lucide-react';
 
-type UserData = {
-  classPoints: number;
-  activePackage: { name: string; expiresIn: number } | null;
-  beveragePoints: number;
-  beverageExpiresIn: number | null;
+type UserStats = {
+  classesThisMonth: number;
+  progressToGoal: number; // 0-100
+  favoriteClass: { name: string; count: number } | null;
+  favoriteCoach: { name: string; count: number } | null;
 };
+
+const CLASS_CATEGORIES = [
+  { id: 'full_body', label: 'Full Body', color: 'bg-red-600' },
+  { id: 'low_body', label: 'Low Body', color: 'bg-purple-600' },
+  { id: 'arms', label: 'Arms', color: 'bg-blue-600' },
+  { id: 'core', label: 'Core', color: 'bg-yellow-600' },
+  { id: 'newby', label: 'Newby', color: 'bg-green-600' },
+  { id: '55plus', label: '55+', color: 'bg-orange-600' },
+  { id: 'hell', label: 'HELL', color: 'bg-pink-600' },
+];
 
 export default function ClientDashboard() {
   const router = useRouter();
   const supabase = createClient();
   const [user, setUser] = useState<any>(null);
-  const [userData, setUserData] = useState<UserData>({
-    classPoints: 0,
-    activePackage: null,
-    beveragePoints: 0,
-    beverageExpiresIn: null,
+  const [stats, setStats] = useState<UserStats>({
+    classesThisMonth: 0,
+    progressToGoal: 0,
+    favoriteClass: null,
+    favoriteCoach: null,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,66 +45,7 @@ export default function ClientDashboard() {
           return;
         }
         setUser(user);
-
-        // Fetch all active user packages with class credits
-        const { data: packagesData, error: packagesError } = await supabase
-          .from('user_packages')
-          .select('created_at, packages(name, class_credits, expires_days)')
-          .eq('user_id', user.id)
-          .not('packages', 'is', null);
-
-        if (packagesError) console.error('Packages error:', packagesError);
-
-        // Calculate total class points and find earliest expiration
-        let totalClassPoints = 0;
-        let earliestExpiry: { name: string; expiresIn: number } | null = null;
-        const now = new Date();
-
-        packagesData?.forEach((pkg: any) => {
-          if (pkg.packages) {
-            totalClassPoints += pkg.packages.class_credits || 0;
-            
-            const createdDate = new Date(pkg.created_at);
-            const expiryDate = new Date(createdDate.getTime() + (pkg.packages.expires_days * 24 * 60 * 60 * 1000));
-            const daysRemaining = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-            if (daysRemaining > 0 && (!earliestExpiry || daysRemaining < earliestExpiry.expiresIn)) {
-              earliestExpiry = {
-                name: pkg.packages.name,
-                expiresIn: daysRemaining,
-              };
-            }
-          }
-        });
-
-        // Fetch latest beverage points (30-day expiration)
-        const { data: beverageData, error: beverageError } = await supabase
-          .from('beverage_points')
-          .select('amount, created_at')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single();
-
-        if (beverageError && beverageError.code !== 'PGRST116') {
-          console.error('Beverage error:', beverageError);
-        }
-
-        // Calculate beverage expiration (30 days from created_at)
-        let beverageExpiresIn = null;
-        if (beverageData) {
-          const createdDate = new Date(beverageData.created_at);
-          const expiryDate = new Date(createdDate.getTime() + (30 * 24 * 60 * 60 * 1000));
-          beverageExpiresIn = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        }
-
-        setUserData({
-          classPoints: totalClassPoints,
-          activePackage: earliestExpiry,
-          beveragePoints: beverageData?.amount || 0,
-          beverageExpiresIn: beverageExpiresIn && beverageExpiresIn > 0 ? beverageExpiresIn : null,
-        });
-
+        await fetchDashboardStats(user.id);
         setLoading(false);
       } catch (err) {
         console.error('Dashboard error:', err);
@@ -106,17 +57,73 @@ export default function ClientDashboard() {
     getUser();
   }, [router, supabase]);
 
+  const fetchDashboardStats = async (userId: string) => {
+    try {
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      // Get all bookings this month that were attended
+      const { data: bookings, error: bookingsError } = await supabase
+        .from('class_bookings')
+        .select('id, attended, classes(name, focus), coaches(name)')
+        .eq('user_id', userId)
+        .gte('signed_up_at', monthStart.toISOString())
+        .lte('signed_up_at', monthEnd.toISOString())
+        .eq('attended', true);
+
+      if (bookingsError) throw bookingsError;
+
+      // Calculate stats
+      const classesThisMonth = bookings?.length || 0;
+      const progressToGoal = Math.min((classesThisMonth / 8) * 100, 100); // 8 classes = 80% goal
+
+      // Find favorite class
+      const classCount = new Map<string, number>();
+      bookings?.forEach((b: any) => {
+        const className = b.classes?.name || 'Unknown';
+        classCount.set(className, (classCount.get(className) || 0) + 1);
+      });
+
+      let favoriteClass: { name: string; count: number } | null = null;
+      let maxCount = 0;
+      classCount.forEach((count, name) => {
+        if (count > maxCount) {
+          maxCount = count;
+          favoriteClass = { name, count };
+        }
+      });
+
+      // Find favorite coach
+      const coachCount = new Map<string, number>();
+      bookings?.forEach((b: any) => {
+        const coachName = b.coaches?.name || 'Unknown';
+        coachCount.set(coachName, (coachCount.get(coachName) || 0) + 1);
+      });
+
+      let favoriteCoach: { name: string; count: number } | null = null;
+      let maxCoachCount = 0;
+      coachCount.forEach((count, name) => {
+        if (count > maxCoachCount) {
+          maxCoachCount = count;
+          favoriteCoach = { name, count };
+        }
+      });
+
+      setStats({
+        classesThisMonth,
+        progressToGoal,
+        favoriteClass,
+        favoriteCoach,
+      });
+    } catch (err) {
+      console.error('Stats error:', err);
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
-  };
-
-  const handleBrowseClasses = () => {
-    router.push('/classes');
-  };
-
-  const handleViewBookings = () => {
-    router.push('/bookings');
   };
 
   if (loading) {
@@ -152,11 +159,12 @@ export default function ClientDashboard() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Header */}
+        {/* Welcome Header */}
         <div className="mb-12">
-          <h1 className="text-5xl font-black text-white mb-2" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>YOUR DASHBOARD</h1>
+          <h1 className="text-5xl font-black text-white mb-2" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>
+            Welcome back, <span className="text-red-600">{user?.email?.split('@')[0]}</span>
+          </h1>
           <div className="h-1.5 w-20 bg-gradient-to-r from-red-800 via-red-600 to-red-500" style={{ boxShadow: '0 0 10px #C41E3A' }} />
-          <p className="text-gray-400 mt-4 font-semibold">Welcome back, {user?.email}</p>
         </div>
 
         {/* Error Message */}
@@ -168,76 +176,132 @@ export default function ClientDashboard() {
         )}
 
         {/* Main Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {/* Class Points Card */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          {/* Classes This Month */}
           <div
             className="bg-black border-2 border-red-700 rounded-lg p-8"
             style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
           >
             <div className="flex items-center justify-between mb-6">
-              <Dumbbell size={40} className="text-red-600" style={{ filter: 'drop-shadow(0 0 8px #C41E3A)' }} />
+              <BookOpen size={40} className="text-red-600" style={{ filter: 'drop-shadow(0 0 8px #C41E3A)' }} />
             </div>
-            <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">Class Points</p>
-            <p className="text-5xl font-black text-white mt-3" style={{ fontWeight: 800 }}>
-              {userData.classPoints}
+            <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">Classes This Month</p>
+            <p className="text-6xl font-black text-white mt-3" style={{ fontWeight: 800 }}>
+              {stats.classesThisMonth}
             </p>
-            {userData.activePackage && (
-              <p className="text-sm text-red-400 mt-3">
-                {userData.activePackage.name} • Expires in {userData.activePackage.expiresIn} days
-              </p>
-            )}
+            <p className="text-sm text-red-400 mt-3">Keep crushing those goals! 🔥</p>
           </div>
 
-          {/* Beverage Credits Card */}
+          {/* Progress to Goal */}
           <div
             className="bg-black border-2 border-red-700 rounded-lg p-8"
             style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
           >
             <div className="flex items-center justify-between mb-6">
-              <Coffee size={40} className="text-red-600" style={{ filter: 'drop-shadow(0 0 8px #C41E3A)' }} />
+              <TrendingUp size={40} className="text-red-600" style={{ filter: 'drop-shadow(0 0 8px #C41E3A)' }} />
             </div>
-            <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">Beverage Points</p>
-            <p className="text-5xl font-black text-white mt-3" style={{ fontWeight: 800 }}>
-              {userData.beveragePoints}
+            <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">Progress to 80% Goal</p>
+            <p className="text-6xl font-black text-white mt-3" style={{ fontWeight: 800 }}>
+              {Math.round(stats.progressToGoal)}%
             </p>
-            {userData.beverageExpiresIn !== null && (
-              <p className="text-sm text-red-400 mt-3">
-                Expires in {userData.beverageExpiresIn} {userData.beverageExpiresIn === 1 ? 'day' : 'days'}
-              </p>
-            )}
+            {/* Progress Bar */}
+            <div className="mt-4 w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-500"
+                style={{ width: `${stats.progressToGoal}%` }}
+              />
+            </div>
+            <p className="text-sm text-gray-400 mt-3">
+              {8 - stats.classesThisMonth} more classes to reach your goal
+            </p>
           </div>
+        </div>
 
-          {/* Quick Stats Card */}
-          <div
-            className="bg-black border-2 border-red-700 rounded-lg p-8"
-            style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <Zap size={40} className="text-red-600" style={{ filter: 'drop-shadow(0 0 8px #C41E3A)' }} />
+        {/* Favorites Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          {/* Favorite Class */}
+          {stats.favoriteClass ? (
+            <div
+              className="bg-black border-2 border-red-700 rounded-lg p-8"
+              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-black text-white">Your Favorite Class</h3>
+                <Award size={32} className="text-red-600" />
+              </div>
+              <p className="text-4xl font-black text-red-600 mt-4">{stats.favoriteClass.name}</p>
+              <p className="text-gray-400 mt-3">
+                You've attended <span className="text-red-400 font-bold">{stats.favoriteClass.count} times</span> this month
+              </p>
             </div>
-            <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">Status</p>
-            <p className="text-2xl font-black text-white mt-3">
-              {userData.classPoints > 0 ? '✓ Ready to Train' : 'Get a Package'}
-            </p>
+          ) : (
+            <div
+              className="bg-black border-2 border-gray-700 rounded-lg p-8"
+              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.1)' }}
+            >
+              <h3 className="text-2xl font-black text-gray-500">Your Favorite Class</h3>
+              <p className="text-gray-400 mt-4">Start booking classes to see your favorite!</p>
+            </div>
+          )}
+
+          {/* Favorite Coach */}
+          {stats.favoriteCoach ? (
+            <div
+              className="bg-black border-2 border-red-700 rounded-lg p-8"
+              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-black text-white">Your Favorite Coach</h3>
+                <Users size={32} className="text-red-600" />
+              </div>
+              <p className="text-4xl font-black text-red-600 mt-4">{stats.favoriteCoach.name}</p>
+              <p className="text-gray-400 mt-3">
+                You've trained with them <span className="text-red-400 font-bold">{stats.favoriteCoach.count} times</span> this month
+              </p>
+            </div>
+          ) : (
+            <div
+              className="bg-black border-2 border-gray-700 rounded-lg p-8"
+              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.1)' }}
+            >
+              <h3 className="text-2xl font-black text-gray-500">Your Favorite Coach</h3>
+              <p className="text-gray-400 mt-4">Book with coaches to see your favorite!</p>
+            </div>
+          )}
+        </div>
+
+        {/* Class Categories */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-black text-white mb-6 uppercase">Our Class Categories</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            {CLASS_CATEGORIES.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => router.push('/classes')}
+                className={`${category.color} hover:opacity-90 text-white font-bold py-6 px-4 rounded-lg transition transform hover:scale-105 text-center`}
+              >
+                <p className="text-sm font-black">{category.label}</p>
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <button
-            onClick={handleBrowseClasses}
+            onClick={() => router.push('/classes')}
             className="bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded font-bold uppercase tracking-wide transition flex items-center justify-center gap-2"
             style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.3)' }}
           >
             <BookOpen size={20} />
-            Browse & Book Classes
+            Book Your Next Class
           </button>
           <button
-            onClick={handleViewBookings}
+            onClick={() => router.push('/bookings')}
             className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-4 rounded font-bold uppercase tracking-wide border-2 border-red-700 transition flex items-center justify-center gap-2"
             style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.1)' }}
           >
-            <Calendar size={20} />
+            <Award size={20} />
             My Bookings
           </button>
         </div>

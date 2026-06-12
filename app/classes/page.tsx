@@ -127,7 +127,7 @@ export default function ClassesBooking() {
   const handleBookClass = async () => {
     if (!selectedClass || !user || classPoints <= 0) {
       if (classPoints <= 0) {
-        router.push('/app/packages');
+        router.push(' /packages');
       }
       return;
     }
@@ -249,7 +249,7 @@ export default function ClassesBooking() {
           <div className="bg-yellow-900 border-2 border-yellow-700 text-yellow-200 p-4 rounded-lg mb-8 flex items-center justify-between">
             <span>You don't have class points. <strong>Get a package first!</strong></span>
             <button
-              onClick={() => router.push('/app/packages')}
+              onClick={() => router.push('/packages')}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold uppercase text-sm transition"
             >
               View Packages
@@ -389,7 +389,7 @@ export default function ClassesBooking() {
 
               {classPoints <= 0 && (
                 <button
-                  onClick={() => router.push('/app/packages')}
+                  onClick={() => router.push('/packages')}
                   className="w-full mt-3 bg-yellow-700 hover:bg-yellow-800 text-white font-bold py-3 px-4 rounded uppercase tracking-wide transition"
                 >
                   Get Points
