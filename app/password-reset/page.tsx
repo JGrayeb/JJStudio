@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
@@ -11,7 +10,6 @@ function PasswordResetContent() {
   const searchParams = useSearchParams();
   const supabase = createClient();
 
-  const code = searchParams.get('code');
   const errorParam = searchParams.get('error');
 
   const [password, setPassword] = useState('');
@@ -28,12 +26,17 @@ function PasswordResetContent() {
   useEffect(() => {
     const checkSession = async () => {
       try {
+        // Wait a moment for the cookie to be set
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         const { data: { session } } = await supabase.auth.getSession();
         
-        if (session) {
+        console.log('🔍 Session check:', { hasSession: !!session, user: session?.user?.email });
+
+        if (session?.user) {
           setSessionValid(true);
-        } else if (!code && !errorParam) {
-          // No session and no recovery code/error = user accessed page directly
+          setError('');
+        } else {
           setError('Invalid or expired reset link. Please request a new password reset.');
         }
       } catch (err) {
@@ -45,7 +48,7 @@ function PasswordResetContent() {
     };
 
     checkSession();
-  }, [code, errorParam]);
+  }, [supabase.auth]);
 
   const isPasswordValid = password.length >= 8;
   const isPasswordMatch = password === confirmPassword && password.length > 0;
@@ -99,14 +102,14 @@ function PasswordResetContent() {
   }
 
   // Show invalid session error
-  if (!sessionValid && errorParam) {
+  if (!sessionValid) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
         <div className="w-full max-w-md text-center">
           <div className="bg-black border-2 border-red-700 rounded-lg shadow-2xl p-8" style={{ boxShadow: '0 0 30px rgba(196, 30, 58, 0.25)' }}>
             <AlertCircle size={64} className="text-red-600 mx-auto mb-6" style={{ filter: 'drop-shadow(0 0 10px #C41E3A)' }} />
             <h1 className="text-2xl font-black text-white mb-4" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>INVALID RESET LINK</h1>
-            <p className="text-red-400 mb-6 font-semibold">{errorParam}</p>
+            <p className="text-red-400 mb-6 font-semibold">{error}</p>
             <a
               href="/forgot-password"
               className="inline-block px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded transition uppercase tracking-wide"
