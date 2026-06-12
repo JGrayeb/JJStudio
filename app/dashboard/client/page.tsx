@@ -67,156 +67,180 @@ export default function ClientDashboard() {
   }, [router, supabase]);
 
   const fetchDashboardStats = async (userId: string) => {
-    try {
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  try {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-      console.log('🔍 Fetching dashboard stats for user:', userId);
+    console.log('🔍 Fetching dashboard stats for user:', userId);
 
-      // ✅ FIXED: Use class_coaches junction table to get coaches
-      const { data: bookings, error: bookingsError } = await supabase
-        .from('class_bookings')
-        .select(`
-          id, 
-          attended, 
-          classes(
-            name, 
-            focus, 
-            class_coaches(
-              coaches(name)
-            )
-          )
-        `)
-        .eq('user_id', userId)
-        .gte('signed_up_at', monthStart.toISOString())
-        .lte('signed_up_at', monthEnd.toISOString())
-        .eq('attended', true);
+    // ✅ STEP 1: Get bookings with classes (no coaches yet)
+    const { data: bookings, error: bookingsError } = await supabase
+      .from('class_bookings')
+      .select(`
+        id, 
+        attended, 
+        classes(
+          id,
+          name, 
+          focus
+        )
+      `)
+      .eq('user_id', userId)
+      .gte('signed_up_at', monthStart.toISOString())
+      .lte('signed_up_at', monthEnd.toISOString())
+      .eq('attended', true);
 
-      if (bookingsError) {
-        console.error('❌ Bookings error:', bookingsError);
-        throw new Error(`Bookings fetch failed: ${bookingsError.message}`);
-      }
-      console.log('✅ Bookings fetched:', bookings);
+    if (bookingsError) {
+      console.error('❌ Bookings error:', bookingsError);
+      throw new Error(`Bookings fetch failed: ${bookingsError.message}`);
+    }
+    console.log('✅ Bookings fetched:', bookings);
 
-      // ✅ Fetch all user_packages
-      const { data: packagesData, error: pkgError } = await supabase
-        .from('user_packages')
-        .select('id, created_at, expires_at, class_credits_remaining, package_id')
-        .eq('user_id', userId);
+    // ✅ STEP 2: Get all coaches for the classes (separate query)
+    const classIds = [...new Set(bookings?.map((b: any) => b.classes?.id).filter(Boolean) || [])];
+    console.log('🔍 Class IDs:', classIds);
 
-      if (pkgError) {
-        console.error('❌ Packages error:', pkgError);
-        throw new Error(`Packages fetch failed: ${pkgError.message}`);
-      }
-      console.log('✅ Packages fetched:', packagesData);
+    let coachMap = new Map<string, string>();
+    if (classIds.length > 0) {
+      const { data: classCoaches, error: ccError } = await supabase
+        .from('class_coaches')
+        .select('class_id, coaches(name)')
+        .in('class_id', classIds);
 
-      // ✅ Fetch packages info separately
-      let packagesWithMeta: any[] = [];
-      if (packagesData && packagesData.length > 0) {
-        const packageIds = packagesData.map((p: any) => p.package_id);
-        
-        const { data: pkgMeta, error: metaError } = await supabase
-          .from('packages')
-          .select('id, name, class_credits, expire_days')
-          .in('id', packageIds);
-
-        if (metaError) {
-          console.error('❌ Package metadata error:', metaError);
-          throw new Error(`Package metadata failed: ${metaError.message}`);
-        }
-
-        packagesWithMeta = packagesData.map((up: any) => {
-          const pkgInfo = pkgMeta?.find((p: any) => p.id === up.package_id);
-          return { ...up, packages: pkgInfo };
+      if (ccError) {
+        console.error('❌ Class coaches error:', ccError);
+        // Don't throw - continue without coach data
+      } else {
+        console.log('✅ Class coaches fetched:', classCoaches);
+        // Build a map of class_id -> coach_name
+        classCoaches?.forEach((cc: any) => {
+          const coachName = cc.coaches?.name || 'Unknown';
+          coachMap.set(cc.class_id, coachName);
         });
       }
-
-      console.log('✅ Combined package data:', packagesWithMeta);
-
-      // Calculate stats
-      const classesThisMonth = bookings?.length || 0;
-      const progressToGoal = Math.min((classesThisMonth / 8) * 100, 100);
-
-      // Map packages and sort by expiration
-      const filteredPackages =
-        packagesWithMeta
-          .map((pkg: any) => {
-            const packageMeta = pkg.packages || {};
-            const expiryDate = pkg.expires_at 
-              ? new Date(pkg.expires_at) 
-              : new Date();
-
-            const daysRemaining = Math.ceil(
-              (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-            );
-            const creditsRemaining = pkg.class_credits_remaining || 0;
-
-            return {
-              id: pkg.id,
-              name: packageMeta.name || 'Package',
-              classCreditsRemaining: creditsRemaining,
-              expiresIn: daysRemaining,
-              expiryDate: expiryDate.toLocaleDateString(),
-              isExpired: daysRemaining <= 0,
-            };
-          })
-          .filter((pkg: any) => pkg && !pkg.isExpired && pkg.classCreditsRemaining > 0)
-          .sort((a: any, b: any) => a.expiresIn - b.expiresIn) || [];
-
-      const activePackages = filteredPackages.map((pkg: any, index: number) => ({
-        ...pkg,
-        isNextToUse: index === 0,
-      }));
-
-      console.log('✅ Final active packages:', activePackages);
-
-      // Find favorite class
-      const classCount = new Map<string, number>();
-      bookings?.forEach((b: any) => {
-        const className = b.classes?.name || 'Unknown';
-        classCount.set(className, (classCount.get(className) || 0) + 1);
-      });
-
-      let favoriteClass: { name: string; count: number } | null = null;
-      let maxCount = 0;
-      classCount.forEach((count, name) => {
-        if (count > maxCount) {
-          maxCount = count;
-          favoriteClass = { name, count };
-        }
-      });
-
-      // ✅ FIXED: Extract coach from class_coaches junction table
-      const coachCount = new Map<string, number>();
-      bookings?.forEach((b: any) => {
-        // class_coaches is an array, get the first one (since each class has one coach)
-        const coachName = b.classes?.class_coaches?.[0]?.coaches?.name || 'Unknown';
-        coachCount.set(coachName, (coachCount.get(coachName) || 0) + 1);
-      });
-
-      let favoriteCoach: { name: string; count: number } | null = null;
-      let maxCoachCount = 0;
-      coachCount.forEach((count, name) => {
-        if (count > maxCoachCount) {
-          maxCoachCount = count;
-          favoriteCoach = { name, count };
-        }
-      });
-
-      setStats({
-        classesThisMonth,
-        progressToGoal,
-        favoriteClass,
-        favoriteCoach,
-        activePackages,
-      });
-    } catch (err: any) {
-      console.error('❌ FULL STATS ERROR:', err);
-      console.error('Error message:', err.message);
-      setError(`Failed to load dashboard stats: ${err.message}`);
     }
-  };
+
+    // ✅ STEP 3: Fetch packages
+    const { data: packagesData, error: pkgError } = await supabase
+      .from('user_packages')
+      .select('id, created_at, expires_at, class_credits_remaining, package_id')
+      .eq('user_id', userId);
+
+    if (pkgError) {
+      console.error('❌ Packages error:', pkgError);
+      throw new Error(`Packages fetch failed: ${pkgError.message}`);
+    }
+    console.log('✅ Packages fetched:', packagesData);
+
+    // ✅ Fetch packages metadata
+    let packagesWithMeta: any[] = [];
+    if (packagesData && packagesData.length > 0) {
+      const packageIds = packagesData.map((p: any) => p.package_id);
+      
+      const { data: pkgMeta, error: metaError } = await supabase
+        .from('packages')
+        .select('id, name, class_credits, expire_days')
+        .in('id', packageIds);
+
+      if (metaError) {
+        console.error('❌ Package metadata error:', metaError);
+        throw new Error(`Package metadata failed: ${metaError.message}`);
+      }
+
+      packagesWithMeta = packagesData.map((up: any) => {
+        const pkgInfo = pkgMeta?.find((p: any) => p.id === up.package_id);
+        return { ...up, packages: pkgInfo };
+      });
+    }
+
+    console.log('✅ Combined package data:', packagesWithMeta);
+
+    // Calculate stats
+    const classesThisMonth = bookings?.length || 0;
+    const progressToGoal = Math.min((classesThisMonth / 8) * 100, 100);
+
+    // Map packages
+    const filteredPackages =
+      packagesWithMeta
+        .map((pkg: any) => {
+          const packageMeta = pkg.packages || {};
+          const expiryDate = pkg.expires_at 
+            ? new Date(pkg.expires_at) 
+            : new Date();
+
+          const daysRemaining = Math.ceil(
+            (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          const creditsRemaining = pkg.class_credits_remaining || 0;
+
+          return {
+            id: pkg.id,
+            name: packageMeta.name || 'Package',
+            classCreditsRemaining: creditsRemaining,
+            expiresIn: daysRemaining,
+            expiryDate: expiryDate.toLocaleDateString(),
+            isExpired: daysRemaining <= 0,
+          };
+        })
+        .filter((pkg: any) => pkg && !pkg.isExpired && pkg.classCreditsRemaining > 0)
+        .sort((a: any, b: any) => a.expiresIn - b.expiresIn) || [];
+
+    const activePackages = filteredPackages.map((pkg: any, index: number) => ({
+      ...pkg,
+      isNextToUse: index === 0,
+    }));
+
+    console.log('✅ Final active packages:', activePackages);
+
+    // Find favorite class
+    const classCount = new Map<string, number>();
+    bookings?.forEach((b: any) => {
+      const className = b.classes?.name || 'Unknown';
+      classCount.set(className, (classCount.get(className) || 0) + 1);
+    });
+
+    let favoriteClass: { name: string; count: number } | null = null;
+    let maxCount = 0;
+    classCount.forEach((count, name) => {
+      if (count > maxCount) {
+        maxCount = count;
+        favoriteClass = { name, count };
+      }
+    });
+
+    // ✅ Find favorite coach (using our coachMap)
+    const coachCount = new Map<string, number>();
+    bookings?.forEach((b: any) => {
+      const classId = b.classes?.id;
+      const coachName = coachMap.get(classId) || 'Unknown';
+      coachCount.set(coachName, (coachCount.get(coachName) || 0) + 1);
+    });
+
+    let favoriteCoach: { name: string; count: number } | null = null;
+    let maxCoachCount = 0;
+    coachCount.forEach((count, name) => {
+      if (count > maxCoachCount) {
+        maxCoachCount = count;
+        favoriteCoach = { name, count };
+      }
+    });
+
+    console.log('✅ Favorite coach:', favoriteCoach);
+
+    setStats({
+      classesThisMonth,
+      progressToGoal,
+      favoriteClass,
+      favoriteCoach,
+      activePackages,
+    });
+  } catch (err: any) {
+    console.error('❌ FULL STATS ERROR:', err);
+    console.error('Error message:', err.message);
+    setError(`Failed to load dashboard stats: ${err.message}`);
+  }
+};
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
