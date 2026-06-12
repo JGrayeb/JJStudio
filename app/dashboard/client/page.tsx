@@ -67,125 +67,146 @@ export default function ClientDashboard() {
   }, [router, supabase]);
 
   const fetchDashboardStats = async (userId: string) => {
-    try {
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  try {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-      // Get all bookings this month that were attended
-      const { data: bookings, error: bookingsError } = await supabase
-        .from('class_bookings')
-        .select('id, attended, classes(name, focus), coaches(name)')
-        .eq('user_id', userId)
-        .gte('signed_up_at', monthStart.toISOString())
-        .lte('signed_up_at', monthEnd.toISOString())
-        .eq('attended', true);
+    console.log('🔍 Fetching dashboard stats for user:', userId);
 
-      if (bookingsError) throw bookingsError;
+    // ✅ FIXED: coaches is nested inside classes, not at top level
+    const { data: bookings, error: bookingsError } = await supabase
+      .from('class_bookings')
+      .select('id, attended, classes(name, focus, coaches(name))')
+      .eq('user_id', userId)
+      .gte('signed_up_at', monthStart.toISOString())
+      .lte('signed_up_at', monthEnd.toISOString())
+      .eq('attended', true);
 
-      // ✅ Fetch all user_packages (no limit)
-      const { data: packagesData, error: pkgError } = await supabase
-        .from('user_packages')
-        .select(`
-          id,
-          created_at,
-          expires_at,
-          class_credits_remaining,
-          packages!inner(id, name, class_credits, expire_days)
-        `)
-        .eq('user_id', userId);
-
-      console.log('Packages fetched:', { packagesData, pkgError });
-      if (pkgError) throw pkgError;
-
-      // Calculate stats
-      const classesThisMonth = bookings?.length || 0;
-      const progressToGoal = Math.min((classesThisMonth / 8) * 100, 100);
-
-      // Map packages and sort by expiration
-      const filteredPackages =
-        packagesData
-          ?.map((pkg: any) => {
-            const packageMeta = pkg.packages || {};
-            const createdDate = new Date(pkg.created_at);
-            const expiryDate = pkg.expires_at 
-              ? new Date(pkg.expires_at) 
-              : new Date(
-                  createdDate.getTime() + (packageMeta.expire_days || 0) * 24 * 60 * 60 * 1000
-                );
-
-            const daysRemaining = Math.ceil(
-              (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-            );
-            const creditsRemaining =
-              typeof pkg.class_credits_remaining === 'number'
-                ? pkg.class_credits_remaining
-                : packageMeta.class_credits || 0;
-
-            return {
-              id: pkg.id,
-              name: packageMeta.name || 'Package',
-              classCreditsRemaining: creditsRemaining,
-              expiresIn: daysRemaining,
-              expiryDate: expiryDate.toLocaleDateString(),
-              isExpired: daysRemaining <= 0,
-            };
-          })
-          .filter((pkg: any) => pkg && !pkg.isExpired && pkg.classCreditsRemaining > 0)
-          .sort((a: any, b: any) => a.expiresIn - b.expiresIn) || [];
-
-      // ✅ Mark the first (soonest expiring) package as the one to use
-      const activePackages = filteredPackages.map((pkg: any, index: number) => ({
-        ...pkg,
-        isNextToUse: index === 0,
-      }));
-
-      console.log('Active packages:', activePackages);
-
-      // Find favorite class
-      const classCount = new Map<string, number>();
-      bookings?.forEach((b: any) => {
-        const className = b.classes?.name || 'Unknown';
-        classCount.set(className, (classCount.get(className) || 0) + 1);
-      });
-
-      let favoriteClass: { name: string; count: number } | null = null;
-      let maxCount = 0;
-      classCount.forEach((count, name) => {
-        if (count > maxCount) {
-          maxCount = count;
-          favoriteClass = { name, count };
-        }
-      });
-
-      // Find favorite coach
-      const coachCount = new Map<string, number>();
-      bookings?.forEach((b: any) => {
-        const coachName = b.coaches?.name || 'Unknown';
-        coachCount.set(coachName, (coachCount.get(coachName) || 0) + 1);
-      });
-
-      let favoriteCoach: { name: string; count: number } | null = null;
-      let maxCoachCount = 0;
-      coachCount.forEach((count, name) => {
-        if (count > maxCoachCount) {
-          maxCoachCount = count;
-          favoriteCoach = { name, count };
-        }
-      });
-
-      setStats({
-        classesThisMonth,
-        progressToGoal,
-        favoriteClass,
-        favoriteCoach,
-        activePackages,
-      });
-    } catch (err) {
-      console.error('Stats error:', err);
-      setError('Failed to load dashboard stats');
+    if (bookingsError) {
+      console.error('❌ Bookings error:', bookingsError);
+      throw new Error(`Bookings fetch failed: ${bookingsError.message}`);
     }
-  };
+    console.log('✅ Bookings fetched:', bookings?.length || 0);
+
+    // ✅ Fetch all user_packages
+    const { data: packagesData, error: pkgError } = await supabase
+      .from('user_packages')
+      .select('id, created_at, expires_at, class_credits_remaining')
+      .eq('user_id', userId);
+
+    console.log('🔍 Raw packages query result:', { packagesData, pkgError });
+    if (pkgError) {
+      console.error('❌ Packages error:', pkgError);
+      throw new Error(`Packages fetch failed: ${pkgError.message}`);
+    }
+
+    // ✅ Fetch packages info separately
+    let packagesWithMeta: any[] = [];
+    if (packagesData && packagesData.length > 0) {
+      const packageIds = packagesData.map((p: any) => p.id);
+      
+      const { data: pkgMeta, error: metaError } = await supabase
+        .from('packages')
+        .select('id, name, class_credits, expire_days')
+        .in('id', packageIds);
+
+      console.log('🔍 Package metadata:', { pkgMeta, metaError });
+      if (metaError) {
+        console.error('❌ Package metadata error:', metaError);
+        throw new Error(`Package metadata failed: ${metaError.message}`);
+      }
+
+      packagesWithMeta = packagesData.map((up: any) => {
+        const pkgInfo = pkgMeta?.find((p: any) => p.id === up.package_id);
+        return { ...up, packages: pkgInfo };
+      });
+    }
+
+    console.log('✅ Combined package data:', packagesWithMeta);
+
+    // Calculate stats
+    const classesThisMonth = bookings?.length || 0;
+    const progressToGoal = Math.min((classesThisMonth / 8) * 100, 100);
+
+    // Map packages and sort by expiration
+    const filteredPackages =
+      packagesWithMeta
+        .map((pkg: any) => {
+          const packageMeta = pkg.packages || {};
+          const expiryDate = pkg.expires_at 
+            ? new Date(pkg.expires_at) 
+            : new Date();
+
+          const daysRemaining = Math.ceil(
+            (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+          );
+          const creditsRemaining = pkg.class_credits_remaining || 0;
+
+          return {
+            id: pkg.id,
+            name: packageMeta.name || 'Package',
+            classCreditsRemaining: creditsRemaining,
+            expiresIn: daysRemaining,
+            expiryDate: expiryDate.toLocaleDateString(),
+            isExpired: daysRemaining <= 0,
+          };
+        })
+        .filter((pkg: any) => pkg && !pkg.isExpired && pkg.classCreditsRemaining > 0)
+        .sort((a: any, b: any) => a.expiresIn - b.expiresIn) || [];
+
+    const activePackages = filteredPackages.map((pkg: any, index: number) => ({
+      ...pkg,
+      isNextToUse: index === 0,
+    }));
+
+    console.log('✅ Final active packages:', activePackages);
+
+    // Find favorite class
+    const classCount = new Map<string, number>();
+    bookings?.forEach((b: any) => {
+      const className = b.classes?.name || 'Unknown';
+      classCount.set(className, (classCount.get(className) || 0) + 1);
+    });
+
+    let favoriteClass: { name: string; count: number } | null = null;
+    let maxCount = 0;
+    classCount.forEach((count, name) => {
+      if (count > maxCount) {
+        maxCount = count;
+        favoriteClass = { name, count };
+      }
+    });
+
+    // ✅ FIXED: Access coach through classes relationship
+    const coachCount = new Map<string, number>();
+    bookings?.forEach((b: any) => {
+      const coachName = b.classes?.coaches?.name || 'Unknown';
+      coachCount.set(coachName, (coachCount.get(coachName) || 0) + 1);
+    });
+
+    let favoriteCoach: { name: string; count: number } | null = null;
+    let maxCoachCount = 0;
+    coachCount.forEach((count, name) => {
+      if (count > maxCoachCount) {
+        maxCoachCount = count;
+        favoriteCoach = { name, count };
+      }
+    });
+
+    setStats({
+      classesThisMonth,
+      progressToGoal,
+      favoriteClass,
+      favoriteCoach,
+      activePackages,
+    });
+  } catch (err: any) {
+    console.error('❌ FULL STATS ERROR:', err);
+    console.error('Error message:', err.message);
+    setError(`Failed to load dashboard stats: ${err.message}`);
+  }
+};
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
