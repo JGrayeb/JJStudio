@@ -1,269 +1,118 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { Eye, EyeOff, Loader, CheckCircle, AlertCircle } from 'lucide-react';
 
-function PasswordResetContent() {
+export default function PasswordReset() {
   const router = useRouter();
   const supabase = createClient();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
 
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [resetSuccess, setResetSuccess] = useState(false);
-  const [sessionValid, setSessionValid] = useState(false);
-  const [checkingSession, setCheckingSession] = useState(true);
-
-  // Check if user has a valid session after callback
   useEffect(() => {
-    const checkSession = async () => {
+    const handleRecovery = async () => {
       try {
-        // First, try to refresh the session from the cookie
-        console.log('🔄 Refreshing session from cookie...');
-        const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
+        // Get hash from URL (Supabase sends recovery tokens in #)
+        const hash = window.location.hash.substring(1);
         
-        console.log('✅ Refresh result:', { hasSession: !!refreshedSession, user: refreshedSession?.user?.email, error: refreshError?.message });
-
-        if (refreshedSession?.user) {
-          setSessionValid(true);
-          setError('');
-          console.log('✅ Session valid for user:', refreshedSession.user.email);
-        } else {
-          setError('Invalid or expired reset link. Please request a new password reset.');
-          console.log('❌ No session found after refresh');
+        if (!hash) {
+          setError('No recovery token found');
+          setLoading(false);
+          return;
         }
+
+        // Parse the hash params
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        const type = params.get('type');
+
+        if (!accessToken || type !== 'recovery') {
+          setError('Invalid or expired reset link');
+          setLoading(false);
+          return;
+        }
+
+        // Set the session with the recovery token
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: '', // Recovery tokens don't have refresh tokens
+        });
+
+        if (sessionError) {
+          setError('Failed to verify recovery link: ' + sessionError.message);
+          setLoading(false);
+          return;
+        }
+
+        setLoading(false);
       } catch (err) {
-        console.error('❌ Session check failed:', err);
-        setError('Session verification failed. Please try again.');
-      } finally {
-        setCheckingSession(false);
+        setError('An error occurred: ' + String(err));
+        setLoading(false);
       }
     };
 
-    checkSession();
-  }, []);
+    handleRecovery();
+  }, [supabase]);
 
-  const isPasswordValid = password.length >= 8;
-  const isPasswordMatch = password === confirmPassword && password.length > 0;
-  const isFormValid = isPasswordValid && isPasswordMatch && !isLoading && sessionValid;
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    
+    if (!newPassword) {
+      setError('Please enter a new password');
+      return;
+    }
 
     try {
-      setError('');
-      setIsLoading(true);
-
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: password,
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
       });
 
-      if (updateError) {
-        setError(updateError.message || 'Failed to reset password');
-        setIsLoading(false);
+      if (error) {
+        setError('Failed to update password: ' + error.message);
         return;
       }
 
-      setResetSuccess(true);
-      
-      // Sign out after password reset
-      await supabase.auth.signOut();
-      
-      setTimeout(() => {
-        router.push('/login');
-      }, 2000);
+      // Password updated successfully
+      router.push('/login?message=Password+updated+successfully');
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Password reset failed';
-      setError(errorMsg);
-      setIsLoading(false);
+      setError('An error occurred: ' + String(err));
     }
   };
 
-  // Show loading state while checking session
-  if (checkingSession) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-        <div className="w-full max-w-md text-center">
-          <div className="bg-black border-2 border-red-700 rounded-lg shadow-2xl p-8" style={{ boxShadow: '0 0 30px rgba(196, 30, 58, 0.25)' }}>
-            <Loader size={48} className="text-red-600 animate-spin mx-auto mb-4" style={{ filter: 'drop-shadow(0 0 10px #C41E3A)' }} />
-            <p className="text-gray-400 font-semibold">Verifying reset link...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Show invalid session error
-  if (!sessionValid) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-        <div className="w-full max-w-md text-center">
-          <div className="bg-black border-2 border-red-700 rounded-lg shadow-2xl p-8" style={{ boxShadow: '0 0 30px rgba(196, 30, 58, 0.25)' }}>
-            <AlertCircle size={64} className="text-red-600 mx-auto mb-6" style={{ filter: 'drop-shadow(0 0 10px #C41E3A)' }} />
-            <h1 className="text-2xl font-black text-white mb-4" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>INVALID RESET LINK</h1>
-            <p className="text-red-400 mb-6 font-semibold">{error}</p>
-            <a
-              href="/forgot-password"
-              className="inline-block px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded transition uppercase tracking-wide"
-              style={{
-                fontWeight: 800,
-                letterSpacing: '0.08em',
-                boxShadow: '0 0 20px rgba(196, 30, 58, 0.3)',
-                fontFamily: 'Montserrat, sans-serif',
-              }}
-            >
-              Request New Reset
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (resetSuccess) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-        <div className="w-full max-w-md text-center">
-          <div className="bg-black border-2 border-red-700 rounded-lg shadow-2xl p-8" style={{ boxShadow: '0 0 30px rgba(196, 30, 58, 0.25)' }}>
-            <CheckCircle size={64} className="text-red-600 mx-auto mb-6" style={{ filter: 'drop-shadow(0 0 10px #C41E3A)' }} />
-            <h1 className="text-3xl font-black text-white mb-2" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>PASSWORD RESET!</h1>
-            <p className="text-gray-400 mb-6 font-bold">Your password has been reset. Redirecting to login...</p>
-            <Loader size={24} className="text-red-600 animate-spin mx-auto" style={{ filter: 'drop-shadow(0 0 8px #C41E3A)' }} />
-          </div>
-        </div>
-      </div>
-    );
+  if (loading) {
+    return <div>Verifying reset link...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      <style>{`
-        input:focus {
-          box-shadow: 0 0 20px rgba(196, 30, 58, 0.4), inset 0 0 10px rgba(196, 30, 58, 0.1) !important;
-        }
-      `}</style>
-
-      <div className="w-full max-w-md">
-        <div className="bg-black border-2 border-red-700 rounded-lg p-8" style={{ boxShadow: '0 0 30px rgba(196, 30, 58, 0.3)' }}>
-          <div className="mb-8">
-            <div className="text-center mb-6">
-              <span className="text-white font-black text-2xl" style={{ fontWeight: 800 }}>JJ</span>
-              <span className="text-red-600 font-black text-2xl" style={{ fontWeight: 800, textShadow: '0 0 8px #C41E3A' }}>STUDIO</span>
-            </div>
-            <h1 className="text-4xl font-black text-white mb-3" style={{ fontWeight: 800, letterSpacing: '0.1em' }}>RESET PASSWORD</h1>
-            <div className="h-1.5 w-14 bg-gradient-to-r from-red-800 via-red-600 to-red-500 mx-auto mb-4" style={{ boxShadow: '0 0 10px #C41E3A' }} />
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="border-2 border-red-700 rounded-lg p-8 w-96">
+        <h1 className="text-2xl font-bold text-white mb-4">Reset Password</h1>
+        
+        {error && (
+          <div className="bg-red-900 text-red-200 p-3 rounded mb-4">
+            {error}
           </div>
+        )}
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-900/30 border-2 border-red-700 rounded flex items-start gap-3" style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.2)' }}>
-              <div className="text-red-600 mt-0.5 font-bold text-lg">⚠️</div>
-              <p className="text-red-400 text-sm font-semibold">{error}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide" style={{ fontWeight: 700, letterSpacing: '0.08em' }}>New Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setError('')}
-                  placeholder="••••••••••••"
-                  className="w-full px-4 py-3 bg-black border-2 border-red-800 rounded text-white placeholder-gray-600 focus:outline-none focus:border-red-600 transition font-semibold pr-12"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600 transition"
-                  disabled={isLoading}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {password && !isPasswordValid && <p className="text-red-500 text-xs mt-1 font-bold">Min 8 characters</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold text-white mb-2 uppercase tracking-wide" style={{ fontWeight: 700, letterSpacing: '0.08em' }}>Confirm Password</label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  onFocus={() => setError('')}
-                  placeholder="••••••••••••"
-                  className="w-full px-4 py-3 bg-black border-2 border-red-800 rounded text-white placeholder-gray-600 focus:outline-none focus:border-red-600 transition font-semibold pr-12"
-                  style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600 }}
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-red-600 transition"
-                  disabled={isLoading}
-                >
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {confirmPassword && !isPasswordMatch && <p className="text-red-500 text-xs mt-1 font-bold">Passwords do not match</p>}
-            </div>
-
-            <button
-              type="submit"
-              disabled={!isFormValid}
-              className={`w-full py-3 rounded font-black uppercase tracking-wide flex items-center justify-center gap-2 transition mt-6 ${
-                isFormValid ? 'bg-red-600 hover:bg-red-700 text-white cursor-pointer border-2 border-red-500' : 'bg-gray-800 text-gray-500 cursor-not-allowed border-2 border-gray-700'
-              }`}
-              style={{
-                fontWeight: 800,
-                letterSpacing: '0.12em',
-                boxShadow: isFormValid ? '0 0 20px rgba(196, 30, 58, 0.3)' : 'none',
-                fontFamily: 'Montserrat, sans-serif',
-              }}
-            >
-              {isLoading ? (
-                <>
-                  <Loader size={18} className="animate-spin" />
-                  RESETTING
-                </>
-              ) : (
-                'RESET PASSWORD'
-              )}
-            </button>
-          </form>
-
-          <a
-            href="/login"
-            className="w-full py-3 rounded font-black text-center bg-black border-2 border-red-700 hover:bg-red-700/10 text-white transition uppercase tracking-wide block mt-4"
-            style={{
-              fontWeight: 800,
-              letterSpacing: '0.1em',
-              boxShadow: '0 0 15px rgba(196, 30, 58, 0.2)',
-              fontFamily: 'Montserrat, sans-serif',
-            }}
+        <form onSubmit={handlePasswordChange}>
+          <input
+            type="password"
+            placeholder="New password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded mb-4"
+            minLength={6}
+          />
+          <button
+            type="submit"
+            className="w-full bg-red-700 text-white font-bold py-2 px-4 rounded hover:bg-red-800"
           >
-            Back to Sign In
-          </a>
-        </div>
+            Update Password
+          </button>
+        </form>
       </div>
     </div>
-  );
-}
-
-export default function PasswordResetPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
-      <PasswordResetContent />
-    </Suspense>
   );
 }
