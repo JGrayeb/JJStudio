@@ -66,30 +66,33 @@ export default function PackagesPage() {
     setPurchasingId(packageId);
     setError(null);
 
-    console.log('Attempting purchase with:', { userId: user.id, packageId }); // ✅ DEBUG
+    // ✅ Fetch the package to get class_credits
+    const { data: packageData, error: fetchError } = await supabase
+      .from('packages')
+      .select('class_credits')
+      .eq('id', packageId)
+      .single();
 
-    const { error: insertError, data } = await supabase
+    if (fetchError || !packageData) throw new Error('Package not found');
+
+    const { error: insertError } = await supabase
       .from('user_packages')
       .insert([
         {
           user_id: user.id,
           package_id: packageId,
           created_at: new Date().toISOString(),
+          class_credits_remaining: packageData.class_credits, // ✅ Set remaining credits
         },
       ]);
 
-    console.log('Insert response:', { error: insertError, data }); // ✅ DEBUG
-
-    if (insertError) {
-      console.error('Insert error details:', insertError); // ✅ DEBUG
-      throw insertError;
-    }
+    if (insertError) throw insertError;
 
     alert('✅ Package purchased successfully!');
     router.push('/dashboard/client');
   } catch (err) {
-    console.error('Purchase error:', err); // ✅ DEBUG
-    setError('Failed to purchase package. Please try again.');
+    console.error('Purchase error:', err);
+    setError(`Failed to purchase package: ${err.message}`);
   } finally {
     setPurchasingId(null);
   }
