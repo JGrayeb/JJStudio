@@ -66,14 +66,18 @@ export default function PackagesPage() {
     setPurchasingId(packageId);
     setError(null);
 
-    // ✅ Fetch the package to get class_credits
+    // ✅ Fetch the package to get class_credits and expire_days
     const { data: packageData, error: fetchError } = await supabase
       .from('packages')
-      .select('class_credits')
+      .select('class_credits, expire_days')
       .eq('id', packageId)
       .single();
 
     if (fetchError || !packageData) throw new Error('Package not found');
+
+    // ✅ Calculate expiration date
+    const createdAt = new Date();
+    const expiresAt = new Date(createdAt.getTime() + packageData.expire_days * 24 * 60 * 60 * 1000);
 
     const { error: insertError } = await supabase
       .from('user_packages')
@@ -81,7 +85,8 @@ export default function PackagesPage() {
         {
           user_id: user.id,
           package_id: packageId,
-          created_at: new Date().toISOString(),
+          created_at: createdAt.toISOString(),
+          expires_at: expiresAt.toISOString(), // ✅ Set expiration date
           class_credits_remaining: packageData.class_credits, // ✅ Set remaining credits
         },
       ]);
