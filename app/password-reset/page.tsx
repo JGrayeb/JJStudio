@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ export default function PasswordReset() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState('');
+  const [passwordUpdated, setPasswordUpdated] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -43,27 +45,79 @@ export default function PasswordReset() {
     }
 
     try {
+      setLoading(true);
       const { error } = await supabase.auth.updateUser({
         password: newPassword,
       });
 
       if (error) {
         setError('Failed to update password: ' + error.message);
+        setLoading(false);
         return;
       }
 
-      // Success
+      // Success - show confirmation screen
+      setPasswordUpdated(true);
       await supabase.auth.signOut();
-      router.push('/login?message=Password+updated.+Please+sign+in.');
+      setLoading(false);
     } catch (err) {
       setError('An error occurred: ' + String(err));
+      setLoading(false);
     }
+  };
+
+  const handleSignIn = () => {
+    router.push('/login');
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white">Verifying reset link...</div>
+      </div>
+    );
+  }
+
+  // Confirmation screen after successful password update
+  if (passwordUpdated) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="border-2 border-red-700 rounded-lg p-8 w-96">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-red-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">Password Updated!</h1>
+            <p className="text-gray-400">Your password has been successfully changed.</p>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={handleSignIn}
+              className="w-full bg-red-700 text-white font-bold py-3 px-4 rounded hover:bg-red-800 transition"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => setPasswordUpdated(false)}
+              className="w-full bg-gray-800 text-white font-bold py-3 px-4 rounded border border-gray-700 hover:bg-gray-700 transition"
+            >
+              Change Password
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -85,13 +139,13 @@ export default function PasswordReset() {
             placeholder="New password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded mb-4"
+            className="w-full px-4 py-2 bg-gray-900 text-white border border-gray-700 rounded mb-4 focus:outline-none focus:border-red-700"
             minLength={6}
           />
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-700 text-white font-bold py-2 px-4 rounded hover:bg-red-800 disabled:opacity-50"
+            className="w-full bg-red-700 text-white font-bold py-2 px-4 rounded hover:bg-red-800 disabled:opacity-50 transition"
           >
             Update Password
           </button>
