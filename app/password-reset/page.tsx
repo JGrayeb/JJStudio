@@ -1,23 +1,20 @@
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { Eye, EyeOff, Loader, CheckCircle, AlertCircle } from 'lucide-react';
 
 function PasswordResetContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const supabase = createClient();
-
-  const errorParam = searchParams.get('error');
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(errorParam || '');
+  const [error, setError] = useState('');
   const [resetSuccess, setResetSuccess] = useState(false);
   const [sessionValid, setSessionValid] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
@@ -26,21 +23,22 @@ function PasswordResetContent() {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        // Wait a moment for the cookie to be set
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // First, try to refresh the session from the cookie
+        console.log('🔄 Refreshing session from cookie...');
+        const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
         
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        console.log('🔍 Session check:', { hasSession: !!session, user: session?.user?.email });
+        console.log('✅ Refresh result:', { hasSession: !!refreshedSession, user: refreshedSession?.user?.email, error: refreshError?.message });
 
-        if (session?.user) {
+        if (refreshedSession?.user) {
           setSessionValid(true);
           setError('');
+          console.log('✅ Session valid for user:', refreshedSession.user.email);
         } else {
           setError('Invalid or expired reset link. Please request a new password reset.');
+          console.log('❌ No session found after refresh');
         }
       } catch (err) {
-        console.error('Session check failed:', err);
+        console.error('❌ Session check failed:', err);
         setError('Session verification failed. Please try again.');
       } finally {
         setCheckingSession(false);
@@ -48,7 +46,7 @@ function PasswordResetContent() {
     };
 
     checkSession();
-  }, [supabase.auth]);
+  }, []);
 
   const isPasswordValid = password.length >= 8;
   const isPasswordMatch = password === confirmPassword && password.length > 0;
