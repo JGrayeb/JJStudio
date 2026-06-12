@@ -54,15 +54,31 @@ export default function ClientDashboard() {
     const getUser = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
+        console.log('👤 Full user object:', user);
+        
         if (!user) {
+          console.log('❌ No user found, redirecting to login');
           router.push('/login');
           return;
         }
+        
         setUser(user);
         
-        // ✅ CHECK IF EMAIL IS VERIFIED
-        const emailConfirmedAt = user.user_metadata?.email_confirmed_at || user.confirmed_at;
-        setIsEmailVerified(!!emailConfirmedAt);
+        // ✅ CHECK EMAIL VERIFICATION - Try multiple fields
+        const isVerified = !!(
+          user.user_metadata?.email_confirmed_at || 
+          user.user_metadata?.email_verified ||
+          user.confirmed_at ||
+          (user.email_confirmed_at && user.email_confirmed_at !== null)
+        );
+        
+        console.log('📧 Email verification check:');
+        console.log('   - email_confirmed_at:', user.user_metadata?.email_confirmed_at);
+        console.log('   - email_verified:', user.user_metadata?.email_verified);
+        console.log('   - confirmed_at:', user.confirmed_at);
+        console.log('   - isVerified result:', isVerified);
+        
+        setIsEmailVerified(isVerified);
         
         await fetchDashboardStats(user.id);
         setLoading(false);
@@ -76,12 +92,19 @@ export default function ClientDashboard() {
     getUser();
   }, [router, supabase]);
 
-  // ✅ RESEND VERIFICATION EMAIL
+  // ✅ RESEND VERIFICATION EMAIL using Supabase auth.resend()
   const handleResendVerification = async () => {
-    if (!user?.email) return;
+    if (!user?.email) {
+      setError('Email not found');
+      return;
+    }
     
     setResendLoading(true);
+    setError(null);
+    
     try {
+      console.log('📧 Attempting to resend verification email to:', user.email);
+      
       const { error: resendError } = await supabase.auth.resend({
         type: 'signup',
         email: user.email,
@@ -90,13 +113,18 @@ export default function ClientDashboard() {
         },
       });
 
-      if (resendError) throw resendError;
+      if (resendError) {
+        console.error('❌ Resend error:', resendError);
+        throw resendError;
+      }
       
+      console.log('✅ Verification email resent successfully');
       setVerificationSent(true);
-      setTimeout(() => setVerificationSent(false), 5000); // Clear message after 5s
+      setTimeout(() => setVerificationSent(false), 5000);
     } catch (err) {
-      console.error('Resend error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to resend verification email');
+      console.error('Resend verification error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to resend verification email';
+      setError(errorMessage);
     } finally {
       setResendLoading(false);
     }
@@ -131,7 +159,7 @@ export default function ClientDashboard() {
         console.error('❌ Bookings error:', bookingsError);
         throw new Error(`Bookings fetch failed: ${bookingsError.message}`);
       }
-      console.log('✅ Bookings fetched:', bookings);
+      console.log('✅ Bookings fetched:', bookings?.length || 0);
 
       // ✅ STEP 2: Get all coaches for the classes
       const classIds = [...new Set(bookings?.map((b: any) => b.classes?.id).filter(Boolean) || [])];
@@ -147,7 +175,7 @@ export default function ClientDashboard() {
         if (ccError) {
           console.error('⚠️ Class coaches error (non-critical):', ccError);
         } else {
-          console.log('✅ Class coaches fetched:', classCoaches);
+          console.log('✅ Class coaches fetched:', classCoaches?.length || 0);
           classCoaches?.forEach((cc: any) => {
             const coachName = cc.coaches?.name || 'Unknown';
             coachMap.set(cc.class_id, coachName);
@@ -165,7 +193,7 @@ export default function ClientDashboard() {
         console.error('❌ Packages error:', pkgError);
         throw new Error(`Packages fetch failed: ${pkgError.message}`);
       }
-      console.log('✅ Packages fetched:', packagesData);
+      console.log('✅ Packages fetched:', packagesData?.length || 0);
 
       // ✅ Fetch packages metadata
       let packagesWithMeta: any[] = [];
@@ -188,15 +216,15 @@ export default function ClientDashboard() {
         });
       }
 
-      console.log('✅ Combined package data:', packagesWithMeta);
+      console.log('✅ Combined package data:', packagesWithMeta.length);
 
-      // ✅ CALCULATE STATS WITH CORRECT GOAL
+      // ✅ CALCULATE STATS
       const classesThisMonth = bookings?.length || 0;
       const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const goalTarget = Math.ceil(daysInMonth * 0.8); // 80% of days in month
+      const goalTarget = Math.ceil(daysInMonth * 0.8);
       const progressToGoal = Math.min((classesThisMonth / goalTarget) * 100, 100);
 
-      console.log(`📊 Stats: ${classesThisMonth} / ${goalTarget} classes (${daysInMonth} days in month)`);
+      console.log(`📊 Stats: ${classesThisMonth} / ${goalTarget} classes`);
 
       // Map packages
       const filteredPackages =
@@ -229,8 +257,6 @@ export default function ClientDashboard() {
         isNextToUse: index === 0,
       }));
 
-      console.log('✅ Final active packages:', activePackages);
-
       // Find favorite class
       const classCount = new Map<string, number>();
       bookings?.forEach((b: any) => {
@@ -247,7 +273,7 @@ export default function ClientDashboard() {
         }
       });
 
-      // ✅ Find favorite coach
+      // Find favorite coach
       const coachCount = new Map<string, number>();
       bookings?.forEach((b: any) => {
         const classId = b.classes?.id;
@@ -264,7 +290,7 @@ export default function ClientDashboard() {
         }
       });
 
-      console.log('✅ Favorite coach:', favoriteCoach);
+      console.log('✅ Dashboard stats loaded');
 
       setStats({
         classesThisMonth,
@@ -275,8 +301,7 @@ export default function ClientDashboard() {
         activePackages,
       });
     } catch (err: any) {
-      console.error('❌ FULL STATS ERROR:', err);
-      console.error('Error message:', err.message);
+      console.error('❌ Dashboard stats error:', err.message);
       setError(`Failed to load dashboard stats: ${err.message}`);
     }
   };
@@ -327,44 +352,42 @@ export default function ClientDashboard() {
           <div className="h-1.5 w-20 bg-gradient-to-r from-red-800 via-red-600 to-red-500" style={{ boxShadow: '0 0 10px #C41E3A' }} />
         </div>
 
-        {/* ✅ EMAIL VERIFICATION BANNER */}
+        {/* ✅ EMAIL VERIFICATION BANNER - VISIBLE WHEN NOT VERIFIED */}
         {!isEmailVerified && (
-          <div className="mb-8 bg-yellow-900/30 border-2 border-yellow-700 rounded-lg p-6" style={{ boxShadow: '0 0 15px rgba(234, 179, 8, 0.2)' }}>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <Mail size={32} className="text-yellow-500 flex-shrink-0 mt-1" />
-                <div>
-                  <h3 className="text-white font-black text-lg uppercase tracking-wide mb-2">Account Not Verified</h3>
-                  <p className="text-yellow-200 font-semibold mb-4">
-                    Verify your email to register your data and gain full access to your packages.
-                  </p>
-                </div>
+          <div className="mb-8 bg-yellow-900/30 border-2 border-yellow-700 rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ boxShadow: '0 0 15px rgba(234, 179, 8, 0.2)' }}>
+            <div className="flex items-start gap-4 flex-1">
+              <Mail size={32} className="text-yellow-500 flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="text-white font-black text-lg uppercase tracking-wide mb-2">Account Not Verified</h3>
+                <p className="text-yellow-200 font-semibold">
+                  Verify your email to register your data and gain full access to your packages.
+                </p>
               </div>
-              <button
-                onClick={handleResendVerification}
-                disabled={resendLoading}
-                className="bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 text-white px-6 py-3 rounded font-bold uppercase tracking-wide transition flex items-center gap-2 whitespace-nowrap flex-shrink-0"
-                style={{ boxShadow: '0 0 10px rgba(234, 179, 8, 0.3)' }}
-              >
-                {resendLoading ? (
-                  <>
-                    <div className="animate-spin">⏳</div>
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Mail size={18} />
-                    Verify Now
-                  </>
-                )}
-              </button>
             </div>
+            <button
+              onClick={handleResendVerification}
+              disabled={resendLoading}
+              className="bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 text-white px-6 py-3 rounded font-bold uppercase tracking-wide transition flex items-center gap-2 whitespace-nowrap flex-shrink-0"
+              style={{ boxShadow: '0 0 10px rgba(234, 179, 8, 0.3)' }}
+            >
+              {resendLoading ? (
+                <>
+                  <div className="animate-spin">⏳</div>
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Mail size={18} />
+                  Verify Now
+                </>
+              )}
+            </button>
 
-            {/* Verification Sent Message */}
+            {/* Verification Sent Success Message */}
             {verificationSent && (
-              <div className="mt-4 p-3 bg-green-900/40 border border-green-700 rounded flex items-center gap-2">
-                <Check size={20} className="text-green-400" />
-                <p className="text-green-300 font-semibold">✓ Verification email sent! Check your inbox.</p>
+              <div className="w-full sm:w-auto col-span-full mt-4 p-3 bg-green-900/40 border border-green-700 rounded flex items-center gap-2">
+                <Check size={20} className="text-green-400 flex-shrink-0" />
+                <p className="text-green-300 font-semibold text-sm">✓ Verification email sent! Check your inbox and spam folder.</p>
               </div>
             )}
           </div>
@@ -465,7 +488,6 @@ export default function ClientDashboard() {
 
         {/* Main Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {/* Classes This Month */}
           <div
             className="bg-black border-2 border-red-700 rounded-lg p-8"
             style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
@@ -480,7 +502,6 @@ export default function ClientDashboard() {
             <p className="text-sm text-red-400 mt-3">One class at a time 💪</p>
           </div>
 
-          {/* Progress to Goal */}
           <div
             className="bg-black border-2 border-red-700 rounded-lg p-8"
             style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
@@ -508,7 +529,6 @@ export default function ClientDashboard() {
 
         {/* Favorites Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {/* Favorite Class */}
           {stats.favoriteClass ? (
             <div
               className="bg-black border-2 border-red-700 rounded-lg p-8"
@@ -533,7 +553,6 @@ export default function ClientDashboard() {
             </div>
           )}
 
-          {/* Favorite Coach */}
           {stats.favoriteCoach ? (
             <div
               className="bg-black border-2 border-red-700 rounded-lg p-8"
