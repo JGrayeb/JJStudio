@@ -155,7 +155,11 @@ export function useAuth() {
   const resetPassword = async (email: string) => {
     try {
       setError(null);
-      const redirectTo = `${window.location.origin}/password-reset`;
+      // Remove www. from origin to match Supabase config
+      const origin = window.location.origin
+        .replace('https://www.', 'https://')
+        .replace('http://www.', 'http://');
+      const redirectTo = `${origin}/password-reset`;
 
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo,
