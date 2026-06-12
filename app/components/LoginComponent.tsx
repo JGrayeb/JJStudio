@@ -39,7 +39,7 @@ export default function LoginComponent() {
       if (fetchError) {
         console.warn('Could not fetch user role:', fetchError);
         // Default to member dashboard if role not found
-        router.push('/app/dashboard/client');
+        router.push('/dashboard/client');
         return;
       }
 
@@ -52,7 +52,7 @@ export default function LoginComponent() {
         router.push('/dashboard/trainer');
       } else {
         // member, client, or anything else goes to client dashboard
-        router.push('/app/dashboard/client');
+        router.push('/dashboard/client');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed. Check your credentials.');
