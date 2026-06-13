@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { Suspense, useEffect, useState, useCallback } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { LogOut, BookOpen, Users, TrendingUp, AlertCircle, Award, Clock, Zap, Mail, Check, Plus, ShoppingBag, Calendar, Dumbbell } from 'lucide-react';
 
@@ -22,22 +22,91 @@ type UserStats = {
   }>;
 };
 
-const CLASS_CATEGORIES = [
-  { id: 'full_body', label: 'Full Body', color: 'bg-red-600' },
-  { id: 'low_body', label: 'Low Body', color: 'bg-purple-600' },
-  { id: 'arms', label: 'Arms', color: 'bg-blue-600' },
-  { id: 'core', label: 'Core', color: 'bg-yellow-600' },
-  { id: 'newby', label: 'Newby', color: 'bg-green-600' },
-  { id: '55plus', label: '55+', color: 'bg-orange-600' },
-  { id: 'hell', label: 'HELL', color: 'bg-pink-600' },
-];
+// ─── TABS CLIENT (reads useSearchParams) ───
+function TabsClient() {
+  const router = useRouter();
+  const pathname = '/dashboard/client';
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState<string>('dashboard');
 
+  // Sync active tab from URL
+  useEffect(() => {
+    const tab = searchParams?.get('tab') || 'dashboard';
+    setActiveTab(tab);
+  }, [searchParams]);
+
+  const handleTabClick = useCallback((id: string) => {
+    setActiveTab(id);
+    router.push(`${pathname}?tab=${encodeURIComponent(id)}`);
+  }, [router]);
+
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: Dumbbell },
+    { id: 'classes', label: 'My Classes', icon: BookOpen },
+    { id: 'book', label: 'My Bookings', icon: Calendar },
+    { id: 'packages', label: 'Packages', icon: ShoppingBag },
+    { id: 'beverages', label: 'Beverages', icon: ShoppingBag },
+  ];
+
+  return (
+    <nav className="bg-black/80 backdrop-blur-lg border-b border-slate-800 sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        <div>
+          <span className="text-white font-black text-xl tracking-tight">JJ</span>
+          <span className="text-red-600 font-black text-xl" style={{ textShadow: '0 0 8px #C41E3A' }}>STUDIO</span>
+        </div>
+
+        <div className="hidden md:flex items-center gap-1 bg-slate-900/50 rounded-full p-1">
+          {tabs.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => handleTabClick(id)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2 ${
+                activeTab === id
+                  ? 'bg-red-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              <Icon size={16} />
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <button
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold uppercase tracking-wide flex items-center gap-2 transition text-sm"
+          style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.3)' }}
+        >
+          <LogOut size={16} /> Logout
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+// ─── FALLBACK FOR SUSPENSE ───
+function TabsSuspenseFallback() {
+  return (
+    <nav className="bg-black/80 backdrop-blur-lg border-b border-slate-800 sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        <div className="h-6 w-32 bg-slate-700 rounded animate-pulse" />
+        <div className="flex gap-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-8 w-20 bg-slate-700 rounded-full animate-pulse" />
+          ))}
+        </div>
+        <div className="h-8 w-24 bg-slate-700 rounded animate-pulse" />
+      </div>
+    </nav>
+  );
+}
+
+// ─── MAIN DASHBOARD ───
 export default function ClientDashboard() {
   const router = useRouter();
   const supabase = createClient();
   const [user, setUser] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
-  const [activeNav, setActiveNav] = useState('dashboard');
   const [stats, setStats] = useState<UserStats>({
     classesThisMonth: 0,
     progressToGoal: 0,
@@ -84,7 +153,8 @@ export default function ClientDashboard() {
     };
 
     getUser();
-  }, [router, supabase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supabase]);
 
   const handleResendVerification = async () => {
     if (!user?.email) {
@@ -279,50 +349,13 @@ export default function ClientDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-950 to-red-950" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      {/* Top Navigation Bar */}
-      <nav className="bg-black/80 backdrop-blur-lg border-b border-slate-800 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div>
-            <span className="text-white font-black text-xl tracking-tight">JJ</span>
-            <span className="text-red-600 font-black text-xl" style={{ textShadow: '0 0 8px #C41E3A' }}>STUDIO</span>
-          </div>
-          
-          {/* Nav Links */}
-          <div className="hidden md:flex items-center gap-1 bg-slate-900/50 rounded-full p-1">
-            {[
-              { id: 'dashboard', label: 'Dashboard', icon: Dumbbell },
-              { id: 'classes', label: 'My Classes', icon: BookOpen },
-              { id: 'bookings', label: 'Bookings', icon: Calendar },
-              { id: 'packages', label: 'Packages', icon: ShoppingBag },
-              { id: 'beverages', label: 'Beverages', icon: ShoppingBag },
-            ].map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => id === 'dashboard' ? setActiveNav(id) : router.push(`/${id}`)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition flex items-center gap-2 ${
-                  activeNav === id
-                    ? 'bg-red-600 text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <Icon size={16} />
-                {label}
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold uppercase tracking-wide flex items-center gap-2 transition text-sm"
-            style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.3)' }}
-          >
-            <LogOut size={16} /> Logout
-          </button>
-        </div>
-      </nav>
+      {/* ✅ SUSPENSE WRAPPER FOR TABS (uses useSearchParams) */}
+      <Suspense fallback={<TabsSuspenseFallback />}>
+        <TabsClient />
+      </Suspense>
 
       <div className="max-w-7xl mx-auto px-4 py-10">
-        {/* ✅ EMAIL VERIFICATION BANNER */}
+        {/* EMAIL VERIFICATION BANNER */}
         {!isEmailVerified && (
           <div className="mb-8 bg-amber-900/20 border border-amber-700/50 rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 backdrop-blur-sm">
             <div className="flex items-start gap-4 flex-1">
@@ -361,7 +394,7 @@ export default function ClientDashboard() {
           </div>
         )}
 
-        {/* Welcome Section - Asymmetrical */}
+        {/* Welcome Section */}
         <div className="mb-12">
           <div className="max-w-3xl">
             <h1 className="text-5xl md:text-6xl font-black text-white mb-3" style={{ letterSpacing: '0.02em' }}>
@@ -377,9 +410,8 @@ export default function ClientDashboard() {
           </div>
         </div>
 
-        {/* Key Metrics - 3 Column Layout */}
+        {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {/* Classes This Month */}
           <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-red-600/50 transition">
             <div className="flex items-start justify-between mb-4">
               <div>
@@ -393,7 +425,6 @@ export default function ClientDashboard() {
             </p>
           </div>
 
-          {/* Progress to Goal */}
           <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-red-600/50 transition">
             <div className="flex items-start justify-between mb-4">
               <div>
@@ -410,7 +441,6 @@ export default function ClientDashboard() {
             </div>
           </div>
 
-          {/* Active Packages */}
           <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-red-600/50 transition">
             <div className="flex items-start justify-between mb-4">
               <div>
@@ -425,11 +455,9 @@ export default function ClientDashboard() {
           </div>
         </div>
 
-        {/* Favorites & Active Packages - Asymmetrical Layout */}
+        {/* Favorites & Packages */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-12">
-          {/* Favorites (Left Side) */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Favorite Class */}
             {stats.favoriteClass ? (
               <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-red-600/50 transition">
                 <div className="flex items-center justify-between mb-4">
@@ -448,7 +476,6 @@ export default function ClientDashboard() {
               </div>
             )}
 
-            {/* Favorite Coach */}
             {stats.favoriteCoach ? (
               <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur border border-slate-700 rounded-2xl p-6 hover:border-red-600/50 transition">
                 <div className="flex items-center justify-between mb-4">
@@ -468,12 +495,11 @@ export default function ClientDashboard() {
             )}
           </div>
 
-          {/* Active Packages (Right Side) */}
           <div className="lg:col-span-3">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-black text-white">Your Active Packages</h2>
               <button
-                onClick={() => router.push('/packages')}
+                onClick={() => router.push('/dashboard/client?tab=packages')}
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 transition"
               >
                 <Plus size={18} />
@@ -527,7 +553,7 @@ export default function ClientDashboard() {
                   Get a package to start booking classes and unlock exclusive benefits.
                 </p>
                 <button
-                  onClick={() => router.push('/packages')}
+                  onClick={() => router.push('/dashboard/client?tab=packages')}
                   className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold text-sm transition"
                 >
                   Browse Packages
@@ -537,7 +563,7 @@ export default function ClientDashboard() {
           </div>
         </div>
 
-        {/* Add Package Section - Prominent CTA */}
+        {/* Add Package CTA */}
         <div className="bg-gradient-to-r from-red-600/20 via-red-600/10 to-transparent border border-red-600/50 rounded-2xl p-8 mb-12 backdrop-blur">
           <div className="flex items-start gap-6">
             <div className="bg-red-600/20 p-4 rounded-xl flex-shrink-0">
@@ -549,7 +575,7 @@ export default function ClientDashboard() {
                 Upgrade your membership and get access to more classes. Choose from our flexible packages designed for your fitness goals.
               </p>
               <button
-                onClick={() => router.push('/packages')}
+                onClick={() => router.push('/dashboard/client?tab=packages')}
                 className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl font-bold uppercase tracking-wide transition flex items-center gap-2"
                 style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.4)' }}
               >
@@ -564,10 +590,18 @@ export default function ClientDashboard() {
         <div className="mb-12">
           <h2 className="text-2xl font-black text-white mb-6">Browse Classes by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            {CLASS_CATEGORIES.map((category) => (
+            {[
+              { id: 'full_body', label: 'Full Body', color: 'bg-red-600' },
+              { id: 'low_body', label: 'Low Body', color: 'bg-purple-600' },
+              { id: 'arms', label: 'Arms', color: 'bg-blue-600' },
+              { id: 'core', label: 'Core', color: 'bg-yellow-600' },
+              { id: 'newby', label: 'Newby', color: 'bg-green-600' },
+              { id: '55plus', label: '55+', color: 'bg-orange-600' },
+              { id: 'hell', label: 'HELL', color: 'bg-pink-600' },
+            ].map((category) => (
               <button
                 key={category.id}
-                onClick={() => router.push('/classes')}
+                onClick={() => router.push('/dashboard/client?tab=classes')}
                 className={`${category.color} hover:shadow-lg hover:shadow-red-600/50 hover:scale-105 text-white font-bold py-6 px-4 rounded-xl transition transform text-center`}
               >
                 <p className="text-sm font-black">{category.label}</p>
@@ -579,7 +613,7 @@ export default function ClientDashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button
-            onClick={() => router.push('/classes')}
+            onClick={() => router.push('/dashboard/client?tab=classes')}
             className="bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-xl font-bold uppercase tracking-wide transition flex items-center justify-center gap-2"
             style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.3)' }}
           >
@@ -587,14 +621,14 @@ export default function ClientDashboard() {
             Book a Class
           </button>
           <button
-            onClick={() => router.push('/bookings')}
+            onClick={() => router.push('/dashboard/client?tab=book')}
             className="bg-slate-800 hover:bg-slate-700 text-white px-6 py-4 rounded-xl font-bold uppercase tracking-wide border border-slate-700 transition flex items-center justify-center gap-2"
           >
             <Calendar size={20} />
             My Bookings
           </button>
           <button
-            onClick={() => router.push('/packages')}
+            onClick={() => router.push('/dashboard/client?tab=packages')}
             className="bg-slate-800 hover:bg-slate-700 text-white px-6 py-4 rounded-xl font-bold uppercase tracking-wide border border-slate-700 transition flex items-center justify-center gap-2"
           >
             <ShoppingBag size={20} />
