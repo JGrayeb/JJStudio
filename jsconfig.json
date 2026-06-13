@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "checkJs": false,
+    "allowJs": true,
+    "jsx": "react-jsx"
+  },
+  "include": ["app/**/*", "components/**/*"],
+  "exclude": ["node_modules", ".next"]
+}
