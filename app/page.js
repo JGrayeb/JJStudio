@@ -1,3 +1,4 @@
+
 "use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -41,11 +42,18 @@ export default function Home() {
 
   const toggleLang = () => setLang(l => l === "en" ? "es" : "en")
 
-  // Navigation handlers with auth checks
+  // ✅ FIXED: Navigation handlers with proper hash scrolling
   const handleScheduleClick = (e) => {
     e?.preventDefault()
     if (user) {
-      router.push('/bookings')
+      router.push('/dashboard/client#book-class')
+      // Scroll to section if already on dashboard
+      setTimeout(() => {
+        const element = document.getElementById('book-class')
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
     } else {
       router.push('/login')
     }
@@ -53,17 +61,42 @@ export default function Home() {
 
   const handlePackageClick = (e) => {
     e?.preventDefault()
-    router.push('/packages')
+    if (user) {
+      router.push('/dashboard/client#packages')
+      // Scroll to section if already on dashboard
+      setTimeout(() => {
+        const element = document.getElementById('packages')
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
+    } else {
+      router.push('/login')
+    }
   }
 
   const handleBeveragesClick = (e) => {
     e?.preventDefault()
-    router.push('/beverages')
+    const element = document.getElementById('beverages')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 
   const handleAboutClick = (e) => {
     e?.preventDefault()
-    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
+    const element = document.getElementById('about')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
+  const handleContactClick = (e) => {
+    e?.preventDefault()
+    const element = document.getElementById('contact')
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 
   const handleProfileClick = () => {
@@ -90,9 +123,61 @@ export default function Home() {
       {/* ── NAVBAR ── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-black/95 shadow-lg shadow-red-900/20" : ""}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="#" className="text-xl font-black tracking-widest uppercase">
-            JJ<span className="text-red-900">Studio</span>
-          </a>
+          <div className="flex items-center gap-4">
+            {/* JJ STUDIO LOGO - NOT CLICKABLE */}
+            <a href="#" className="text-xl font-black tracking-widest uppercase cursor-default">
+              JJ<span className="text-red-900">Studio</span>
+            </a>
+
+            {/* DIVIDER */}
+            <div className="h-6 w-px bg-red-900/30 hidden sm:block" />
+
+            {/* INSTAGRAM ICON */}
+            <a
+              href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg hover:bg-white/10 transition text-gray-400 hover:text-pink-500 hidden sm:flex"
+              title="Follow us on Instagram"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <circle cx="17.5" cy="6.5" r="1.5" />
+              </svg>
+            </a>
+
+            {/* WHATSAPP ICON */}
+            <a
+              href="https://wa.me/5213318373447?text=Hola%20JJ%20Studio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg hover:bg-white/10 transition text-gray-400 hover:text-green-500 hidden sm:flex"
+              title="Contact us on WhatsApp"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </a>
+          </div>
 
           {/* Desktop links */}
           <div className="hidden lg:flex items-center gap-8">
@@ -110,9 +195,9 @@ export default function Home() {
                   else if (idx === 2) handlePackageClick(e)
                   else if (idx === 3) handleBeveragesClick(e)
                   else if (idx === 4) handleAboutClick(e)
+                  else if (idx === 5) handleContactClick(e)
                   else {
                     e.preventDefault()
-                    document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' })
                   }
                 }}
                 className="text-xs font-medium tracking-widest uppercase text-white/70 hover:text-white transition-colors relative group"
@@ -189,7 +274,7 @@ export default function Home() {
             <button onClick={(e) => { handleAboutClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
               {t.nav.about}
             </button>
-            <button onClick={() => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+            <button onClick={(e) => { handleContactClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
               {t.nav.contact}
             </button>
             
@@ -287,7 +372,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── CLASSES ── */}
+      {/* ── CLASSES / SCHEDULE ── */}
       <section className="py-24 bg-black" id="schedule">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
@@ -479,7 +564,13 @@ export default function Home() {
               <div className="space-y-6">
                 <div>
                   <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.location}</p>
-                  <p className="text-sm text-white/65">{t.contact.locationVal}</p>
+                  <p className="text-sm text-white/65">Xentric Lomas Norte, El Campanario, Lcl 211</p>
+                </div>
+                <div>
+                  <p className="text-xs tracking-widest uppercase mb-1 text-white/25">PHONE</p>
+                  <a href="tel:+5213318373447" className="text-sm text-white/65 hover:text-white transition-colors">
+                    +52 1 33 1837 3447
+                  </a>
                 </div>
                 <div>
                   <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.hours}</p>
@@ -487,21 +578,16 @@ export default function Home() {
                   <p className="text-sm text-white/65">{t.contact.hoursVal2}</p>
                 </div>
                 <div>
-                    <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.email}</p>
-                    <a href="mailto:administracion@jjstudio.mx" className="text-sm text-white/65 hover:text-white transition-colors">
-                       administracion@jjstudio.mx
-                    </a>
+                  <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.email}</p>
+                  <a href="mailto:administracion@jjstudio.mx" className="text-sm text-white/65 hover:text-white transition-colors">
+                    administracion@jjstudio.mx
+                  </a>
                 </div>
                 <div>
                   <p className="text-xs tracking-widest uppercase mb-2 text-white/25">{t.contact.follow}</p>
                   <div className="flex gap-4">
-                   {[
-                     { name: "Instagram", url: "https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" },
-                    { name: "TikTok", url: "https://tiktok.com/@yourhandle" },
-                    { name: "WhatsApp", url: "https://wa.me/5213318373447" },
-                      ].map(link => (
-                        <a key={link.name} href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-white/35 hover:text-white transition-colors">{link.name}</a>
-                    ))}
+                    <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-white/35 hover:text-white transition-colors">Instagram</a>
+                    <a href="https://wa.me/5213318373447" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-white/35 hover:text-white transition-colors">WhatsApp</a>
                   </div>
                 </div>
               </div>
@@ -608,4 +694,4 @@ export default function Home() {
       `}</style>
     </main>
   )
-} 
+}
