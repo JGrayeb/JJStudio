@@ -1,4 +1,3 @@
-
 "use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -22,8 +21,8 @@ export default function Home() {
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser()
-        setUser(user || null)
+        const { data } = await supabase.auth.getUser()
+        setUser(data?.user || null)
       } catch (err) {
         console.error('Auth error:', err)
         setUser(null)
@@ -32,7 +31,7 @@ export default function Home() {
       }
     }
     checkUser()
-  }, [])
+  }, [supabase])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -44,7 +43,7 @@ export default function Home() {
 
   // Navigation handlers with auth checks
   const handleScheduleClick = (e) => {
-    e.preventDefault()
+    e?.preventDefault()
     if (user) {
       router.push('/bookings')
     } else {
@@ -53,17 +52,17 @@ export default function Home() {
   }
 
   const handlePackageClick = (e) => {
-    e.preventDefault()
+    e?.preventDefault()
     router.push('/packages')
   }
 
   const handleBeveragesClick = (e) => {
-    e.preventDefault()
+    e?.preventDefault()
     router.push('/beverages')
   }
 
   const handleAboutClick = (e) => {
-    e.preventDefault()
+    e?.preventDefault()
     document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
   }
 
@@ -76,7 +75,11 @@ export default function Home() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    try {
+      await supabase.auth.signOut()
+    } catch (err) {
+      console.error('Sign out error:', err)
+    }
     setUser(null)
     router.push('/')
   }
@@ -487,7 +490,7 @@ export default function Home() {
                     <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.email}</p>
                     <a href="mailto:administracion@jjstudio.mx" className="text-sm text-white/65 hover:text-white transition-colors">
                        administracion@jjstudio.mx
-                 </a>
+                    </a>
                 </div>
                 <div>
                   <p className="text-xs tracking-widest uppercase mb-2 text-white/25">{t.contact.follow}</p>
@@ -518,4 +521,91 @@ export default function Home() {
                   const data = await res.json()
                   if (data.success) {
                     setFormState("success")
-                    setFormData({
+                    setFormData({ firstName: "", lastName: "", email: "", message: "" })
+                  } else {
+                    setFormState("error")
+                  }
+                } catch (err) {
+                  console.error('Contact submit error:', err)
+                  setFormState("error")
+                }
+              }}
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <input
+                  type="text"
+                  placeholder={t.contact.firstName}
+                  value={formData.firstName}
+                  onChange={e => setFormData(p => ({ ...p, firstName: e.target.value }))}
+                  required
+                  className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors"
+                />
+                <input
+                  type="text"
+                  placeholder={t.contact.lastName}
+                  value={formData.lastName}
+                  onChange={e => setFormData(p => ({ ...p, lastName: e.target.value }))}
+                  className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors"
+                />
+              </div>
+              <input
+                type="email"
+                placeholder={t.contact.emailPlaceholder}
+                value={formData.email}
+                onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
+                required
+                className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors"
+              />
+              <textarea
+                placeholder={t.contact.message}
+                rows={4}
+                value={formData.message}
+                onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
+                required
+                className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors resize-none"
+              />
+              <button
+                type="submit"
+                disabled={formState === "loading"}
+                className="bg-red-900 hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold tracking-widest uppercase px-8 py-4 w-full transition-all"
+              >
+                {formState === "loading" ? "Sending..." : t.contact.send}
+              </button>
+
+              {formState === "success" && (
+                <div className="border border-red-900/50 bg-red-900/10 px-4 py-3 text-sm text-red-400 tracking-wide text-center">
+                  ✓ Message sent — we'll get back to you soon.
+                </div>
+              )}
+              {formState === "error" && (
+                <div className="border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/40 tracking-wide text-center">
+                  Something went wrong. Try emailing us at administracion@jjstudio.mx
+                </div>
+              )}
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer className="bg-black border-t border-white/5 py-12">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
+          <span className="text-xl font-black tracking-widest uppercase">JJ<span className="text-red-800">Studio</span></span>
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-center">
+            <p className="text-xs uppercase tracking-widest text-white/20">{t.footer.tagline}</p>
+            <span className="text-white/10 hidden sm:inline">|</span>
+            <p className="text-xs text-white/20">{t.footer.location}</p>
+          </div>
+          <p className="text-xs text-white/15">{t.footer.rights}</p>
+        </div>
+      </footer>
+
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
+    </main>
+  )
+}
