@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { LogOut, BookOpen, Calendar, ShoppingBag, Zap, Mail, AlertCircle, MessageCircle } from 'lucide-react';
+import { LogOut, BookOpen, Calendar, ShoppingBag, Zap, Mail, AlertCircle, MessageCircle, Heart } from 'lucide-react';
 
 type UserStats = {
   classesThisMonth: number;
@@ -313,7 +313,7 @@ export default function Dashboard() {
               className="p-2 rounded-lg hover:bg-slate-800 transition text-gray-400 hover:text-pink-500"
               title="Follow us on Instagram"
             >
-              <Instagram size={20} />
+              <Heart size={20} />
             </a>
 
             <a
