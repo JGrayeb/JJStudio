@@ -23,7 +23,7 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "JJ Studio Lagree",
-    "description": "Premium Lagree fitness studio in Guadalajara. Transform your body and mind with our high-intensity, low-impact classes.",
+    "description": "Premium Lagree fitness studio in Querétaro. Transform your body and mind with our high-intensity, low-impact classes. Trust the Process.",
     "image": "https://jjstudio.mx/logo.png",
     "url": "https://jjstudio.mx",
     "telephone": "+5213318373447",
@@ -31,20 +31,19 @@ export default function Home() {
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Xentric Lomas Norte, El Campanario, Lcl 211",
-      "addressLocality": "Guadalajara",
-      "addressRegion": "Jalisco",
-      "postalCode": "45127",
+      "addressLocality": "Querétaro",
+      "addressRegion": "Querétaro",
+      "postalCode": "76000",
       "addressCountry": "MX"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": "20.6923",
-      "longitude": "-103.3924"
+      "latitude": "20.5888",
+      "longitude": "-100.3898"
     },
     "priceRange": "$$$",
     "sameAs": [
-      "https://www.instagram.com/jj_lagree_experience",
-      "https://wa.me/5213318373447"
+      "https://www.instagram.com/jj_lagree_experience"
     ],
     "openingHoursSpecification": [
       {
@@ -164,26 +163,28 @@ export default function Home() {
     <>
       <Head>
         {/* PRIMARY SEO */}
-        <title>JJ Studio Lagree | Premium Fitness Classes in Guadalajara | Trust the Process</title>
-        <meta name="description" content="Transform your body and mind at JJ Studio - premium Lagree fitness studio in Guadalajara. High-intensity, low-impact classes designed for women and men 25-45. Book your first class today." />
-        <meta name="keywords" content="Lagree fitness Guadalajara, Lagree classes, fitness studio near me, core strengthening classes, women fitness, luxury fitness studio, Lomas Norte Guadalajara" />
+        <title>JJ Studio Lagree Querétaro | Premium Fitness Classes | Trust the Process</title>
+        <meta name="description" content="Transform your body and mind at JJ Studio - premium Lagree fitness studio in Querétaro. High-intensity, low-impact classes for women and men 25-45. Located in Xentric Lomas, Campanario Norte. Book your first class today." />
+        <meta name="keywords" content="Lagree Querétaro, fitness studio Querétaro, Lagree classes, core strengthening, pilates Querétaro, luxury fitness, Campanario Norte, women fitness, premium fitness studio" />
         
         {/* OG TAGS */}
-        <meta property="og:title" content="JJ Studio Lagree | Premium Fitness in Guadalajara" />
-        <meta property="og:description" content="Transform with JJ Studio. Premium Lagree fitness classes for serious results. Trust the Process." />
+        <meta property="og:title" content="JJ Studio Lagree Querétaro | Premium Fitness Classes" />
+        <meta property="og:description" content="Transform with JJ Studio. Premium Lagree fitness classes in Querétaro. Trust the Process." />
         <meta property="og:image" content="https://jjstudio.mx/og-image.jpg" />
         <meta property="og:url" content="https://jjstudio.mx" />
         <meta property="og:type" content="website" />
         
         {/* TWITTER TAGS */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="JJ Studio Lagree | Premium Fitness in Guadalajara" />
-        <meta name="twitter:description" content="High-intensity Lagree classes. Trust the Process. Book now." />
+        <meta name="twitter:title" content="JJ Studio Lagree Querétaro | Premium Fitness" />
+        <meta name="twitter:description" content="High-intensity Lagree classes in Querétaro. Trust the Process. Book now." />
         <meta name="twitter:image" content="https://jjstudio.mx/og-image.jpg" />
         
-        {/* LOCAL SEO */}
-        <meta name="geo.position" content="20.6923;-103.3924" />
-        <meta name="ICBM" content="20.6923, -103.3924" />
+        {/* LOCAL SEO - QUERÉTARO */}
+        <meta name="geo.position" content="20.5888;-100.3898" />
+        <meta name="ICBM" content="20.5888, -100.3898" />
+        <meta name="geo.region" content="MX-QRO" />
+        <meta name="geo.placename" content="Querétaro" />
         
         {/* GENERAL */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -379,22 +380,22 @@ export default function Home() {
 
           <div className="relative z-10 max-w-7xl mx-auto px-6">
             <div className="max-w-4xl">
-              <p className="text-xs font-semibold tracking-[0.3em] mb-6 uppercase text-amber-500">{t.hero.location}</p>
+              <p className="text-xs font-semibold tracking-[0.3em] mb-6 uppercase text-amber-500">Premium Fitness Studio in Querétaro</p>
               
               <h1 className="font-black uppercase leading-tight mb-8" style={{ fontSize: "clamp(3rem,9vw,7rem)", letterSpacing: "-0.02em", color: "#FFFFFF" }}>
-                <span className="text-amber-600">{t.hero.trust}</span><br />
-                <span className="text-gray-300">{t.hero.the}</span><br />
-                <span className="text-amber-600">{t.hero.process}</span>
+                <span className="text-amber-600">Trust the</span><br />
+                <span className="text-gray-300">Process</span><br />
+                <span className="text-amber-600">Transform</span>
               </h1>
 
-              <p className="text-lg font-light max-w-2xl mb-12 leading-relaxed text-gray-300">{t.hero.sub}</p>
+              <p className="text-lg font-light max-w-2xl mb-12 leading-relaxed text-gray-300">High-intensity, low-impact Lagree classes designed for serious results. Build strength, improve posture, and develop stability from your core.</p>
 
               <div className="flex flex-wrap gap-4">
                 <a href="/signup" className="bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg transition-all shadow-lg hover:shadow-xl">
-                  {t.hero.cta1}
+                  Start Free Trial
                 </a>
                 <button onClick={handleAboutClick} className="border-2 border-amber-600 text-amber-600 text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg hover:bg-amber-600 hover:text-white transition-all">
-                  {t.hero.cta2}
+                  Learn More
                 </button>
               </div>
             </div>
@@ -402,7 +403,7 @@ export default function Home() {
 
           {/* Scroll indicator */}
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-            <span className="text-xs tracking-widest uppercase text-gray-500">{t.hero.scroll}</span>
+            <span className="text-xs tracking-widest uppercase text-gray-500">Scroll to explore</span>
             <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
               <path d="M8 0v20M1 13l7 7 7-7" stroke="rgba(212,175,106,0.6)" strokeWidth="1.5" />
             </svg>
@@ -414,12 +415,16 @@ export default function Home() {
           <div className="flex whitespace-nowrap" style={{ animation: "marquee 25s linear infinite" }}>
             {[...Array(2)].map((_, i) => (
               <span key={i} className="flex items-center gap-0 shrink-0">
-                {t.marquee.split(" · ").map((item, j) => (
-                  <span key={j} className="flex items-center">
-                    <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">{item}</span>
-                    <span className="text-xs text-amber-600 mx-2">✦</span>
-                  </span>
-                ))}
+                <span className="flex items-center">
+                  <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Trust the Process</span>
+                  <span className="text-xs text-amber-600 mx-2">✦</span>
+                  <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">High-Intensity Training</span>
+                  <span className="text-xs text-amber-600 mx-2">✦</span>
+                  <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Low-Impact Results</span>
+                  <span className="text-xs text-amber-600 mx-2">✦</span>
+                  <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Premium Experience</span>
+                  <span className="text-xs text-amber-600 mx-2">✦</span>
+                </span>
               </span>
             ))}
           </div>
@@ -432,11 +437,11 @@ export default function Home() {
               <div>
                 <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mb-6 rounded-full" />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl text-white" style={{ letterSpacing: "-0.02em" }}>
-                  {t.classes.title1}<br /><span className="text-amber-600">{t.classes.title2}</span>
+                  Our Classes<br /><span className="text-amber-600">Transform Your Body</span>
                 </h2>
               </div>
               <button onClick={handleScheduleClick} className="border-2 border-amber-600 text-amber-600 text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-lg hover:bg-amber-600 hover:text-white transition-all">
-                {t.classes.book}
+                Book a Class
               </button>
             </div>
 
@@ -464,9 +469,9 @@ export default function Home() {
             <div className="text-center mb-16">
               <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mx-auto mb-6 rounded-full" />
               <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl text-white" style={{ letterSpacing: "-0.02em" }}>
-                {t.packages.title1} <span className="text-amber-600">{t.packages.title2}</span>
+                Membership <span className="text-amber-600">Plans</span>
               </h2>
-              <p className="mt-4 max-w-2xl mx-auto text-sm text-gray-400">{t.packages.sub}</p>
+              <p className="mt-4 max-w-2xl mx-auto text-sm text-gray-400">Choose the perfect plan for your fitness journey. All memberships include unlimited class access and beverage options.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -474,7 +479,7 @@ export default function Home() {
                 <div key={i} className={`p-8 rounded-xl flex flex-col transition-all duration-300 relative border-2 ${plan.popular ? "border-amber-600 bg-amber-600/5 hover:shadow-lg hover:shadow-amber-600/30" : "border-gray-700 bg-gray-800 hover:border-amber-600/50"}`}>
                   {plan.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-xs px-4 py-1 tracking-widest uppercase rounded-lg">
-                      {t.packages.popular}
+                      Most Popular
                     </div>
                   )}
                   <p className={`text-xs tracking-widest uppercase mb-4 font-semibold ${plan.popular ? "text-amber-500" : "text-gray-500"}`}>{plan.label}</p>
@@ -491,7 +496,7 @@ export default function Home() {
                     </li>
                   </ul>
                   <button onClick={handlePackageClick} className={`text-center text-xs font-bold tracking-widest uppercase px-4 py-3 rounded-lg transition-all ${plan.popular ? "bg-amber-600 hover:bg-amber-700 text-white" : "border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white"}`}>
-                    {t.packages.cta}
+                    Get Started
                   </button>
                 </div>
               ))}
@@ -506,12 +511,12 @@ export default function Home() {
               <div>
                 <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mb-6 rounded-full" />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
-                  {t.beverages.title1} <span className="text-amber-600">{t.beverages.title2}</span>
+                  Premium <span className="text-amber-600">Beverages</span>
                 </h2>
-                <p className="text-base leading-relaxed mb-4 text-gray-300">{t.beverages.p1}</p>
-                <p className="text-sm leading-relaxed mb-8 text-gray-400">{t.beverages.p2}</p>
+                <p className="text-base leading-relaxed mb-4 text-gray-300">Fuel your recovery and wellness with our carefully curated beverage selection. Perfect for before, during, and after your workout.</p>
+                <p className="text-sm leading-relaxed mb-8 text-gray-400">Included with premium memberships. Enhance your JJ Studio experience with nutritional support that complements your fitness journey.</p>
                 <button onClick={handleBeveragesClick} className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-block transition-all">
-                  {t.beverages.cta}
+                  View All Options
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -533,16 +538,16 @@ export default function Home() {
             <div className="text-center mb-16">
               <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mx-auto mb-6 rounded-full" />
               <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl text-white" style={{ letterSpacing: "-0.02em" }}>
-                {t.about.title1} <span className="text-amber-600">{t.about.title2}</span>
+                Meet Your <span className="text-amber-600">Coach</span>
               </h2>
-              <p className="mt-4 max-w-2xl mx-auto text-sm text-gray-400">{t.about.sub}</p>
+              <p className="mt-4 max-w-2xl mx-auto text-sm text-gray-400">Dedicated to your success and transformation. Our coaches are certified and passionate about helping you achieve your fitness goals.</p>
             </div>
 
             <div className="max-w-3xl mx-auto">
               <div className="border-2 border-amber-600/30 p-10 rounded-xl bg-gray-800 relative overflow-hidden">
                 <div className="flex flex-col sm:flex-row items-start gap-8">
                   <div className="w-40 h-40 flex-shrink-0 relative overflow-hidden rounded-lg border-2 border-amber-600">
-                    <Image src="/images/coach-javi.jpeg" alt="Coach Javi - JJ Studio" fill className="object-cover object-top" />
+                    <Image src="/images/coach-javi.jpeg" alt="Coach Javi - JJ Studio Querétaro" fill className="object-cover object-top" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
@@ -575,17 +580,59 @@ export default function Home() {
         <section className="relative py-32 overflow-hidden" id="register" style={{ background: "linear-gradient(135deg, #2D2A2A 0%, #1A1A1A 50%, #2D2A2A 100%)" }}>
           <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(212,175,106,0.2), transparent)" }} />
           <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-            <p className="text-xs tracking-[0.3em] uppercase mb-4 font-semibold text-amber-500">{t.cta.ready}</p>
+            <p className="text-xs tracking-[0.3em] uppercase mb-4 font-semibold text-amber-500">Begin Your Transformation</p>
             <h2 className="font-black uppercase leading-tight mb-8 text-white" style={{ fontSize: "clamp(2.5rem,8vw,7rem)", letterSpacing: "-0.02em" }}>
-              {t.cta.join} <span className="text-amber-600">{t.cta.studio}</span>
+              Trust the <span className="text-amber-600">Process</span>
             </h2>
-            <p className="text-lg mb-4 max-w-2xl mx-auto text-gray-300">{t.cta.sub}</p>
-            <p className="text-xs uppercase tracking-widest mb-10 text-gray-500">{t.cta.location}</p>
+            <p className="text-lg mb-4 max-w-2xl mx-auto text-gray-300">Join JJ Studio today and start your journey to strength, stability, and transformation. Your first class is free.</p>
+            <p className="text-xs uppercase tracking-widest mb-10 text-gray-500">Xentric Lomas, Campanario Norte, Querétaro</p>
             <a href="/signup" className="bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold tracking-widest uppercase px-12 py-5 rounded-lg inline-block transition-all shadow-lg hover:shadow-xl">
-              {t.cta.btn}
+              Start Your Free Trial
             </a>
           </div>
         </section>
+
+{/* ── NESSTY BOOKING ── */}
+<section className="py-24 bg-gray-900" id="nessty">
+  <div className="max-w-7xl mx-auto px-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mb-6 rounded-full" />
+        <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
+          Book on <span className="text-amber-600">Nessty</span>
+        </h2>
+        <p className="text-base leading-relaxed mb-4 text-gray-300">
+          Nessty is the most popular fitness booking app in Mexico. Schedule classes, manage your membership, and stay connected with the JJ Studio community.
+        </p>
+        <p className="text-sm leading-relaxed mb-8 text-gray-400">
+          Available on iOS and Android. Download now and book your first Lagree class at JJ Studio.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <a 
+            href="https://nessty.mx/@jjstudio" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-flex items-center gap-2 transition-all"
+          >
+            Open Nessty App →
+          </a>
+        </div>
+      </div>
+      <div className="flex justify-center">
+        <div className="bg-white p-6 rounded-xl shadow-2xl">
+          <Image 
+            src="/images/nessty-qr.png" 
+            alt="Nessty QR Code - JJ Studio"
+            width={280}
+            height={280}
+          />
+          <p className="text-sm text-gray-700 text-center mt-4 font-semibold">Scan to book on Nessty</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
         {/* ── CONTACT ── */}
         <section className="py-24 bg-gray-900" id="contact">
@@ -594,34 +641,35 @@ export default function Home() {
               <div>
                 <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mb-6 rounded-full" />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-5xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
-                  {t.contact.title1} <span className="text-amber-600">{t.contact.title2}</span>
+                  Get in <span className="text-amber-600">Touch</span>
                 </h2>
                 <div className="space-y-8">
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">{t.contact.location}</p>
-                    <p className="text-sm text-gray-300">Xentric Lomas Norte, El Campanario, Lcl 211<br />Guadalajara, Jalisco 45127</p>
+                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">Location</p>
+                    <p className="text-sm text-gray-300">Xentric Lomas Norte<br />El Campanario, Lcl 211<br />Querétaro, Querétaro 76000<br />Mexico</p>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">PHONE</p>
+                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">Phone</p>
                     <a href="tel:+5213318373447" className="text-sm text-gray-300 hover:text-amber-500 transition-colors font-semibold">
                       +52 1 33 1837 3447
                     </a>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">{t.contact.hours}</p>
-                    <p className="text-sm text-gray-300">{t.contact.hoursVal1}</p>
-                    <p className="text-sm text-gray-300">{t.contact.hoursVal2}</p>
+                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">Hours</p>
+                    <p className="text-sm text-gray-300">Monday - Friday: 6:00 AM - 8:00 PM</p>
+                    <p className="text-sm text-gray-300">Saturday: 7:00 AM - 6:00 PM</p>
+                    <p className="text-sm text-gray-300">Sunday: Closed</p>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">{t.contact.email}</p>
+                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">Email</p>
                     <a href="mailto:administracion@jjstudio.mx" className="text-sm text-gray-300 hover:text-amber-500 transition-colors font-semibold">
                       administracion@jjstudio.mx
                     </a>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-3 text-amber-500 font-semibold">{t.contact.follow}</p>
+                    <p className="text-xs tracking-widest uppercase mb-3 text-amber-500 font-semibold">Follow Us</p>
                     <div className="flex gap-4">
-                      <a href="https://www.instagram.com/jj_lagree_experience" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-gray-400 hover:text-amber-500 transition-colors">
+                      <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-gray-400 hover:text-amber-500 transition-colors">
                         Instagram
                       </a>
                       <a href="https://wa.me/5213318373447" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-gray-400 hover:text-amber-500 transition-colors">
@@ -658,7 +706,7 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4">
                   <input
                     type="text"
-                    placeholder={t.contact.firstName}
+                    placeholder="First Name"
                     value={formData.firstName}
                     onChange={e => setFormData(p => ({ ...p, firstName: e.target.value }))}
                     required
@@ -666,7 +714,7 @@ export default function Home() {
                   />
                   <input
                     type="text"
-                    placeholder={t.contact.lastName}
+                    placeholder="Last Name"
                     value={formData.lastName}
                     onChange={e => setFormData(p => ({ ...p, lastName: e.target.value }))}
                     className="px-4 py-3 text-sm text-white w-full bg-gray-800 border border-gray-700 focus:outline-none focus:border-amber-600 transition-colors rounded-lg"
@@ -674,14 +722,14 @@ export default function Home() {
                 </div>
                 <input
                   type="email"
-                  placeholder={t.contact.emailPlaceholder}
+                  placeholder="Your Email"
                   value={formData.email}
                   onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                   required
                   className="px-4 py-3 text-sm text-white w-full bg-gray-800 border border-gray-700 focus:outline-none focus:border-amber-600 transition-colors rounded-lg"
                 />
                 <textarea
-                  placeholder={t.contact.message}
+                  placeholder="Your Message"
                   rows={4}
                   value={formData.message}
                   onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
@@ -693,17 +741,17 @@ export default function Home() {
                   disabled={formState === "loading"}
                   className="bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold tracking-widest uppercase px-8 py-4 w-full transition-all rounded-lg"
                 >
-                  {formState === "loading" ? "Sending..." : t.contact.send}
+                  {formState === "loading" ? "Sending..." : "Send Message"}
                 </button>
 
                 {formState === "success" && (
                   <div className="border border-amber-600/50 bg-amber-600/10 px-4 py-3 text-sm text-amber-400 tracking-wide text-center rounded-lg">
-                    ✓ {t.contact.successMsg || "Message sent — we'll get back to you soon!"}
+                    ✓ Message sent! We'll get back to you soon.
                   </div>
                 )}
                 {formState === "error" && (
                   <div className="border border-gray-700 bg-gray-800 px-4 py-3 text-sm text-gray-400 tracking-wide text-center rounded-lg">
-                    {t.contact.errorMsg || "Something went wrong. Try emailing us."}
+                    Something went wrong. Email us at administracion@jjstudio.mx
                   </div>
                 )}
               </form>
@@ -716,11 +764,11 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
             <span className="text-xl font-black tracking-widest uppercase text-white">JJ<span className="text-amber-600">Studio</span></span>
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center">
-              <p className="text-xs uppercase tracking-widest text-gray-500">{t.footer.tagline}</p>
+              <p className="text-xs uppercase tracking-widest text-gray-500">Premium Lagree Studio in Querétaro</p>
               <span className="text-gray-700 hidden sm:inline">|</span>
-              <p className="text-xs text-gray-500">{t.footer.location}</p>
+              <p className="text-xs text-gray-500">Trust the Process</p>
             </div>
-            <p className="text-xs text-gray-600">{t.footer.rights}</p>
+            <p className="text-xs text-gray-600">© 2024 JJ Studio. All rights reserved.</p>
           </div>
         </footer>
 

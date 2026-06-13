@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -6,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { 
   LogOut, BookOpen, Calendar, ShoppingBag, Zap, Mail, AlertCircle, 
-  MessageCircle, Heart, X, CheckCircle, Loader, AlertTriangle
+  MessageCircle, Heart, X, CheckCircle, Loader, AlertTriangle, ExternalLink
 } from 'lucide-react';
 
 // ============================================================
@@ -89,6 +88,7 @@ export default function Dashboard() {
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [loading, setLoading] = useState(true);
+  const [showNesstyIframe, setShowNesstyIframe] = useState(false);
 
   // State: Data
   const [stats, setStats] = useState<UserStats>({
@@ -294,7 +294,7 @@ export default function Dashboard() {
   };
 
   // ============================================================
-  // FETCH CLASSES & BOOKED MEGAFORMERS (NEW!)
+  // FETCH CLASSES & BOOKED MEGAFORMERS
   // ============================================================
 
   const fetchClasses = async (userId: string, date: string) => {
@@ -333,7 +333,7 @@ export default function Dashboard() {
     }
   };
 
-  // ✅ NEW: Fetch booked megaformers for a specific class
+  // Fetch booked megaformers for a specific class
   const fetchBookedMegaformers = async (classId: string) => {
     try {
       const { data, error } = await supabase
@@ -344,11 +344,10 @@ export default function Dashboard() {
 
       if (error) throw error;
 
-      // If user already has a booking for this class, return all megaformers (user can't book multiple)
       if (data && data.length > 0) {
-        setBookedMegaformers([1, 2, 3, 4, 5, 6, 7]); // Mark all as unavailable
+        setBookedMegaformers([1, 2, 3, 4, 5, 6, 7]);
       } else {
-        setBookedMegaformers([]); // No booking, all available
+        setBookedMegaformers([]);
       }
     } catch (err) {
       console.error('Error fetching booked megaformers:', err);
@@ -356,7 +355,7 @@ export default function Dashboard() {
   };
 
   // ============================================================
-  // CLASS BOOKING (IMPROVED!)
+  // CLASS BOOKING
   // ============================================================
 
   const handleSelectClass = async (cls: Class) => {
@@ -364,7 +363,7 @@ export default function Dashboard() {
     setMegaformerState(
       Object.fromEntries([1, 2, 3, 4, 5, 6, 7].map((i) => [i, false]))
     );
-    await fetchBookedMegaformers(cls.id); // ✅ Fetch booked megaformers
+    await fetchBookedMegaformers(cls.id);
   };
 
   const handleBookClass = async () => {
@@ -410,7 +409,6 @@ export default function Dashboard() {
       }
 
       if (!data?.success) {
-        // ✅ Check if it's a duplicate booking error
         const isDuplicate = data?.message?.toLowerCase().includes('already have');
         
         setErrorModal({
@@ -424,7 +422,6 @@ export default function Dashboard() {
         return;
       }
 
-      // ✅ Success! Show success message and reset
       setErrorModal({
         isOpen: true,
         title: 'Booking Successful! ✅',
@@ -730,6 +727,50 @@ export default function Dashboard() {
                 </div>
               )}
 
+              {/* ✨ NESSTY IFRAME OPTION */}
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                      <span className="text-red-600">🔗</span> Book on Nessty
+                    </h3>
+                    <p className="text-gray-400 text-sm mt-1">
+                      Easily manage your schedule, cancellations, and community through Nessty
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowNesstyIframe(!showNesstyIframe)}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-sm transition flex items-center gap-2"
+                  >
+                    <ExternalLink size={16} />
+                    {showNesstyIframe ? 'Hide' : 'Show'} Nessty
+                  </button>
+                </div>
+
+                {showNesstyIframe && (
+                  <div className="mt-4 rounded-lg overflow-hidden border border-slate-700 bg-white">
+                    <iframe
+                      src="https://nessty.mx/@jjstudio"
+                      width="100%"
+                      height="800"
+                      frameBorder="0"
+                      allow="payment"
+                      title="Nessty - JJ Studio Booking"
+                      className="w-full"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-700" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-slate-950 text-gray-400">or book directly below</span>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Classes List */}
                 <div className="lg:col-span-2 space-y-4">
@@ -904,6 +945,29 @@ export default function Dashboard() {
                 </p>
               </div>
 
+              {/* ✨ NESSTY IFRAME ALTERNATIVE */}
+              <div className="bg-gradient-to-r from-slate-800/50 to-red-900/20 border border-red-600/30 rounded-xl p-6 mb-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <span>📲</span> Prefer Nessty?
+                    </h3>
+                    <p className="text-gray-400 text-sm mt-1 max-w-2xl">
+                      You can also purchase packages directly through the Nessty app, which is the easiest way to manage everything in one place.
+                    </p>
+                  </div>
+                  <a
+                    href="https://nessty.mx/@jjstudio"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-sm transition flex items-center gap-2 whitespace-nowrap"
+                  >
+                    <ExternalLink size={16} />
+                    Go to Nessty
+                  </a>
+                </div>
+              </div>
+
               {packagesLoading ? (
                 <div className="flex justify-center items-center py-12">
                   <div className="w-12 h-12 border-4 border-slate-700 border-t-red-600 rounded-full animate-spin" />
@@ -994,98 +1058,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-{/* NAVIGATION */}
-<nav className="fixed inset-x-0 top-0 z-50 h-16 bg-black/80 backdrop-blur-lg border-b border-slate-800">
-  <div className="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
-    <div className="flex items-center gap-4">
-      {/* JJ STUDIO LOGO - NOT CLICKABLE */}
-      <div>
-        <span className="text-white font-black text-lg">JJ</span>
-        <span className="text-red-600 font-black text-lg ml-0.5">
-          STUDIO
-        </span>
-      </div>
-
-      <div className="h-10 w-px bg-slate-700" />
-
-      {/* INSTAGRAM ICON */}
-      <a
-        href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg=="
-        target="_blank"
-        rel="noopener noreferrer"
-        className="p-2 rounded-lg hover:bg-slate-800 transition text-gray-400 hover:text-pink-500"
-        title="Follow us on Instagram"
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-          <circle cx="17.5" cy="6.5" r="1.5" />
-        </svg>
-      </a>
-
-      {/* WHATSAPP ICON */}
-      <a
-        href="https://wa.me/5213318373447?text=Hola%20JJ%20Studio"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="p-2 rounded-lg hover:bg-slate-800 transition text-gray-400 hover:text-green-500"
-        title="Contact us on WhatsApp"
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-        </svg>
-      </a>
-    </div>
-
-    {/* REST OF NAVBAR STAYS THE SAME */}
-    <div className="hidden lg:flex gap-4 flex-1 justify-center">
-      {[
-        { id: 'dashboard' as const, label: 'Dashboard' },
-        { id: 'book' as const, label: 'Book Class' },
-        { id: 'bookings' as const, label: 'My Bookings' },
-        { id: 'packages' as const, label: 'Packages' },
-      ].map(({ id, label }) => (
-        <button
-          key={id}
-          onClick={() => setActiveTab(id)}
-          className={`px-4 py-2 rounded-lg font-bold text-sm transition ${
-            activeTab === id
-              ? 'bg-red-600 text-white'
-              : 'text-gray-400 hover:text-white'
-          }`}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-
-    <button
-      onClick={handleLogout}
-      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2"
-    >
-      <LogOut size={16} /> Logout
-    </button>
-  </div>
-</nav>
-
-
-
-
-      {/* ✅ ERROR MODAL (NEW!) */}
+      {/* ✅ ERROR MODAL */}
       {errorModal.isOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-8">
