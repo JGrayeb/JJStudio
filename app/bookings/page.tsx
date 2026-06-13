@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { LogOut, AlertCircle, X, Trash2 } from 'lucide-react';
+import ExternalBookings from '../components/ExternalBookings';
 
 type Booking = {
   id: string;
