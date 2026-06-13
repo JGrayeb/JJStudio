@@ -1,10 +1,36 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { LogOut, BookOpen, Users, TrendingUp, AlertCircle, Award, Clock, Zap, Mail, Check } from 'lucide-react';
+import { 
+  LogOut, BookOpen, Calendar, ShoppingBag, Zap, Mail, AlertCircle, 
+  MessageCircle, Heart, X, CheckCircle, Loader, AlertTriangle
+} from 'lucide-react';
+
+// ============================================================
+// TYPE DEFINITIONS
+// ============================================================
+
+type Coach = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+type Class = {
+  id: string;
+  name: string;
+  focus: string;
+  date: string;
+  hour: number;
+  capacity: number;
+  spots_remaining: number;
+  coach_id: string;
+  coaches?: Coach[] | null;
+  coach_name?: string;
+};
 
 type UserStats = {
   classesThisMonth: number;
@@ -16,27 +42,55 @@ type UserStats = {
     id: string;
     name: string;
     classCreditsRemaining: number;
+    beveragePoints: number;
     expiresIn: number;
     expiryDate: string;
     isNextToUse: boolean;
   }>;
 };
 
-const CLASS_CATEGORIES = [
-  { id: 'full_body', label: 'Full Body', color: 'bg-red-600' },
-  { id: 'low_body', label: 'Low Body', color: 'bg-purple-600' },
-  { id: 'arms', label: 'Arms', color: 'bg-blue-600' },
-  { id: 'core', label: 'Core', color: 'bg-yellow-600' },
-  { id: 'newby', label: 'Newby', color: 'bg-green-600' },
-  { id: '55plus', label: '55+', color: 'bg-orange-600' },
-  { id: 'hell', label: 'HELL', color: 'bg-pink-600' },
-];
+type TabType = 'dashboard' | 'book' | 'bookings' | 'packages';
 
-export default function ClientDashboard() {
+type Package = {
+  id: string;
+  name: string;
+  class_credits: number;
+  beverage_credits: number;
+  price_mxn: number;
+  expire_days: number;
+  active?: boolean;
+  created_at?: string;
+};
+
+type BookingResult = {
+  success: boolean;
+  message: string;
+  creditsRemaining?: number;
+};
+
+type ErrorModalState = {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  isDuplicateBooking: boolean;
+};
+
+// ============================================================
+// COMPONENT
+// ============================================================
+
+export default function Dashboard() {
   const router = useRouter();
   const supabase = createClient();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  // State: Auth & UI
   const [user, setUser] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [loading, setLoading] = useState(true);
+
+  // State: Data
   const [stats, setStats] = useState<UserStats>({
     classesThisMonth: 0,
     progressToGoal: 0,
@@ -45,45 +99,65 @@ export default function ClientDashboard() {
     favoriteCoach: null,
     activePackages: [],
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [resendLoading, setResendLoading] = useState(false);
-  const [verificationSent, setVerificationSent] = useState(false);
+
+  // State: Packages
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [packagesLoading, setPackagesLoading] = useState(false);
+
+  // State: Class Booking
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
+  const [selectedClass, setSelectedClass] = useState<Class | null>(null);
+  const [bookedMegaformers, setBookedMegaformers] = useState<number[]>([]);
+  const [megaformerState, setMegaformerState] = useState<{
+    [key: number]: boolean;
+  }>({});
+  const [classPoints, setClassPoints] = useState(0);
+  const [bookingLoading, setBookingLoading] = useState(false);
+
+  // State: Error Modal
+  const [errorModal, setErrorModal] = useState<ErrorModalState>({
+    isOpen: false,
+    title: '',
+    message: '',
+    isDuplicateBooking: false,
+  });
+
+  // State: Payment Modal
+  const [paymentModal, setPaymentModal] = useState<{
+    isOpen: boolean;
+    package: Package | null;
+  }>({ isOpen: false, package: null });
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  // ============================================================
+  // INITIALIZATION
+  // ============================================================
 
   useEffect(() => {
     const getUser = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        console.log('👤 Full user object:', user);
-        
         if (!user) {
-          console.log('❌ No user found, redirecting to login');
           router.push('/login');
           return;
         }
-        
+
         setUser(user);
-        
-        const isVerified = !!(
-          user.user_metadata?.email_confirmed_at || 
+        setIsEmailVerified(!!(
+          user.user_metadata?.email_confirmed_at ||
           user.user_metadata?.email_verified ||
-          user.confirmed_at ||
-          (user.email_confirmed_at && user.email_confirmed_at !== null)
-        );
-        
-        console.log('📧 Email verification check:');
-        console.log('   - email_confirmed_at:', user.user_metadata?.email_confirmed_at);
-        console.log('   - email_verified:', user.user_metadata?.email_verified);
-        console.log('   - confirmed_at:', user.confirmed_at);
-        console.log('   - isVerified result:', isVerified);
-        
-        setIsEmailVerified(isVerified);
-        
+          user.confirmed_at
+        ));
+
+        await fetchPackages();
         await fetchDashboardStats(user.id);
         setLoading(false);
       } catch (err) {
-        console.error('Dashboard error:', err);
-        setError('Failed to load dashboard');
+        console.error('Auth error:', err);
         setLoading(false);
       }
     };
@@ -91,191 +165,111 @@ export default function ClientDashboard() {
     getUser();
   }, [router, supabase]);
 
-  const handleResendVerification = async () => {
-    if (!user?.email) {
-      setError('Email not found');
-      return;
-    }
-    
-    setResendLoading(true);
-    setError(null);
-    
-    try {
-      console.log('📧 Attempting to resend verification email to:', user.email);
-      
-      const { error: resendError } = await supabase.auth.resend({
-        type: 'signup',
-        email: user.email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/signup`,
-        },
-      });
+  // ============================================================
+  // FETCH PACKAGES FROM DATABASE
+  // ============================================================
 
-      if (resendError) {
-        console.error('❌ Resend error:', resendError);
-        throw resendError;
-      }
-      
-      console.log('✅ Verification email resent successfully');
-      setVerificationSent(true);
-      setTimeout(() => setVerificationSent(false), 5000);
+  const fetchPackages = async () => {
+    try {
+      setPackagesLoading(true);
+      const { data, error: fetchError } = await supabase
+        .from('packages')
+        .select('id, name, class_credits, beverage_credits, price_mxn, expire_days, active')
+        .eq('active', true)
+        .order('price_mxn', { ascending: true });
+
+      if (fetchError) throw fetchError;
+      setPackages(data || []);
     } catch (err) {
-      console.error('Resend verification error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to resend verification email';
-      setError(errorMessage);
+      console.error('Error fetching packages:', err);
     } finally {
-      setResendLoading(false);
+      setPackagesLoading(false);
     }
   };
 
+  // ============================================================
+  // DATA FETCHING
+  // ============================================================
+
   const fetchDashboardStats = async (userId: string) => {
     try {
-      // ✅ DEBUG: Check if session exists
       const { data: { session } } = await supabase.auth.getSession();
-      console.log('🔐 Session:', session);
-      console.log('🔑 Access Token:', session?.access_token ? '✓ Present' : '❌ Missing');
-
-      if (!session) {
-        throw new Error('❌ No active session - JWT token missing! Try logging out and back in.');
-      }
+      if (!session) throw new Error('No active session');
 
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-      console.log('🔍 Fetching dashboard stats for user:', userId);
-      console.log('📅 Date range:', monthStart.toISOString(), '-', monthEnd.toISOString());
-
-      // ✅ STEP 1: Get bookings with classes
-      // NOTE: We ALWAYS filter by user_id to help the query optimizer
-      const { data: bookings, error: bookingsError } = await supabase
+      const { data: bookings } = await supabase
         .from('class_bookings')
-        .select(`
-          id, 
-          attended, 
-          classes(
-            id,
-            name, 
-            focus
-          )
-        `)
+        .select('classes(id, name, focus)')
         .eq('user_id', userId)
         .gte('signed_up_at', monthStart.toISOString())
         .lte('signed_up_at', monthEnd.toISOString())
         .eq('attended', true);
 
-      if (bookingsError) {
-        console.error('❌ Bookings error:', bookingsError);
-        throw new Error(`Bookings fetch failed: ${bookingsError.message}`);
-      }
-      console.log('✅ Bookings fetched:', bookings?.length || 0);
-      console.log('📊 Bookings data:', bookings);
-
-      // ✅ STEP 2: Get all coaches for the classes
-      const classIds = [...new Set(bookings?.map((b: any) => b.classes?.id).filter(Boolean) || [])];
-      console.log('🔍 Class IDs:', classIds);
-
-      let coachMap = new Map<string, string>();
-      if (classIds.length > 0) {
-        const { data: classCoaches, error: ccError } = await supabase
-          .from('class_coaches')
-          .select('class_id, coaches(name)')
-          .in('class_id', classIds);
-
-        if (ccError) {
-          console.error('⚠️ Class coaches error (non-critical):', ccError);
-        } else {
-          console.log('✅ Class coaches fetched:', classCoaches?.length || 0);
-          classCoaches?.forEach((cc: any) => {
-            const coachName = cc.coaches?.name || 'Unknown';
-            coachMap.set(cc.class_id, coachName);
-          });
-        }
-      }
-
-      // ✅ STEP 3: Fetch packages
-      // NOTE: We ALWAYS filter by user_id
-      const { data: packagesData, error: pkgError } = await supabase
+      const { data: packagesData } = await supabase
         .from('user_packages')
-        .select('id, created_at, expires_at, class_credits_remaining, package_id')
+        .select('id, expires_at, class_credits_remaining, beverage_points, package_id')
         .eq('user_id', userId);
 
-      if (pkgError) {
-        console.error('❌ Packages error:', pkgError);
-        throw new Error(`Packages fetch failed: ${pkgError.message}`);
-      }
-      console.log('✅ Packages fetched:', packagesData?.length || 0);
-
-      // ✅ Fetch packages metadata
       let packagesWithMeta: any[] = [];
-      if (packagesData && packagesData.length > 0) {
+      if (packagesData?.length > 0) {
         const packageIds = packagesData.map((p: any) => p.package_id);
-        
-        const { data: pkgMeta, error: metaError } = await supabase
+        const { data: pkgMeta } = await supabase
           .from('packages')
-          .select('id, name, class_credits, expire_days')
+          .select('id, name')
           .in('id', packageIds);
 
-        if (metaError) {
-          console.error('❌ Package metadata error:', metaError);
-          throw new Error(`Package metadata failed: ${metaError.message}`);
-        }
-
-        packagesWithMeta = packagesData.map((up: any) => {
-          const pkgInfo = pkgMeta?.find((p: any) => p.id === up.package_id);
-          return { ...up, packages: pkgInfo };
-        });
-      }
-
-      console.log('✅ Combined package data:', packagesWithMeta.length);
-
-      // ✅ CALCULATE STATS
-      const classesThisMonth = bookings?.length || 0;
-      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const goalTarget = Math.ceil(daysInMonth * 0.8);
-      const progressToGoal = Math.min((classesThisMonth / goalTarget) * 100, 100);
-
-      console.log(`📊 Stats: ${classesThisMonth} / ${goalTarget} classes`);
-
-      // Map packages
-      const filteredPackages =
-        packagesWithMeta
-          .map((pkg: any) => {
-            const packageMeta = pkg.packages || {};
-            const expiryDate = pkg.expires_at 
-              ? new Date(pkg.expires_at) 
-              : new Date();
-
+        packagesWithMeta = packagesData
+          .map((up: any) => {
+            const pkgInfo = pkgMeta?.find((p: any) => p.id === up.package_id);
+            const expiryDate = new Date(up.expires_at);
             const daysRemaining = Math.ceil(
               (expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
             );
-            const creditsRemaining = pkg.class_credits_remaining || 0;
 
             return {
-              id: pkg.id,
-              name: packageMeta.name || 'Package',
-              classCreditsRemaining: creditsRemaining,
+              id: up.id,
+              name: pkgInfo?.name || 'Package',
+              classCreditsRemaining: up.class_credits_remaining || 0,
+              beveragePoints: up.beverage_points || 0,
               expiresIn: daysRemaining,
               expiryDate: expiryDate.toLocaleDateString(),
+              isNextToUse: false,
               isExpired: daysRemaining <= 0,
             };
           })
-          .filter((pkg: any) => pkg && !pkg.isExpired && pkg.classCreditsRemaining > 0)
-          .sort((a: any, b: any) => a.expiresIn - b.expiresIn) || [];
+          .filter((p: any) => !p.isExpired && p.classCreditsRemaining > 0)
+          .sort((a: any, b: any) => a.expiresIn - b.expiresIn);
+      }
 
-      const activePackages = filteredPackages.map((pkg: any, index: number) => ({
-        ...pkg,
-        isNextToUse: index === 0,
+      const activePackages = packagesWithMeta.map((p: any, i: number) => ({
+        ...p,
+        isNextToUse: i === 0,
       }));
 
-      // Find favorite class
+      const classesThisMonth = bookings?.length || 0;
+      const daysInMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        0
+      ).getDate();
+      const goalTarget = Math.ceil(daysInMonth * 0.8);
+
+      const totalCredits = activePackages.reduce(
+        (sum: number, p: any) => sum + p.classCreditsRemaining,
+        0
+      );
+      setClassPoints(totalCredits);
+
       const classCount = new Map<string, number>();
       bookings?.forEach((b: any) => {
-        const className = b.classes?.name || 'Unknown';
-        classCount.set(className, (classCount.get(className) || 0) + 1);
+        const name = b.classes?.name || 'Unknown';
+        classCount.set(name, (classCount.get(name) || 0) + 1);
       });
 
-      let favoriteClass: { name: string; count: number } | null = null;
+      let favoriteClass = null;
       let maxCount = 0;
       classCount.forEach((count, name) => {
         if (count > maxCount) {
@@ -284,36 +278,230 @@ export default function ClientDashboard() {
         }
       });
 
-      // Find favorite coach
-      const coachCount = new Map<string, number>();
-      bookings?.forEach((b: any) => {
-        const classId = b.classes?.id;
-        const coachName = coachMap.get(classId) || 'Unknown';
-        coachCount.set(coachName, (coachCount.get(coachName) || 0) + 1);
-      });
-
-      let favoriteCoach: { name: string; count: number } | null = null;
-      let maxCoachCount = 0;
-      coachCount.forEach((count, name) => {
-        if (count > maxCoachCount) {
-          maxCoachCount = count;
-          favoriteCoach = { name, count };
-        }
-      });
-
-      console.log('✅ Dashboard stats loaded');
-
       setStats({
         classesThisMonth,
-        progressToGoal,
+        progressToGoal: Math.min((classesThisMonth / goalTarget) * 100, 100),
         goalTarget,
         favoriteClass,
-        favoriteCoach,
+        favoriteCoach: null,
         activePackages,
       });
-    } catch (err: any) {
-      console.error('❌ Dashboard stats error:', err.message);
-      setError(`Failed to load dashboard stats: ${err.message}`);
+
+      await fetchClasses(userId, selectedDate);
+    } catch (err) {
+      console.error('Stats error:', err);
+    }
+  };
+
+  // ============================================================
+  // FETCH CLASSES & BOOKED MEGAFORMERS (NEW!)
+  // ============================================================
+
+  const fetchClasses = async (userId: string, date: string) => {
+    try {
+      const { data, error: fetchError } = await supabase
+        .from('classes')
+        .select(`
+          id,
+          name,
+          focus,
+          date,
+          hour,
+          capacity,
+          spots_remaining,
+          coach_id,
+          coaches(
+            id,
+            name,
+            email
+          )
+        `)
+        .eq('date', date)
+        .gt('spots_remaining', 0)
+        .order('hour', { ascending: true });
+
+      if (fetchError) throw fetchError;
+
+      const formatted = data?.map((cls: any) => ({
+        ...cls,
+        coach_name: cls.coaches?.[0]?.name || 'Unassigned',
+      })) || [];
+
+      setClasses(formatted);
+    } catch (err) {
+      console.error('Classes fetch error:', err);
+    }
+  };
+
+  // ✅ NEW: Fetch booked megaformers for a specific class
+  const fetchBookedMegaformers = async (classId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('class_bookings')
+        .select('user_id')
+        .eq('class_id', classId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // If user already has a booking for this class, return all megaformers (user can't book multiple)
+      if (data && data.length > 0) {
+        setBookedMegaformers([1, 2, 3, 4, 5, 6, 7]); // Mark all as unavailable
+      } else {
+        setBookedMegaformers([]); // No booking, all available
+      }
+    } catch (err) {
+      console.error('Error fetching booked megaformers:', err);
+    }
+  };
+
+  // ============================================================
+  // CLASS BOOKING (IMPROVED!)
+  // ============================================================
+
+  const handleSelectClass = async (cls: Class) => {
+    setSelectedClass(cls);
+    setMegaformerState(
+      Object.fromEntries([1, 2, 3, 4, 5, 6, 7].map((i) => [i, false]))
+    );
+    await fetchBookedMegaformers(cls.id); // ✅ Fetch booked megaformers
+  };
+
+  const handleBookClass = async () => {
+    if (!selectedClass || !user || classPoints <= 0) {
+      setErrorModal({
+        isOpen: true,
+        title: 'Invalid Booking',
+        message: 'Please make sure you have available credits and a class selected.',
+        isDuplicateBooking: false,
+      });
+      return;
+    }
+
+    const selectedMegaformers = Object.entries(megaformerState)
+      .filter(([_, selected]) => selected)
+      .map(([num]) => parseInt(num));
+
+    if (selectedMegaformers.length === 0) {
+      setErrorModal({
+        isOpen: true,
+        title: 'No Equipment Selected',
+        message: 'Please select at least one megaformer to book this class.',
+        isDuplicateBooking: false,
+      });
+      return;
+    }
+
+    try {
+      setBookingLoading(true);
+
+      const { data, error: rpcError } = await supabase.rpc(
+        'book_class_and_deduct_credits',
+        {
+          p_user_id: user.id,
+          p_class_id: selectedClass.id,
+          p_megaformer_ids: selectedMegaformers,
+        }
+      );
+
+      if (rpcError) {
+        console.error('RPC Error:', rpcError);
+        throw new Error(rpcError.message || 'Booking failed');
+      }
+
+      if (!data?.success) {
+        // ✅ Check if it's a duplicate booking error
+        const isDuplicate = data?.message?.toLowerCase().includes('already have');
+        
+        setErrorModal({
+          isOpen: true,
+          title: isDuplicate ? 'Already Booked' : 'Booking Failed',
+          message: isDuplicate 
+            ? 'You already have a megaformer in this class. Each user can only book one equipment per class.'
+            : (data?.message || 'Your booking could not be completed. Please try again.'),
+          isDuplicateBooking: isDuplicate,
+        });
+        return;
+      }
+
+      // ✅ Success! Show success message and reset
+      setErrorModal({
+        isOpen: true,
+        title: 'Booking Successful! ✅',
+        message: `${data.message}\n\n${data.creditsRemaining} credits remaining`,
+        isDuplicateBooking: false,
+      });
+
+      setSelectedClass(null);
+      setMegaformerState({});
+      setBookedMegaformers([]);
+      await fetchDashboardStats(user.id);
+    } catch (err) {
+      console.error('Booking error:', err);
+      setErrorModal({
+        isOpen: true,
+        title: 'Booking Error',
+        message: err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.',
+        isDuplicateBooking: false,
+      });
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  // ============================================================
+  // PACKAGE PURCHASE
+  // ============================================================
+
+  const handlePackagePurchase = (pkg: Package) => {
+    setPaymentModal({ isOpen: true, package: pkg });
+    setPaymentSuccess(false);
+  };
+
+  const simulatePayment = async () => {
+    if (!paymentModal.package || !user) return;
+
+    setPaymentLoading(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    try {
+      const { data, error: rpcError } = await supabase.rpc(
+        'purchase_package',
+        {
+          p_user_id: user.id,
+          p_package_id: paymentModal.package.id,
+          p_class_credits: paymentModal.package.class_credits,
+          p_beverage_credits: paymentModal.package.beverage_credits,
+          p_expiration_days: paymentModal.package.expire_days,
+        }
+      );
+
+      if (rpcError) {
+        console.error('RPC Error:', rpcError);
+        throw new Error(rpcError.message || 'Purchase failed');
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.message || 'Purchase failed');
+      }
+
+      setPaymentSuccess(true);
+
+      setTimeout(async () => {
+        await fetchDashboardStats(user.id);
+        setPaymentModal({ isOpen: false, package: null });
+        setPaymentSuccess(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Purchase error:', err);
+      setErrorModal({
+        isOpen: true,
+        title: 'Purchase Failed',
+        message: err instanceof Error ? err.message : 'Your purchase could not be completed.',
+        isDuplicateBooking: false,
+      });
+      setPaymentLoading(false);
     }
   };
 
@@ -322,308 +510,636 @@ export default function ClientDashboard() {
     router.push('/login');
   };
 
+  // ============================================================
+  // RENDER
+  // ============================================================
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin mb-4">
-            <div className="w-16 h-16 border-4 border-red-900 border-t-red-600 rounded-full mx-auto" />
-          </div>
-          <p className="text-white font-bold">Loading your dashboard...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-950 to-red-950 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-slate-700 border-t-red-600 rounded-full animate-spin" />
       </div>
     );
   }
 
+  const dateObj = new Date(selectedDate);
+  const dateString = dateObj.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-      {/* Navigation */}
-      <nav className="bg-black border-b-2 border-red-700" style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}>
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div>
-            <span className="text-white font-black text-xl">JJ</span>
-            <span className="text-red-600 font-black text-xl" style={{ textShadow: '0 0 8px #C41E3A' }}>STUDIO</span>
+    <div
+      className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-950 to-red-950"
+      style={{ fontFamily: 'Montserrat, sans-serif' }}
+    >
+      {/* NAVIGATION */}
+      <nav className="fixed inset-x-0 top-0 z-50 h-16 bg-black/80 backdrop-blur-lg border-b border-slate-800">
+        <div className="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div>
+              <span className="text-white font-black text-lg">JJ</span>
+              <span className="text-red-600 font-black text-lg ml-0.5">
+                STUDIO
+              </span>
+            </div>
+
+            <div className="h-10 w-px bg-slate-700" />
+
+            <a
+              href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg hover:bg-slate-800 transition text-gray-400 hover:text-pink-500"
+              title="Follow us on Instagram"
+            >
+              <Heart size={20} />
+            </a>
+
+            <a
+              href={`https://wa.me/5213318373447?text=Hola%20JJ%20Studio`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg hover:bg-slate-800 transition text-gray-400 hover:text-green-500"
+              title="Contact us on WhatsApp"
+            >
+              <MessageCircle size={20} />
+            </a>
           </div>
+
+          <div className="hidden lg:flex gap-4 flex-1 justify-center">
+            {[
+              { id: 'dashboard' as const, label: 'Dashboard' },
+              { id: 'book' as const, label: 'Book Class' },
+              { id: 'bookings' as const, label: 'My Bookings' },
+              { id: 'packages' as const, label: 'Packages' },
+            ].map(({ id, label }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`px-4 py-2 rounded-lg font-bold text-sm transition ${
+                  activeTab === id
+                    ? 'bg-red-600 text-white'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
           <button
             onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold uppercase tracking-wide flex items-center gap-2 transition"
-            style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.3)' }}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2"
           >
-            <LogOut size={18} /> Logout
+            <LogOut size={16} /> Logout
           </button>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Welcome Header */}
-        <div className="mb-12">
-          <h1 className="text-5xl font-black text-white mb-2" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>
-            Welcome back, <span className="text-red-600">{user?.email?.split('@')[0]}</span>
-          </h1>
-          <div className="h-1.5 w-20 bg-gradient-to-r from-red-800 via-red-600 to-red-500" style={{ boxShadow: '0 0 10px #C41E3A' }} />
-        </div>
+      {/* MAIN CONTENT */}
+      <div className="pt-16 pb-12">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {!isEmailVerified && (
+            <div className="mb-6 bg-amber-900/20 border border-amber-700 rounded-xl p-4 flex items-center justify-between text-sm">
+              <div className="flex items-center gap-3">
+                <Mail size={18} className="text-amber-500" />
+                <span className="text-amber-200">
+                  Verify your email to unlock full access
+                </span>
+              </div>
+              <button className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-1 rounded-lg font-bold text-xs">
+                Verify Now
+              </button>
+            </div>
+          )}
 
-        {/* ✅ EMAIL VERIFICATION BANNER */}
-        {!isEmailVerified && (
-          <div className="mb-8 bg-yellow-900/30 border-2 border-yellow-700 rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ boxShadow: '0 0 15px rgba(234, 179, 8, 0.2)' }}>
-            <div className="flex items-start gap-4 flex-1">
-              <Mail size={32} className="text-yellow-500 flex-shrink-0 mt-1" />
-              <div className="flex-1">
-                <h3 className="text-white font-black text-lg uppercase tracking-wide mb-2">Account Not Verified</h3>
-                <p className="text-yellow-200 font-semibold">
-                  Verify your email to register your data and gain full access to your packages.
+          {/* DASHBOARD TAB */}
+          {activeTab === 'dashboard' && (
+            <div className="space-y-8">
+              <div>
+                <h1 className="text-5xl font-black text-white mb-2">
+                  Welcome back,{' '}
+                  <span className="text-red-500">
+                    {user?.email?.split('@')[0]}
+                  </span>
+                </h1>
+                <p className="text-gray-400">
+                  Here's your fitness summary for this month
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-red-600/50 transition">
+                  <p className="text-gray-400 text-xs font-bold uppercase mb-2">
+                    Classes This Month
+                  </p>
+                  <p className="text-4xl font-black text-white mb-2">
+                    {stats.classesThisMonth}
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    {Math.max(0, stats.goalTarget - stats.classesThisMonth)}{' '}
+                    more to reach goal
+                  </p>
+                </div>
+
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-red-600/50 transition">
+                  <p className="text-gray-400 text-xs font-bold uppercase mb-2">
+                    Monthly Progress
+                  </p>
+                  <p className="text-4xl font-black text-white mb-2">
+                    {Math.round(stats.progressToGoal)}%
+                  </p>
+                  <div className="w-full bg-slate-700 rounded-full h-2">
+                    <div
+                      className="bg-red-600 h-full rounded-full"
+                      style={{ width: `${stats.progressToGoal}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-red-600/50 transition">
+                  <p className="text-gray-400 text-xs font-bold uppercase mb-2">
+                    Active Packages
+                  </p>
+                  <p className="text-4xl font-black text-white mb-2">
+                    {stats.activePackages.length}
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    {classPoints} credits available
+                  </p>
+                </div>
+              </div>
+
+              {stats.activePackages.length > 0 && (
+                <div>
+                  <h2 className="text-2xl font-black text-white mb-4">
+                    Your Active Packages
+                  </h2>
+                  <div className="space-y-3">
+                    {stats.activePackages.map((pkg) => (
+                      <div
+                        key={pkg.id}
+                        className="bg-slate-800/50 border border-slate-700 rounded-xl p-4"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="text-white font-bold">{pkg.name}</h3>
+                            <p className="text-sm text-gray-400 mt-1">
+                              {pkg.classCreditsRemaining} credits • Expires in{' '}
+                              {pkg.expiresIn} days
+                              {pkg.beveragePoints > 0 && (
+                                <span className="text-green-400 ml-2">
+                                  • {pkg.beveragePoints} beverage points
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          <Zap className="text-red-600" size={24} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <button
+                onClick={() => setActiveTab('packages')}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition text-lg"
+              >
+                + Add Package
+              </button>
+            </div>
+          )}
+
+          {/* BOOK CLASS TAB */}
+          {activeTab === 'book' && (
+            <div className="space-y-6">
+              <h1 className="text-4xl font-black text-white">Book Your Class</h1>
+
+              {classPoints <= 0 && (
+                <div className="bg-amber-900/20 border border-amber-700 rounded-xl p-4 text-amber-200">
+                  You don't have class points.{' '}
+                  <button
+                    onClick={() => setActiveTab('packages')}
+                    className="text-red-400 font-bold underline"
+                  >
+                    Get a package
+                  </button>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Classes List */}
+                <div className="lg:col-span-2 space-y-4">
+                  <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 text-center">
+                    <p className="text-gray-400 text-xs font-bold uppercase mb-2">
+                      Selected Date
+                    </p>
+                    <p className="text-3xl font-black text-white">
+                      {dateString}
+                    </p>
+                  </div>
+
+                  {classes.length > 0 ? (
+                    classes.map((cls) => (
+                      <div
+                        key={cls.id}
+                        onClick={() => handleSelectClass(cls)}
+                        className={`bg-slate-800/50 border-2 rounded-xl p-4 cursor-pointer transition ${
+                          selectedClass?.id === cls.id
+                            ? 'border-red-600 bg-red-600/10'
+                            : 'border-slate-700 hover:border-red-600'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="text-xl font-black text-white">
+                              {cls.name}
+                            </h3>
+                            <p className="text-red-400 font-bold text-sm">
+                              {cls.focus}
+                            </p>
+                            <p className="text-gray-400 text-sm mt-2">
+                              Coach: {cls.coach_name}
+                            </p>
+                          </div>
+                          <div className="bg-red-600 text-white px-3 py-1 rounded-lg font-bold">
+                            {cls.hour}:00
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-8 text-center text-gray-400">
+                      No classes available
+                    </div>
+                  )}
+                </div>
+
+                {/* Megaformer Selection */}
+                {selectedClass && (
+                  <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 h-fit sticky top-24">
+                    <h3 className="text-xl font-black text-white mb-4">
+                      Select Equipment
+                    </h3>
+
+                    {bookedMegaformers.length > 0 && (
+                      <div className="mb-4 bg-amber-900/30 border border-amber-700 rounded-lg p-3">
+                        <p className="text-amber-200 text-sm font-bold">
+                          ⚠️ You already have a booking for this class
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="space-y-4 mb-6">
+                      <div className="bg-gray-600 h-6 rounded flex items-center justify-center text-xs font-bold text-black">
+                        MIRROR
+                      </div>
+
+                      <div className="flex justify-center gap-3">
+                        {[1, 2].map((n) => (
+                          <button
+                            key={n}
+                            onClick={() =>
+                              !bookedMegaformers.includes(n) &&
+                              setMegaformerState({
+                                ...megaformerState,
+                                [n]: !megaformerState[n],
+                              })
+                            }
+                            disabled={bookedMegaformers.includes(n)}
+                            className={`w-16 h-16 rounded-lg font-black transition ${
+                              bookedMegaformers.includes(n)
+                                ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
+                                : megaformerState[n]
+                                ? 'bg-red-600 text-white'
+                                : 'bg-slate-700 text-gray-400 hover:border-red-600'
+                            }`}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-center gap-2">
+                        {[3, 4, 5, 6, 7].map((n) => (
+                          <button
+                            key={n}
+                            onClick={() =>
+                              !bookedMegaformers.includes(n) &&
+                              setMegaformerState({
+                                ...megaformerState,
+                                [n]: !megaformerState[n],
+                              })
+                            }
+                            disabled={bookedMegaformers.includes(n)}
+                            className={`w-14 h-14 rounded-lg font-bold transition ${
+                              bookedMegaformers.includes(n)
+                                ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
+                                : megaformerState[n]
+                                ? 'bg-red-600 text-white'
+                                : 'bg-slate-700 text-gray-400'
+                            }`}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-900/50 rounded-lg p-3 mb-4 text-sm">
+                      <p className="text-gray-400">
+                        Selected:{' '}
+                        <span className="text-red-400 font-bold">
+                          {
+                            Object.values(megaformerState).filter((v) => v)
+                              .length
+                          }
+                        </span>
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={handleBookClass}
+                      disabled={
+                        bookingLoading ||
+                        Object.values(megaformerState).every((v) => !v) ||
+                        classPoints <= 0 ||
+                        bookedMegaformers.length > 0
+                      }
+                      className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-700 text-white font-bold py-3 rounded-lg transition"
+                    >
+                      {bookingLoading ? 'Booking...' : `Book (${classPoints})`}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* BOOKINGS TAB */}
+          {activeTab === 'bookings' && (
+            <div className="space-y-6">
+              <h1 className="text-4xl font-black text-white">My Bookings</h1>
+              <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-12 text-center">
+                <Calendar size={40} className="text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400">
+                  Your bookings will appear here
                 </p>
               </div>
             </div>
-            <button
-              onClick={handleResendVerification}
-              disabled={resendLoading}
-              className="bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 text-white px-6 py-3 rounded font-bold uppercase tracking-wide transition flex items-center gap-2 whitespace-nowrap flex-shrink-0"
-              style={{ boxShadow: '0 0 10px rgba(234, 179, 8, 0.3)' }}
-            >
-              {resendLoading ? (
-                <>
-                  <div className="animate-spin">⏳</div>
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Mail size={18} />
-                  Verify Now
-                </>
-              )}
-            </button>
+          )}
 
-            {verificationSent && (
-              <div className="w-full sm:w-auto col-span-full mt-4 p-3 bg-green-900/40 border border-green-700 rounded flex items-center gap-2">
-                <Check size={20} className="text-green-400 flex-shrink-0" />
-                <p className="text-green-300 font-semibold text-sm">✓ Verification email sent! Check your inbox and spam folder.</p>
+          {/* PACKAGES TAB */}
+          {activeTab === 'packages' && (
+            <div className="space-y-8">
+              <div>
+                <h1 className="text-4xl font-black text-white">
+                  Choose Your Package
+                </h1>
+                <p className="text-gray-400 mt-2">
+                  Select the perfect plan for your fitness goals
+                </p>
               </div>
-            )}
-          </div>
-        )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-900 border-2 border-red-700 text-red-200 p-4 rounded-lg mb-8 flex items-center gap-3">
-            <AlertCircle size={24} />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Active Packages Section */}
-        {stats.activePackages.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-black text-white mb-6 uppercase">Your Active Packages</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {stats.activePackages.map((pkg) => (
-                <div
-                  key={pkg.id}
-                  className={`bg-black border-2 rounded-lg p-4 relative transition-all ${
-                    pkg.isNextToUse
-                      ? 'border-green-500 ring-2 ring-green-500/50'
-                      : pkg.expiresIn <= 3
-                      ? 'border-yellow-600 ring-2 ring-yellow-600/30'
-                      : 'border-red-700'
-                  }`}
-                  style={{
-                    boxShadow: pkg.isNextToUse
-                      ? '0 0 20px rgba(34, 197, 94, 0.3)'
-                      : '0 0 20px rgba(196, 30, 58, 0.2)',
-                  }}
-                >
-                  {pkg.isNextToUse && (
-                    <div className="absolute top-0 right-0 bg-green-500 text-white text-xs font-black px-3 py-1 rounded-bl-lg">
-                      WILL USE
-                    </div>
-                  )}
-
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-lg font-black text-white">{pkg.name}</h3>
-                      <p className="text-sm text-gray-400">
-                        {pkg.classCreditsRemaining === 999 ? '∞ Unlimited' : pkg.classCreditsRemaining} credits
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Zap
-                        size={16}
-                        className={pkg.isNextToUse ? 'text-green-500' : 'text-red-600'}
-                      />
-                      <span
-                        className={`font-bold ${
-                          pkg.isNextToUse ? 'text-green-500' : 'text-red-600'
+              {packagesLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="w-12 h-12 border-4 border-slate-700 border-t-red-600 rounded-full animate-spin" />
+                </div>
+              ) : packages.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {packages.map((pkg) => {
+                    const isPopular = pkg.name.toLowerCase().includes('unlimited');
+                    
+                    return (
+                      <div
+                        key={pkg.id}
+                        className={`bg-slate-800/50 border-2 border-slate-700 rounded-xl p-6 relative hover:shadow-xl hover:shadow-red-600/20 transition ${
+                          isPopular ? 'ring-2 ring-red-600 scale-105' : ''
                         }`}
                       >
-                        {pkg.classCreditsRemaining === 999 ? '∞' : pkg.classCreditsRemaining}
-                      </span>
-                    </div>
+                        {isPopular && (
+                          <div className="absolute top-0 right-0 bg-red-600 text-white px-2 py-1 rounded-bl-lg font-bold text-xs">
+                            POPULAR
+                          </div>
+                        )}
+
+                        <h3 className="text-lg font-black text-white mb-1">
+                          {pkg.name}
+                        </h3>
+                        <p className="text-3xl font-black text-red-600 mb-1">
+                          ${pkg.price_mxn.toLocaleString()}
+                        </p>
+                        <p className="text-gray-400 text-xs uppercase mb-4 font-bold">
+                          {pkg.class_credits === 999
+                            ? 'Unlimited'
+                            : `${pkg.class_credits} Classes`}
+                        </p>
+
+                        <div className="space-y-2 mb-4 text-xs text-gray-300">
+                          <p>✓ Expires in {pkg.expire_days} days</p>
+                          {pkg.beverage_credits > 0 && (
+                            <p className="text-green-400 font-bold">
+                              ✓ +{pkg.beverage_credits} Beverage Points
+                            </p>
+                          )}
+                        </div>
+
+                        <button
+                          onClick={() => handlePackagePurchase(pkg)}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition text-sm"
+                        >
+                          Get Package
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-8 text-center text-gray-400">
+                  No packages available
+                </div>
+              )}
+
+              <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6 mt-8">
+                <h3 className="text-xl font-black text-white mb-4">
+                  Contact JJ Studio
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                  <div>
+                    <p className="text-gray-400 uppercase font-bold mb-1">
+                      Phone
+                    </p>
+                    <a
+                      href="tel:+5213318373447"
+                      className="text-red-500 hover:text-red-400 font-bold"
+                    >
+                      +52 1 33 1837 3447
+                    </a>
                   </div>
-
-                  <div
-                    className={`flex items-center gap-2 p-2 rounded ${
-                      pkg.isNextToUse ? 'bg-green-900/30' : 'bg-gray-900'
-                    }`}
-                  >
-                    <Clock
-                      size={16}
-                      className={
-                        pkg.isNextToUse
-                          ? 'text-green-500'
-                          : pkg.expiresIn <= 3
-                          ? 'text-yellow-500'
-                          : 'text-gray-400'
-                      }
-                    />
-                    <div>
-                      <p className="text-xs text-gray-400">Expires in</p>
-                      <p
-                        className={`font-bold text-sm ${
-                          pkg.isNextToUse
-                            ? 'text-green-400'
-                            : pkg.expiresIn <= 3
-                            ? 'text-yellow-500'
-                            : 'text-white'
-                        }`}
-                      >
-                        {pkg.expiresIn} day{pkg.expiresIn !== 1 ? 's' : ''} ({pkg.expiryDate})
-                      </p>
-                    </div>
+                  <div>
+                    <p className="text-gray-400 uppercase font-bold mb-1">
+                      Address
+                    </p>
+                    <p className="text-gray-300">
+                      Xentric Lomas Norte, El Campanario, Lcl 211
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Main Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <div
-            className="bg-black border-2 border-red-700 rounded-lg p-8"
-            style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <BookOpen size={40} className="text-red-600" style={{ filter: 'drop-shadow(0 0 8px #C41E3A)' }} />
-            </div>
-            <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">Classes This Month</p>
-            <p className="text-6xl font-black text-white mt-3" style={{ fontWeight: 800 }}>
-              {stats.classesThisMonth}
-            </p>
-            <p className="text-sm text-red-400 mt-3">One class at a time 💪</p>
-          </div>
-
-          <div
-            className="bg-black border-2 border-red-700 rounded-lg p-8"
-            style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <TrendingUp size={40} className="text-red-600" style={{ filter: 'drop-shadow(0 0 8px #C41E3A)' }} />
-            </div>
-            <p className="text-gray-400 text-sm uppercase font-bold tracking-wide">
-              Reach {stats.goalTarget} classes for a reward
-            </p>
-            <p className="text-6xl font-black text-white mt-3" style={{ fontWeight: 800 }}>
-              {Math.round(stats.progressToGoal)}%
-            </p>
-            <div className="mt-4 w-full bg-gray-800 rounded-full h-2 overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-red-600 to-red-500 h-full transition-all duration-500"
-                style={{ width: `${stats.progressToGoal}%` }}
-              />
-            </div>
-            <p className="text-sm text-gray-400 mt-3">
-              {Math.max(0, stats.goalTarget - stats.classesThisMonth)} more classes to reach your goal
-            </p>
-          </div>
-        </div>
-
-        {/* Favorites Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {stats.favoriteClass ? (
-            <div
-              className="bg-black border-2 border-red-700 rounded-lg p-8"
-              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-black text-white">Your Favorite Class</h3>
-                <Award size={32} className="text-red-600" />
               </div>
-              <p className="text-4xl font-black text-red-600 mt-4">{stats.favoriteClass.name}</p>
-              <p className="text-gray-400 mt-3">
-                You've attended <span className="text-red-400 font-bold">{stats.favoriteClass.count} times</span> this month
-              </p>
-            </div>
-          ) : (
-            <div
-              className="bg-black border-2 border-gray-700 rounded-lg p-8"
-              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.1)' }}
-            >
-              <h3 className="text-2xl font-black text-gray-500">Your Favorite Class</h3>
-              <p className="text-gray-400 mt-4">Start booking classes to see your favorite!</p>
             </div>
           )}
-
-          {stats.favoriteCoach ? (
-            <div
-              className="bg-black border-2 border-red-700 rounded-lg p-8"
-              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.2)' }}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-black text-white">Your Favorite Coach</h3>
-                <Users size={32} className="text-red-600" />
-              </div>
-              <p className="text-4xl font-black text-red-600 mt-4">{stats.favoriteCoach.name}</p>
-              <p className="text-gray-400 mt-3">
-                You've trained with them <span className="text-red-400 font-bold">{stats.favoriteCoach.count} times</span> this month
-              </p>
-            </div>
-          ) : (
-            <div
-              className="bg-black border-2 border-gray-700 rounded-lg p-8"
-              style={{ boxShadow: '0 0 20px rgba(196, 30, 58, 0.1)' }}
-            >
-              <h3 className="text-2xl font-black text-gray-500">Your Favorite Coach</h3>
-              <p className="text-gray-400 mt-4">Book with coaches to see your favorite!</p>
-            </div>
-          )}
-        </div>
-
-        {/* Class Categories */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-black text-white mb-6 uppercase">Our Class Categories</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            {CLASS_CATEGORIES.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => router.push('/classes')}
-                className={`${category.color} hover:opacity-90 text-white font-bold py-6 px-4 rounded-lg transition transform hover:scale-105 text-center`}
-              >
-                <p className="text-sm font-black">{category.label}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <button
-            onClick={() => router.push('/classes')}
-            className="bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded font-bold uppercase tracking-wide transition flex items-center justify-center gap-2"
-            style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.3)' }}
-          >
-            <BookOpen size={20} />
-            Book Your Next Class
-          </button>
-          <button
-            onClick={() => router.push('/bookings')}
-            className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-4 rounded font-bold uppercase tracking-wide border-2 border-red-700 transition flex items-center justify-center gap-2"
-            style={{ boxShadow: '0 0 15px rgba(196, 30, 58, 0.1)' }}
-          >
-            <Award size={20} />
-            My Bookings
-          </button>
         </div>
       </div>
+
+      {/* ✅ ERROR MODAL (NEW!) */}
+      {errorModal.isOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-8">
+            <div className="flex items-center justify-center mb-4">
+              {errorModal.isDuplicateBooking ? (
+                <AlertTriangle size={48} className="text-amber-500" />
+              ) : errorModal.title.includes('Successful') ? (
+                <CheckCircle size={48} className="text-green-500" />
+              ) : (
+                <AlertCircle size={48} className="text-red-500" />
+              )}
+            </div>
+
+            <h2 className="text-2xl font-black text-white text-center mb-2">
+              {errorModal.title}
+            </h2>
+
+            <p className="text-gray-400 text-center text-sm mb-6 whitespace-pre-wrap">
+              {errorModal.message}
+            </p>
+
+            <button
+              onClick={() =>
+                setErrorModal({
+                  isOpen: false,
+                  title: '',
+                  message: '',
+                  isDuplicateBooking: false,
+                })
+              }
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* PAYMENT MODAL */}
+      {paymentModal.isOpen && paymentModal.package && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-8 relative">
+            <button
+              onClick={() =>
+                !paymentLoading &&
+                setPaymentModal({ isOpen: false, package: null })
+              }
+              disabled={paymentLoading}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white disabled:opacity-50"
+            >
+              <X size={24} />
+            </button>
+
+            {!paymentSuccess ? (
+              <>
+                <h2 className="text-2xl font-black text-white mb-2">
+                  Complete Your Purchase
+                </h2>
+                <p className="text-gray-400 text-sm mb-6">
+                  Confirm your package purchase
+                </p>
+
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 mb-6 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 font-bold">Package</span>
+                    <span className="text-white font-black">
+                      {paymentModal.package.name}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 font-bold">Amount</span>
+                    <span className="text-red-500 font-black text-lg">
+                      ${paymentModal.package.price_mxn.toLocaleString()} MXN
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 font-bold">Credits</span>
+                    <span className="text-green-400 font-black">
+                      {paymentModal.package.class_credits === 999
+                        ? 'Unlimited'
+                        : paymentModal.package.class_credits}
+                    </span>
+                  </div>
+                  {paymentModal.package.beverage_credits > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400 font-bold">
+                        Beverage Points
+                      </span>
+                      <span className="text-green-400 font-black">
+                        +{paymentModal.package.beverage_credits}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={simulatePayment}
+                  disabled={paymentLoading}
+                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2"
+                >
+                  {paymentLoading ? (
+                    <>
+                      <Loader size={20} className="animate-spin" />
+                      Processing Payment...
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag size={20} />
+                      Confirm Purchase
+                    </>
+                  )}
+                </button>
+
+                <p className="text-xs text-gray-500 text-center mt-4">
+                  💳 This is a simulated payment for development purposes
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col items-center justify-center py-8">
+                  <div className="mb-4 animate-bounce">
+                    <CheckCircle size={64} className="text-green-500" />
+                  </div>
+                  <h3 className="text-2xl font-black text-white mb-2">
+                    Payment Successful! ✅
+                  </h3>
+                  <p className="text-gray-400 text-center text-sm mb-4">
+                    Your {paymentModal.package.name} package has been added to
+                    your account
+                  </p>
+                  <div className="bg-green-900/20 border border-green-700/50 rounded-lg p-3 w-full text-center">
+                    <p className="text-green-400 font-bold text-sm">
+                      +
+                      {paymentModal.package.class_credits === 999
+                        ? '∞'
+                        : paymentModal.package.class_credits}{' '}
+                      Credits Added
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
