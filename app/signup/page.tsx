@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
@@ -11,6 +12,7 @@ function SignupContent() {
   const supabase = createClient();
 
   const verificationToken = searchParams.get('code');
+  const selectedPackage = searchParams.get('package'); // Get package from URL params
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -52,7 +54,12 @@ function SignupContent() {
       if (data.user) {
         setVerificationState('verified');
         setTimeout(() => {
-          router.push('/dashboard');
+          // If package was selected, redirect to packages page to complete purchase
+          if (selectedPackage) {
+            router.push(`/packages?package=${selectedPackage}`);
+          } else {
+            router.push('/dashboard');
+          }
         }, 2000);
       }
     } catch (err) {
@@ -73,7 +80,7 @@ function SignupContent() {
         email: email.toLowerCase(),
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/signup`,
+          emailRedirectTo: `${window.location.origin}/signup${selectedPackage ? `?package=${selectedPackage}` : ''}`,
           data: {
             first_name: firstName.trim(),
             last_name: lastName.trim(),

@@ -2,15 +2,37 @@
 "use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { createClient } from "@/utils/supabase/client"
 import { content } from "./lib/i18n"
 
 export default function Home() {
   const [lang, setLang] = useState("en")
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [user, setUser] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", message: "" })
   const [formState, setFormState] = useState("idle")
+  const router = useRouter()
+  const supabase = createClient()
   const t = content[lang]
+
+  // Check if user is logged in
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user || null)
+      } catch (err) {
+        console.error('Auth error:', err)
+        setUser(null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    checkUser()
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -19,6 +41,45 @@ export default function Home() {
   }, [])
 
   const toggleLang = () => setLang(l => l === "en" ? "es" : "en")
+
+  // Navigation handlers with auth checks
+  const handleScheduleClick = (e) => {
+    e.preventDefault()
+    if (user) {
+      router.push('/bookings')
+    } else {
+      router.push('/login')
+    }
+  }
+
+  const handlePackageClick = (e) => {
+    e.preventDefault()
+    router.push('/packages')
+  }
+
+  const handleBeveragesClick = (e) => {
+    e.preventDefault()
+    router.push('/beverages')
+  }
+
+  const handleAboutClick = (e) => {
+    e.preventDefault()
+    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const handleProfileClick = () => {
+    if (user) {
+      router.push('/dashboard/client')
+    } else {
+      router.push('/login')
+    }
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+    router.push('/')
+  }
 
   return (
     <main className="bg-black text-white overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -39,15 +100,27 @@ export default function Home() {
               ["#beverages", t.nav.beverages],
               ["#about", t.nav.about],
               ["#contact", t.nav.contact],
-            ].map(([href, label]) => (
-              <a key={href} href={href}
-                className="text-xs font-medium tracking-widest uppercase text-white/70 hover:text-white transition-colors relative group">
+            ].map(([href, label], idx) => (
+              <button key={href}
+                onClick={(e) => {
+                  if (idx === 1) handleScheduleClick(e)
+                  else if (idx === 2) handlePackageClick(e)
+                  else if (idx === 3) handleBeveragesClick(e)
+                  else if (idx === 4) handleAboutClick(e)
+                  else {
+                    e.preventDefault()
+                    document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' })
+                  }
+                }}
+                className="text-xs font-medium tracking-widest uppercase text-white/70 hover:text-white transition-colors relative group"
+              >
                 {label}
                 <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-red-900 group-hover:w-full transition-all duration-300" />
-              </a>
+              </button>
             ))}
           </div>
 
+          {/* Right side - Language + Auth buttons */}
           <div className="hidden lg:flex items-center gap-5">
             <button onClick={toggleLang} className="flex items-center gap-2 cursor-pointer select-none group">
               <span className={`text-xs font-bold tracking-widest transition-colors ${lang === "es" ? "text-white" : "text-white/30"}`}>ES</span>
@@ -56,10 +129,38 @@ export default function Home() {
               </div>
               <span className={`text-xs font-bold tracking-widest transition-colors ${lang === "en" ? "text-white" : "text-white/30"}`}>EN</span>
             </button>
-              <a href="/signup"
-                className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all duration-200 hover:-translate-y-0.5">
-              {t.nav.register}
-            </a>
+
+            {!isLoading && (
+              <>
+                {user ? (
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleProfileClick}
+                      className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all duration-200 hover:-translate-y-0.5"
+                    >
+                      PROFILE
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="text-xs font-bold tracking-widest uppercase text-white/50 hover:text-white transition-colors"
+                    >
+                      LOGOUT
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <a href="/login"
+                      className="text-xs font-bold tracking-widest uppercase text-white/50 hover:text-white transition-colors">
+                      LOGIN
+                    </a>
+                    <a href="/signup"
+                      className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all duration-200 hover:-translate-y-0.5">
+                      {t.nav.register}
+                    </a>
+                  </>
+                )}
+              </>
+            )}
           </div>
 
           {/* Hamburger */}
@@ -73,21 +174,55 @@ export default function Home() {
         {/* Mobile menu */}
         <div className={`lg:hidden bg-black border-t border-white/10 overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-screen py-6" : "max-h-0"}`}>
           <div className="flex flex-col px-6 gap-5">
-            {[["#", t.nav.home], ["#schedule", t.nav.schedule], ["#packages", t.nav.packages],
-              ["#beverages", t.nav.beverages], ["#about", t.nav.about], ["#contact", t.nav.contact]].map(([href, label]) => (
-              <a key={href} href={href} onClick={() => setMenuOpen(false)}
-                className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white">{label}</a>
-            ))}
-            <button onClick={toggleLang} className="flex items-center gap-2 self-start">
-              <span className={`text-xs font-bold tracking-widest ${lang === "es" ? "text-white" : "text-white/30"}`}>ES</span>
-              <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-white/10 border-white/20" : "bg-red-900/40 border-red-900"}`}>
-                <div className={`absolute top-1 w-4 h-4 rounded-full bg-red-800 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
-              </div>
-              <span className={`text-xs font-bold tracking-widest ${lang === "en" ? "text-white" : "text-white/30"}`}>EN</span>
+            <button onClick={(e) => { handleScheduleClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+              {t.nav.schedule}
             </button>
-            <a href="#contact" className="bg-red-900 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center">
-              {t.nav.register}
-            </a>
+            <button onClick={(e) => { handlePackageClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+              {t.nav.packages}
+            </button>
+            <button onClick={(e) => { handleBeveragesClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+              {t.nav.beverages}
+            </button>
+            <button onClick={(e) => { handleAboutClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+              {t.nav.about}
+            </button>
+            <button onClick={() => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+              {t.nav.contact}
+            </button>
+            
+            <div className="border-t border-white/10 pt-5">
+              <button onClick={toggleLang} className="flex items-center gap-2 self-start mb-4">
+                <span className={`text-xs font-bold tracking-widest ${lang === "es" ? "text-white" : "text-white/30"}`}>ES</span>
+                <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-white/10 border-white/20" : "bg-red-900/40 border-red-900"}`}>
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-red-800 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
+                </div>
+                <span className={`text-xs font-bold tracking-widest ${lang === "en" ? "text-white" : "text-white/30"}`}>EN</span>
+              </button>
+
+              {!isLoading && (
+                <>
+                  {user ? (
+                    <>
+                      <button onClick={() => { handleProfileClick(); setMenuOpen(false) }} className="w-full bg-red-900 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 mb-2">
+                        PROFILE
+                      </button>
+                      <button onClick={() => { handleLogout(); setMenuOpen(false) }} className="w-full text-xs font-bold tracking-widest uppercase text-white/50 hover:text-white py-2">
+                        LOGOUT
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <a href="/login" className="block bg-black border border-white/20 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center mb-2">
+                        LOGIN
+                      </a>
+                      <a href="/signup" className="block bg-red-900 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center">
+                        {t.nav.register}
+                      </a>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </nav>
@@ -113,14 +248,14 @@ export default function Home() {
             </h1>
             <p className="text-lg font-light max-w-md mb-10 leading-relaxed text-white/50">{t.hero.sub}</p>
             <div className="flex flex-wrap gap-4">
-              <a href="#contact"
+              <a href="/signup"
                 className="bg-red-900 hover:bg-red-800 text-white text-sm font-bold tracking-widest uppercase px-8 py-4 transition-all hover:-translate-y-0.5">
                 {t.hero.cta1}
               </a>
-              <a href="#about"
+              <button onClick={handleAboutClick}
                 className="border border-white text-white text-sm font-bold tracking-widest uppercase px-8 py-4 hover:bg-white hover:text-black transition-all">
                 {t.hero.cta2}
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -159,9 +294,9 @@ export default function Home() {
                 {t.classes.title1}<br /><span className="text-red-800">{t.classes.title2}</span>
               </h2>
             </div>
-            <a href="#contact" className="border border-white text-white text-xs font-bold tracking-widest uppercase px-6 py-3 hover:bg-white hover:text-black transition-all self-start">
+            <button onClick={handleScheduleClick} className="border border-white text-white text-xs font-bold tracking-widest uppercase px-6 py-3 hover:bg-white hover:text-black transition-all self-start">
               {t.classes.book}
-            </a>
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-white/5"
@@ -221,10 +356,10 @@ export default function Home() {
                     {plan.beverage ? t.packages.bev : t.packages.noBev}
                   </li>
                 </ul>
-                <a href="#contact"
+                <button onClick={handlePackageClick}
                   className={`block text-center text-xs font-bold tracking-widest uppercase px-4 py-3 transition-all ${plan.popular ? "bg-red-900 hover:bg-red-800 text-white" : "border border-white text-white hover:bg-white hover:text-black"}`}>
                   {t.packages.cta}
-                </a>
+                </button>
               </div>
             ))}
           </div>
@@ -248,9 +383,9 @@ export default function Home() {
               </h2>
               <p className="text-base leading-relaxed mb-4 text-white/50">{t.beverages.p1}</p>
               <p className="text-sm leading-relaxed mb-8 text-white/30">{t.beverages.p2}</p>
-              <a href="#packages" className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 inline-block transition-all">
+              <button onClick={handleBeveragesClick} className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 inline-block transition-all">
                 {t.beverages.cta}
-              </a>
+              </button>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {t.beverages.items.map((item, i) => (
@@ -383,90 +518,4 @@ export default function Home() {
                   const data = await res.json()
                   if (data.success) {
                     setFormState("success")
-                    setFormData({ firstName: "", lastName: "", email: "", message: "" })
-                  } else {
-                    setFormState("error")
-                  }
-                } catch {
-                  setFormState("error")
-                }
-              }}
-            >
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder={t.contact.firstName}
-                  value={formData.firstName}
-                  onChange={e => setFormData(p => ({ ...p, firstName: e.target.value }))}
-                  required
-                  className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors"
-                />
-                <input
-                  type="text"
-                  placeholder={t.contact.lastName}
-                  value={formData.lastName}
-                  onChange={e => setFormData(p => ({ ...p, lastName: e.target.value }))}
-                  className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors"
-                />
-              </div>
-              <input
-                type="email"
-                placeholder={t.contact.emailPlaceholder}
-                value={formData.email}
-                onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
-                required
-                className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors"
-              />
-              <textarea
-                placeholder={t.contact.message}
-                rows={4}
-                value={formData.message}
-                onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
-                required
-                className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors resize-none"
-              />
-              <button
-                type="submit"
-                disabled={formState === "loading"}
-                className="bg-red-900 hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold tracking-widest uppercase px-8 py-4 w-full transition-all"
-              >
-                {formState === "loading" ? "Sending..." : t.contact.send}
-              </button>
-
-              {formState === "success" && (
-                <div className="border border-red-900/50 bg-red-900/10 px-4 py-3 text-sm text-red-400 tracking-wide text-center">
-                  ✓ Message sent — we'll get back to you soon.
-                </div>
-              )}
-              {formState === "error" && (
-                <div className="border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/40 tracking-wide text-center">
-                  Something went wrong. Try emailing us at administracion@jjstudio.mx
-                </div>
-              )}
-            </form>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FOOTER ── */}
-      <footer className="bg-black border-t border-white/5 py-12">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
-          <span className="text-xl font-black tracking-widest uppercase">JJ<span className="text-red-800">Studio</span></span>
-          <div className="flex flex-col sm:flex-row items-center gap-4 text-center">
-            <p className="text-xs uppercase tracking-widest text-white/20">{t.footer.tagline}</p>
-            <span className="text-white/10 hidden sm:inline">|</span>
-            <p className="text-xs text-white/20">{t.footer.location}</p>
-          </div>
-          <p className="text-xs text-white/15">{t.footer.rights}</p>
-        </div>
-      </footer>
-
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-      `}</style>
-    </main>
-  )
-}
+                    setFormData({

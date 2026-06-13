@@ -1,170 +1,212 @@
 
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Mail, Lock, Loader, AlertCircle } from 'lucide-react';
-import { createClient } from '@/utils/supabase/client';
 
-export default function LoginComponent() {
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
+import { Eye, EyeOff, Loader, CheckCircle, Mail } from 'lucide-react';
+
+function SignupContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
 
+  const verificationToken = searchParams.get('code');
+  const selectedPackage = searchParams.get('package'); // Get package from URL params
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [verificationState, setVerificationState] = useState<'pending' | 'verifying' | 'verified' | 'error'>('pending');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isPasswordValid = password.length >= 8;
+  const isPasswordMatch = password === confirmPassword && password.length > 0;
+  const isFirstNameValid = firstName.trim().length > 0;
+  const isLastNameValid = lastName.trim().length > 0;
 
+  const isFormValid = isEmailValid && isPasswordValid && isPasswordMatch && isFirstNameValid && isLastNameValid && !isLoading;
+
+  useEffect(() => {
+    if (verificationToken) {
+      handleEmailVerification(verificationToken);
+    }
+  }, [verificationToken]);
+
+  const handleEmailVerification = async (token: string) => {
     try {
-      // Sign in with Supabase Auth
-      const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      setVerificationState('verifying');
+      const { data, error: verifyError } = await supabase.auth.exchangeCodeForSession(token);
 
-      if (signInError) throw signInError;
-      if (!user) throw new Error('Login failed');
-
-      // Fetch user role from database
-      const { data: userData, error: fetchError } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (fetchError) {
-        console.warn('Could not fetch user role:', fetchError);
-        // Default to member dashboard if role not found
-        router.push('/dashboard/client');
+      if (verifyError) {
+        setVerificationState('error');
+        setError('Email verification failed. Link may have expired.');
         return;
       }
 
-      // Redirect based on role
-      const role = userData?.role || 'member';
-
-      if (role === 'admin') {
-        router.push('/dashboard/admin');
-      } else if (role === 'trainer') {
-        router.push('/dashboard/trainer');
-      } else {
-        // member, client, or anything else goes to client dashboard
-        router.push('/dashboard/client');
+      if (data.user) {
+        setVerificationState('verified');
+        setTimeout(() => {
+          // If package was selected, redirect to packages page to complete purchase
+          if (selectedPackage) {
+            router.push(`/packages?package=${selectedPackage}`);
+          } else {
+            router.push('/dashboard');
+          }
+        }, 2000);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed. Check your credentials.');
-    } finally {
-      setLoading(false);
+      setVerificationState('error');
+      setError('Verification error. Please try again.');
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isFormValid) return;
+
+    try {
+      setError('');
+      setIsLoading(true);
+
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: email.toLowerCase(),
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/signup${selectedPackage ? `?package=${selectedPackage}` : ''}`,
+          data: {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+          },
+        },
+      });
+
+      if (authError) {
+        if (authError.message.includes('already registered') || authError.message.includes('already exists')) {
+          setError('This email is already registered. Please sign in or use a different email.');
+        } else {
+          setError(authError.message || 'Signup failed. Please try again.');
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      if (!authData.user) {
+        setError('Failed to create user account');
+        setIsLoading(false);
+        return;
+      }
+
+      const { error: profileError } = await supabase
+        .from('users')
+        .update({
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          created_at: new Date().toISOString(),
+        })
+        .eq('id', authData.user.id);
+
+      if (profileError) {
+        console.error('Profile creation error:', profileError);
+        setError(`Failed to create profile: ${profileError.message}`);
+        setIsLoading(false);
+        return;
+      }
+
+      setSignupSuccess(true);
+      setIsLoading(false);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Signup failed. Please try again.';
+      setError(errorMsg);
+      setIsLoading(false);
+    }
+  };
+
+  if (verificationState === 'verified') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <div className="w-full max-w-md text-center">
+          <div className="bg-black border-2 border-red-700 rounded-lg shadow-2xl p-8" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.25)' }}>
+            <CheckCircle size={64} className="text-red-600 mx-auto mb-6" style={{ filter: 'drop-shadow(0 0 10px #CC0000)' }} />
+            <h1 className="text-3xl font-black text-white mb-2" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>EMAIL VERIFIED!</h1>
+            <p className="text-gray-400 mb-6 font-bold">Your account verified. Redirecting...</p>
+            <Loader size={24} className="text-red-600 animate-spin mx-auto" style={{ filter: 'drop-shadow(0 0 8px #CC0000)' }} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (signupSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <div className="w-full max-w-md">
+          <div className="bg-black border-2 border-red-700 rounded-lg shadow-2xl p-8 text-center" style={{ boxShadow: '0 0 30px rgba(255, 0, 0, 0.25)' }}>
+            <Mail size={64} className="text-red-600 mx-auto mb-6" style={{ filter: 'drop-shadow(0 0 10px #CC0000)' }} />
+            <h1 className="text-3xl font-black text-white mb-4" style={{ fontWeight: 800, letterSpacing: '0.08em' }}>VERIFY YOUR EMAIL</h1>
+            <div className="h-1.5 w-16 bg-gradient-to-r from-red-900 to-red-600 mx-auto mb-6" style={{ boxShadow: '0 0 10px #CC0000' }} />
+            <div className="bg-red-900/20 border-2 border-red-700 rounded p-4 mb-6" style={{ boxShadow: '0 0 15px rgba(200, 0, 0, 0.2)' }}>
+              <p className="text-gray-300 text-sm mb-2 font-bold">VERIFICATION LINK SENT TO:</p>
+              <p className="text-red-400 font-bold break-all text-base">{email}</p>
+            </div>
+            <p className="text-gray-300 text-sm mb-6 font-semibold">Click the link in your email to verify and auto-login.</p>
+            <div className="border-t border-gray-800 pt-6">
+              <p className="text-gray-500 text-xs mb-4 font-bold">DIDN'T RECEIVE EMAIL?</p>
+              <button
+                onClick={() => {
+                  setSignupSuccess(false);
+                  setFirstName('');
+                  setLastName('');
+                  setEmail('');
+                  setPassword('');
+                  setConfirmPassword('');
+                  setError('');
+                }}
+                className="text-red-600 hover:text-red-400 font-bold text-sm transition-colors uppercase tracking-wide"
+              >
+                TRY ANOTHER EMAIL
+              </button>
+            </div>
+            <p className="text-gray-600 text-xs mt-8 uppercase tracking-widest font-bold">CHECK SPAM FOLDER</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-black text-white flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Ambient background elements */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-red-900 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-900 rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-black via-black to-red-950 flex items-center justify-center p-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
+        
+        input:focus {
+          box-shadow: 0 0 20px rgba(200, 0, 0, 0.4), inset 0 0 10px rgba(200, 0, 0, 0.1) !important;
+        }
+        
+        button:not(:disabled):hover {
+          box-shadow: 0 0 25px rgba(200, 0, 0, 0.5) !important;
+          transform: translateY(-2px);
+        }
+      `}</style>
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Logo */}
-        <div className="text-center mb-12">
-          <div className="inline-block">
-            <span className="text-4xl font-black tracking-tight">JJ</span>
-            <span className="text-4xl font-black ml-1" style={{ color: '#C41E3A' }}>STUDIO</span>
-          </div>
-        </div>
-
-        {/* Login Card */}
-        <div className="border border-white/10 rounded-lg p-8 backdrop-blur-sm" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
-            <div>
-              <label className="text-xs text-white/60 uppercase tracking-wider font-bold mb-2 block">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3.5 text-white/30" size={18} />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none focus:border-red-600/50 focus:ring-1 focus:ring-red-600/30 rounded transition"
-                />
-              </div>
+      <div className="w-full max-w-md">
+        <div className="bg-black border-2 border-red-700 rounded-lg p-8" style={{ boxShadow: '0 0 30px rgba(200, 0, 0, 0.3)' }}>
+          <div className="mb-8">
+            <div className="text-center mb-6">
+              <span className="text-white font-black text-2xl" style={{ fontWeight: 800 }}>JJ</span>
+              <span className="text-red-600 font-black text-2xl" style={{ fontWeight: 800, textShadow: '0 0 8px #CC0000' }}>STUDIO</span>
             </div>
-
-            {/* Password Field */}
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <label className="text-xs text-white/60 uppercase tracking-wider font-bold">
-                  Password
-                </label>
-                <a href="/forgot-password" className="text-xs font-bold" style={{ color: '#C41E3A' }}>
-                  Forgot?
-                </a>
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3.5 text-white/30" size={18} />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none focus:border-red-600/50 focus:ring-1 focus:ring-red-600/30 rounded transition"
-                />
-              </div>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="flex gap-3 p-3 bg-red-900/20 border border-red-900/50 rounded">
-                <AlertCircle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-red-200">{error}</p>
-              </div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 px-4 rounded font-bold uppercase tracking-wider text-sm text-white transition duration-300 flex items-center justify-center gap-2"
-              style={{
-                backgroundColor: '#C41E3A',
-                opacity: loading ? 0.7 : 1,
-              }}
-            >
-              {loading ? (
-                <>
-                  <Loader size={16} className="animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </button>
-          </form>
-
-          {/* Signup Link */}
-          <div className="mt-8 text-center text-sm text-white/50">
-            Don't have an account?{' '}
-            <a href="/signup" className="font-bold" style={{ color: '#C41E3A' }}>
-              Create one
-            </a>
+            <h1 className="text-4xl font-black text-white mb-3" style={{ fontWeight: 800, letterSpacing: '0.1em' }}>CREATE ACCOUNT</h1>
+            <div className="h-1.5 w-14 bg-gradient-to-r from-red-800 via-red-600 to-red-500 mx-auto mb-4" style={{ boxShadow: '0 0 10px #CC0000' }} />
+            <p className="text-gray-300 font-bold uppercase tracking-wide text-sm">START YOUR TRANSFORMATION TODAY</p>
           </div>
-        </div>
 
-        {/* Footer */}
-        <p className="text-center text-xs text-white/30 mt-8">
-          Secure login powered by industry standards
-        </p>
-      </div>
-    </main>
-  );
-}
+          {error && (
+            <div className="mb-6 p-4 bg-red-900/30 border-2 border-red-700 rounded flex items-start gap-3" style={{ boxShadow: '0 0 15px rgba(200
