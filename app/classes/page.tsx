@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { LogOut, BookOpen, Calendar, ShoppingBag, Zap, Mail, AlertCircle, MessageCircle, Heart } from 'lucide-react';
+import { LogOut, BookOpen, Calendar, ShoppingBag, Zap, Mail, AlertCircle, MessageCircle, Heart, X, CheckCircle, Loader } from 'lucide-react';
 
 type UserStats = {
   classesThisMonth: number;
@@ -35,7 +35,19 @@ type Class = {
 
 type TabType = 'dashboard' | 'book' | 'bookings' | 'packages';
 
-const PACKAGES = [
+type Package = {
+  id: number;
+  name: string;
+  price: number;
+  currency: string;
+  classes: number | string;
+  expirationDays: number;
+  beveragePoints: number;
+  popular?: boolean;
+  color: string;
+};
+
+const PACKAGES: Package[] = [
   {
     id: 1,
     name: '1 Class',
@@ -69,7 +81,7 @@ const PACKAGES = [
   {
     id: 4,
     name: 'Unlimited',
-    price: 9999,
+    price: 8000,
     currency: 'MXN',
     classes: '∞',
     expirationDays: 30,
@@ -102,6 +114,11 @@ export default function Dashboard() {
   const [megaformerState, setMegaformerState] = useState<{ [key: number]: boolean }>({});
   const [classPoints, setClassPoints] = useState(0);
   const [bookingLoading, setBookingLoading] = useState(false);
+
+  // Payment Modal State
+  const [paymentModal, setPaymentModal] = useState<{ isOpen: boolean; package: Package | null }>({ isOpen: false, package: null });
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   useEffect(() => {
     const getUser = async () => {
@@ -272,6 +289,59 @@ export default function Dashboard() {
       setError('Booking failed');
     } finally {
       setBookingLoading(false);
+    }
+  };
+
+  const handlePackagePurchase = (pkg: Package) => {
+    setPaymentModal({ isOpen: true, package: pkg });
+    setPaymentSuccess(false);
+  };
+
+  const simulatePayment = async () => {
+    if (!paymentModal.package || !user) return;
+
+    setPaymentLoading(true);
+
+    // Simulate payment processing delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+      // Get package credit amount
+      const creditAmount = typeof paymentModal.package.classes === 'string' 
+        ? 999 // Unlimited gets 999 credits (treated as unlimited)
+        : paymentModal.package.classes;
+
+      // Calculate expiration date
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + paymentModal.package.expirationDays);
+
+      // Insert into user_packages
+      const { error: insertError } = await supabase
+        .from('user_packages')
+        .insert([{
+          user_id: user.id,
+          package_id: paymentModal.package.id,
+          created_at: new Date().toISOString(),
+          expires_at: expiryDate.toISOString(),
+          class_credits_remaining: creditAmount,
+          beverage_points: paymentModal.package.beveragePoints,
+        }]);
+
+      if (insertError) throw insertError;
+
+      // Show success state
+      setPaymentSuccess(true);
+
+      // Refresh stats after 2 seconds
+      setTimeout(async () => {
+        await fetchDashboardStats(user.id);
+        setPaymentModal({ isOpen: false, package: null });
+        setPaymentSuccess(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Purchase error:', err);
+      setError('Purchase failed. Please try again.');
+      setPaymentLoading(false);
     }
   };
 
@@ -598,7 +668,10 @@ export default function Dashboard() {
                       )}
                     </div>
 
-                    <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition text-sm">
+                    <button 
+                      onClick={() => handlePackagePurchase(pkg)}
+                      className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition text-sm"
+                    >
                       Get Package
                     </button>
                   </div>
@@ -625,6 +698,97 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Payment Modal */}
+      {paymentModal.isOpen && paymentModal.package && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-8 relative">
+            {/* Close Button */}
+            <button
+              onClick={() => !paymentLoading && setPaymentModal({ isOpen: false, package: null })}
+              disabled={paymentLoading}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white disabled:opacity-50"
+            >
+              <X size={24} />
+            </button>
+
+            {!paymentSuccess ? (
+              <>
+                {/* Payment Form */}
+                <h2 className="text-2xl font-black text-white mb-2">Complete Your Purchase</h2>
+                <p className="text-gray-400 text-sm mb-6">Confirm your package purchase</p>
+
+                {/* Package Details */}
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 mb-6 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 font-bold">Package</span>
+                    <span className="text-white font-black">{paymentModal.package.name}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 font-bold">Amount</span>
+                    <span className="text-red-500 font-black text-lg">
+                      ${paymentModal.package.price.toLocaleString()} {paymentModal.package.currency}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 font-bold">Credits</span>
+                    <span className="text-green-400 font-black">
+                      {paymentModal.package.classes === '∞' ? 'Unlimited' : paymentModal.package.classes}
+                    </span>
+                  </div>
+                  {paymentModal.package.beveragePoints > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400 font-bold">Beverage Points</span>
+                      <span className="text-green-400 font-black">+{paymentModal.package.beveragePoints}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Simulated Payment Button */}
+                <button
+                  onClick={simulatePayment}
+                  disabled={paymentLoading}
+                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2"
+                >
+                  {paymentLoading ? (
+                    <>
+                      <Loader size={20} className="animate-spin" />
+                      Processing Payment...
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag size={20} />
+                      Confirm Purchase
+                    </>
+                  )}
+                </button>
+
+                <p className="text-xs text-gray-500 text-center mt-4">
+                  💳 This is a simulated payment for development purposes
+                </p>
+              </>
+            ) : (
+              <>
+                {/* Success State */}
+                <div className="flex flex-col items-center justify-center py-8">
+                  <div className="mb-4 animate-bounce">
+                    <CheckCircle size={64} className="text-green-500" />
+                  </div>
+                  <h3 className="text-2xl font-black text-white mb-2">Payment Successful! ✅</h3>
+                  <p className="text-gray-400 text-center text-sm mb-4">
+                    Your {paymentModal.package.name} package has been added to your account
+                  </p>
+                  <div className="bg-green-900/20 border border-green-700/50 rounded-lg p-3 w-full text-center">
+                    <p className="text-green-400 font-bold text-sm">
+                      +{paymentModal.package.classes === '∞' ? '∞' : paymentModal.package.classes} Credits Added
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
