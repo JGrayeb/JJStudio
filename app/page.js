@@ -191,7 +191,7 @@ export default function Home() {
         <meta name="language" content="English, Spanish" />
         <meta name="author" content="JJ Studio" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-        <meta name="theme-color" content="#1A1A1A" />
+        <meta name="theme-color" content="#030712" />
         <link rel="canonical" href="https://jjstudio.mx" />
         
         {/* STRUCTURED DATA */}
@@ -201,25 +201,25 @@ export default function Home() {
         />
       </Head>
 
-      <main className="text-gray-900 overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif", background: "#1A1A1A" }}>
+      <main className="text-gray-900 overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif", background: "#030712" }}>
 
         {/* ── NAVBAR ── */}
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-gray-900/95 shadow-lg" : "bg-gray-900/90"}`} role="navigation" aria-label="Main navigation">
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-slate-950/95 shadow-lg" : "bg-slate-950/90"}`} role="navigation" aria-label="Main navigation">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               {/* LOGO */}
               <span className="text-xl font-black tracking-widest uppercase cursor-default select-none text-white">
-                JJ<span className="text-amber-600">Studio</span>
+                JJ<span className="text-teal-500">Studio</span>
               </span>
 
-              <div className="h-6 w-px bg-amber-600/40 hidden sm:block" />
+              <div className="h-6 w-px bg-teal-500/40 hidden sm:block" />
 
               {/* INSTAGRAM */}
               <a
                 href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg=="
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg hover:bg-amber-600/20 transition text-gray-400 hover:text-amber-500"
+                className="p-2 rounded-lg hover:bg-teal-500/20 transition text-gray-400 hover:text-teal-400"
                 title="Follow JJ Studio on Instagram"
                 aria-label="Instagram"
               >
@@ -235,7 +235,7 @@ export default function Home() {
                 href="https://wa.me/5213318373447?text=Hola%20JJ%20Studio"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg hover:bg-amber-600/20 transition text-gray-400 hover:text-green-500"
+                className="p-2 rounded-lg hover:bg-teal-500/20 transition text-gray-400 hover:text-green-500"
                 title="Contact JJ Studio on WhatsApp"
                 aria-label="WhatsApp"
               >
@@ -258,10 +258,10 @@ export default function Home() {
                 <button
                   key={label}
                   onClick={handler}
-                  className="text-xs font-medium tracking-widest uppercase text-gray-300 hover:text-amber-500 transition-colors relative group"
+                  className="text-xs font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400 transition-colors relative group"
                 >
                   {label}
-                  <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-amber-600 group-hover:w-full transition-all duration-300" />
+                  <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-teal-500 group-hover:w-full transition-all duration-300" />
                 </button>
               ))}
             </div>
@@ -270,8 +270,8 @@ export default function Home() {
             <div className="hidden lg:flex items-center gap-5">
               <button onClick={toggleLang} className="flex items-center gap-2 cursor-pointer select-none">
                 <span className={`text-xs font-bold tracking-widest transition-colors ${lang === "es" ? "text-white" : "text-gray-400"}`}>ES</span>
-                <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-gray-700 border-gray-600" : "bg-amber-600/40 border-amber-600"}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-amber-600 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
+                <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-gray-700 border-gray-600" : "bg-teal-500/40 border-teal-500"}`}>
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-teal-500 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
                 </div>
                 <span className={`text-xs font-bold tracking-widest transition-colors ${lang === "en" ? "text-white" : "text-gray-400"}`}>EN</span>
               </button>
@@ -282,23 +282,23 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={handleProfileClick}
-                        className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg transition-all duration-200"
+                        className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg transition-all duration-200"
                       >
                         PROFILE
                       </button>
                       <button
                         onClick={handleLogout}
-                        className="text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-amber-500 transition-colors"
+                        className="text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-teal-400 transition-colors"
                       >
                         LOGOUT
                       </button>
                     </div>
                   ) : (
                     <>
-                      <a href="/login" className="text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-amber-500 transition-colors">
+                      <a href="/login" className="text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-teal-400 transition-colors">
                         LOGIN
                       </a>
-                      <a href="/signup" className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg transition-all">
+                      <a href="/signup" className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg transition-all">
                         {t.nav.register}
                       </a>
                     </>
@@ -316,32 +316,32 @@ export default function Home() {
           </div>
 
           {/* Mobile Menu */}
-          <div className={`lg:hidden bg-gray-900 border-t border-amber-600/20 overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-screen py-6" : "max-h-0"}`}>
+          <div className={`lg:hidden bg-slate-950 border-t border-teal-500/20 overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-screen py-6" : "max-h-0"}`}>
             <div className="flex flex-col px-6 gap-5">
-              <button onClick={(e) => { handleHomeClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-amber-500">
+              <button onClick={(e) => { handleHomeClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
                 {t.nav.home}
               </button>
-              <button onClick={(e) => { handleScheduleClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-amber-500">
+              <button onClick={(e) => { handleScheduleClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
                 {t.nav.schedule}
               </button>
-              <button onClick={(e) => { handlePackageClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-amber-500">
+              <button onClick={(e) => { handlePackageClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
                 {t.nav.packages}
               </button>
-              <button onClick={(e) => { handleBeveragesClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-amber-500">
+              <button onClick={(e) => { handleBeveragesClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
                 {t.nav.beverages}
               </button>
-              <button onClick={(e) => { handleAboutClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-amber-500">
+              <button onClick={(e) => { handleAboutClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
                 {t.nav.about}
               </button>
-              <button onClick={(e) => { handleContactClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-amber-500">
+              <button onClick={(e) => { handleContactClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
                 {t.nav.contact}
               </button>
               
-              <div className="border-t border-amber-600/20 pt-5">
+              <div className="border-t border-teal-500/20 pt-5">
                 <button onClick={toggleLang} className="flex items-center gap-2 self-start mb-4">
                   <span className={`text-xs font-bold tracking-widest ${lang === "es" ? "text-white" : "text-gray-400"}`}>ES</span>
-                  <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-gray-700 border-gray-600" : "bg-amber-600/40 border-amber-600"}`}>
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-amber-600 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
+                  <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-gray-700 border-gray-600" : "bg-teal-500/40 border-teal-500"}`}>
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-teal-500 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
                   </div>
                   <span className={`text-xs font-bold tracking-widest ${lang === "en" ? "text-white" : "text-gray-400"}`}>EN</span>
                 </button>
@@ -350,10 +350,10 @@ export default function Home() {
                   <>
                     {user ? (
                       <>
-                        <button onClick={() => { handleProfileClick(); setMenuOpen(false) }} className="w-full bg-amber-600 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 rounded-lg mb-2">
+                        <button onClick={() => { handleProfileClick(); setMenuOpen(false) }} className="w-full bg-teal-500 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 rounded-lg mb-2">
                           PROFILE
                         </button>
-                        <button onClick={() => { handleLogout(); setMenuOpen(false) }} className="w-full text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-amber-500 py-2">
+                        <button onClick={() => { handleLogout(); setMenuOpen(false) }} className="w-full text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-teal-400 py-2">
                           LOGOUT
                         </button>
                       </>
@@ -362,7 +362,7 @@ export default function Home() {
                         <a href="/login" className="block bg-gray-800 border border-gray-700 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center rounded-lg mb-2">
                           LOGIN
                         </a>
-                        <a href="/signup" className="block bg-amber-600 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center rounded-lg">
+                        <a href="/signup" className="block bg-teal-500 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center rounded-lg">
                           {t.nav.register}
                         </a>
                       </>
@@ -375,26 +375,26 @@ export default function Home() {
         </nav>
 
         {/* ── HERO SECTION ── */}
-        <section className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20" id="home" style={{ background: "linear-gradient(135deg, #1A1A1A 0%, #2D2A2A 40%, #1A1A1A 100%)" }}>
-          <div className="absolute inset-0 opacity-30" style={{ background: "radial-gradient(ellipse at 70% 50%, rgba(212,175,106,0.15) 0%, transparent 70%)" }} />
+        <section className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20" id="home" style={{ background: "linear-gradient(135deg, #030712 0%, #0f2a2a 40%, #030712 100%)" }}>
+          <div className="absolute inset-0 opacity-30" style={{ background: "radial-gradient(ellipse at 70% 50%, rgba(20,184,184,0.15) 0%, transparent 70%)" }} />
 
           <div className="relative z-10 max-w-7xl mx-auto px-6">
             <div className="max-w-4xl">
-              <p className="text-xs font-semibold tracking-[0.3em] mb-6 uppercase text-amber-500">Premium Fitness Studio in Querétaro</p>
+              <p className="text-xs font-semibold tracking-[0.3em] mb-6 uppercase text-teal-400">Premium Fitness Studio in Querétaro</p>
               
               <h1 className="font-black uppercase leading-tight mb-8" style={{ fontSize: "clamp(3rem,9vw,7rem)", letterSpacing: "-0.02em", color: "#FFFFFF" }}>
-                <span className="text-amber-600">Trust the</span><br />
+                <span className="text-teal-500">Trust the</span><br />
                 <span className="text-gray-300">Process</span><br />
-                <span className="text-amber-600">Transform</span>
+                <span className="text-teal-500">Transform</span>
               </h1>
 
               <p className="text-lg font-light max-w-2xl mb-12 leading-relaxed text-gray-300">High-intensity, low-impact Lagree classes designed for serious results. Build strength, improve posture, and develop stability from your core.</p>
 
               <div className="flex flex-wrap gap-4">
-                <a href="/signup" className="bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg transition-all shadow-lg hover:shadow-xl">
+                <a href="/signup" className="bg-teal-500 hover:bg-teal-600 text-white text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg transition-all shadow-lg hover:shadow-xl">
                   Start Free Trial
                 </a>
-                <button onClick={handleAboutClick} className="border-2 border-amber-600 text-amber-600 text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg hover:bg-amber-600 hover:text-white transition-all">
+                <button onClick={handleAboutClick} className="border-2 border-teal-500 text-teal-400 text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg hover:bg-teal-500 hover:text-white transition-all">
                   Learn More
                 </button>
               </div>
@@ -405,25 +405,25 @@ export default function Home() {
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
             <span className="text-xs tracking-widest uppercase text-gray-500">Scroll to explore</span>
             <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
-              <path d="M8 0v20M1 13l7 7 7-7" stroke="rgba(212,175,106,0.6)" strokeWidth="1.5" />
+              <path d="M8 0v20M1 13l7 7 7-7" stroke="rgba(20,184,184,0.6)" strokeWidth="1.5" />
             </svg>
           </div>
         </section>
 
         {/* ── MARQUEE ── */}
-        <div className="py-6 overflow-hidden border-y border-amber-600/30" style={{ background: "linear-gradient(90deg, #2D2A2A 0%, #1A1A1A 50%, #2D2A2A 100%)" }}>
+        <div className="py-6 overflow-hidden border-y border-teal-500/30" style={{ background: "linear-gradient(90deg, #0f2a2a 0%, #030712 50%, #0f2a2a 100%)" }}>
           <div className="flex whitespace-nowrap" style={{ animation: "marquee 25s linear infinite" }}>
             {[...Array(2)].map((_, i) => (
               <span key={i} className="flex items-center gap-0 shrink-0">
                 <span className="flex items-center">
                   <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Trust the Process</span>
-                  <span className="text-xs text-amber-600 mx-2">✦</span>
+                  <span className="text-xs text-teal-500 mx-2">✦</span>
                   <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">High-Intensity Training</span>
-                  <span className="text-xs text-amber-600 mx-2">✦</span>
+                  <span className="text-xs text-teal-500 mx-2">✦</span>
                   <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Low-Impact Results</span>
-                  <span className="text-xs text-amber-600 mx-2">✦</span>
+                  <span className="text-xs text-teal-500 mx-2">✦</span>
                   <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Premium Experience</span>
-                  <span className="text-xs text-amber-600 mx-2">✦</span>
+                  <span className="text-xs text-teal-500 mx-2">✦</span>
                 </span>
               </span>
             ))}
@@ -431,26 +431,26 @@ export default function Home() {
         </div>
 
         {/* ── CLASSES SECTION ── */}
-        <section className="py-24 bg-gray-900" id="schedule">
+        <section className="py-24 bg-slate-950" id="schedule">
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
               <div>
-                <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mb-6 rounded-full" />
+                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mb-6 rounded-full" />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl text-white" style={{ letterSpacing: "-0.02em" }}>
-                  Our Classes<br /><span className="text-amber-600">Transform Your Body</span>
+                  Our Classes<br /><span className="text-teal-500">Transform Your Body</span>
                 </h2>
               </div>
-              <button onClick={handleScheduleClick} className="border-2 border-amber-600 text-amber-600 text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-lg hover:bg-amber-600 hover:text-white transition-all">
+              <button onClick={handleScheduleClick} className="border-2 border-teal-500 text-teal-400 text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-lg hover:bg-teal-500 hover:text-white transition-all">
                 Book a Class
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {t.classes.items.map((cls, i) => (
-                <div key={i} className="bg-gray-800 p-8 rounded-xl group hover:shadow-xl hover:shadow-amber-600/20 hover:-translate-y-2 transition-all duration-300 border border-gray-700 hover:border-amber-600/50">
+                <div key={i} className="bg-slate-900 p-8 rounded-xl group hover:shadow-xl hover:shadow-teal-500/20 hover:-translate-y-2 transition-all duration-300 border border-slate-800 hover:border-teal-500/50">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-4xl font-black text-amber-600">{cls.num}</span>
-                    {cls.badge && <span className="text-xs tracking-widest uppercase px-3 py-1 border border-amber-600/50 text-amber-500 rounded-lg">{cls.badge}</span>}
+                    <span className="text-4xl font-black text-teal-500">{cls.num}</span>
+                    {cls.badge && <span className="text-xs tracking-widest uppercase px-3 py-1 border border-teal-500/50 text-teal-400 rounded-lg">{cls.badge}</span>}
                   </div>
                   <h3 className="text-xl font-bold uppercase tracking-wide mb-3 text-white">{cls.name}</h3>
                   <p className="text-sm leading-relaxed mb-6 text-gray-400">{cls.desc}</p>
@@ -464,38 +464,38 @@ export default function Home() {
         </section>
 
         {/* ── PACKAGES SECTION ── */}
-        <section className="py-24 bg-gray-950" id="packages">
+        <section className="py-24 bg-black" id="packages">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
-              <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mx-auto mb-6 rounded-full" />
+              <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mx-auto mb-6 rounded-full" />
               <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl text-white" style={{ letterSpacing: "-0.02em" }}>
-                Membership <span className="text-amber-600">Plans</span>
+                Membership <span className="text-teal-500">Plans</span>
               </h2>
               <p className="mt-4 max-w-2xl mx-auto text-sm text-gray-400">Choose the perfect plan for your fitness journey. All memberships include unlimited class access and beverage options.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {t.packages.plans.map((plan, i) => (
-                <div key={i} className={`p-8 rounded-xl flex flex-col transition-all duration-300 relative border-2 ${plan.popular ? "border-amber-600 bg-amber-600/5 hover:shadow-lg hover:shadow-amber-600/30" : "border-gray-700 bg-gray-800 hover:border-amber-600/50"}`}>
+                <div key={i} className={`p-8 rounded-xl flex flex-col transition-all duration-300 relative border-2 ${plan.popular ? "border-teal-500 bg-teal-500/5 hover:shadow-lg hover:shadow-teal-500/30" : "border-slate-800 bg-slate-900 hover:border-teal-500/50"}`}>
                   {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-xs px-4 py-1 tracking-widest uppercase rounded-lg">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal-500 text-white text-xs px-4 py-1 tracking-widest uppercase rounded-lg">
                       Most Popular
                     </div>
                   )}
-                  <p className={`text-xs tracking-widest uppercase mb-4 font-semibold ${plan.popular ? "text-amber-500" : "text-gray-500"}`}>{plan.label}</p>
+                  <p className={`text-xs tracking-widest uppercase mb-4 font-semibold ${plan.popular ? "text-teal-400" : "text-gray-500"}`}>{plan.label}</p>
                   <div className="font-black leading-none mb-2 text-white" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>{plan.price}</div>
                   <p className="text-xs mb-6 text-gray-400">{plan.sub}</p>
-                  <div className="w-8 h-1 bg-amber-600 rounded-full mb-6" />
+                  <div className="w-8 h-1 bg-teal-500 rounded-full mb-6" />
                   <ul className="space-y-3 mb-8 flex-1">
-                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-amber-500 text-lg">✓</span>{plan.classes}</li>
-                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-amber-500 text-lg">✓</span>All class types</li>
-                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-amber-500 text-lg">✓</span>{plan.expire}</li>
+                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-teal-400 text-lg">✓</span>{plan.classes}</li>
+                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-teal-400 text-lg">✓</span>All class types</li>
+                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-teal-400 text-lg">✓</span>{plan.expire}</li>
                     <li className={`text-sm flex items-center gap-3 ${plan.beverage ? "text-gray-300" : "text-gray-600"}`}>
-                      <span className={plan.beverage ? "text-amber-500 text-lg" : "text-gray-600"}>{plan.beverage ? "✓" : "–"}</span>
+                      <span className={plan.beverage ? "text-teal-400 text-lg" : "text-gray-600"}>{plan.beverage ? "✓" : "–"}</span>
                       {plan.beverage ? t.packages.bev : t.packages.noBev}
                     </li>
                   </ul>
-                  <button onClick={handlePackageClick} className={`text-center text-xs font-bold tracking-widest uppercase px-4 py-3 rounded-lg transition-all ${plan.popular ? "bg-amber-600 hover:bg-amber-700 text-white" : "border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white"}`}>
+                  <button onClick={handlePackageClick} className={`text-center text-xs font-bold tracking-widest uppercase px-4 py-3 rounded-lg transition-all ${plan.popular ? "bg-teal-500 hover:bg-teal-600 text-white" : "border-2 border-teal-500 text-teal-400 hover:bg-teal-500 hover:text-white"}`}>
                     Get Started
                   </button>
                 </div>
@@ -505,23 +505,23 @@ export default function Home() {
         </section>
 
         {/* ── BEVERAGES ── */}
-        <section className="py-24 bg-gray-900" id="beverages">
+        <section className="py-24 bg-slate-950" id="beverages">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
-                <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mb-6 rounded-full" />
+                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mb-6 rounded-full" />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
-                  Premium <span className="text-amber-600">Beverages</span>
+                  Premium <span className="text-teal-500">Beverages</span>
                 </h2>
                 <p className="text-base leading-relaxed mb-4 text-gray-300">Fuel your recovery and wellness with our carefully curated beverage selection. Perfect for before, during, and after your workout.</p>
                 <p className="text-sm leading-relaxed mb-8 text-gray-400">Included with premium memberships. Enhance your JJ Studio experience with nutritional support that complements your fitness journey.</p>
-                <button onClick={handleBeveragesClick} className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-block transition-all">
+                <button onClick={handleBeveragesClick} className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-block transition-all">
                   View All Options
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {t.beverages.items.map((item, i) => (
-                  <div key={i} className="p-6 border border-amber-600/30 bg-gray-800 rounded-xl hover:border-amber-600/60 hover:bg-gray-750 transition-all duration-300">
+                  <div key={i} className="p-6 border border-teal-500/30 bg-slate-900 rounded-xl hover:border-teal-500/60 hover:bg-slate-800 transition-all duration-300">
                     <div className="text-3xl mb-3">{item.icon}</div>
                     <h4 className="font-bold uppercase text-sm tracking-wide mb-2 text-white">{item.name}</h4>
                     <p className="text-xs leading-relaxed text-gray-400">{item.desc}</p>
@@ -533,39 +533,39 @@ export default function Home() {
         </section>
 
         {/* ── ABOUT ── */}
-        <section className="py-24 bg-gray-950" id="about">
+        <section className="py-24 bg-black" id="about">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
-              <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mx-auto mb-6 rounded-full" />
+              <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mx-auto mb-6 rounded-full" />
               <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl text-white" style={{ letterSpacing: "-0.02em" }}>
-                Meet Your <span className="text-amber-600">Coach</span>
+                Meet Your <span className="text-teal-500">Coach</span>
               </h2>
               <p className="mt-4 max-w-2xl mx-auto text-sm text-gray-400">Dedicated to your success and transformation. Our coaches are certified and passionate about helping you achieve your fitness goals.</p>
             </div>
 
             <div className="max-w-3xl mx-auto">
-              <div className="border-2 border-amber-600/30 p-10 rounded-xl bg-gray-800 relative overflow-hidden">
+              <div className="border-2 border-teal-500/30 p-10 rounded-xl bg-slate-900 relative overflow-hidden">
                 <div className="flex flex-col sm:flex-row items-start gap-8">
-                  <div className="w-40 h-40 flex-shrink-0 relative overflow-hidden rounded-lg border-2 border-amber-600">
+                  <div className="w-40 h-40 flex-shrink-0 relative overflow-hidden rounded-lg border-2 border-teal-500">
                     <Image src="/images/coach-javi.jpeg" alt="Coach Javi - JJ Studio Querétaro" fill className="object-cover object-top" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
                       <h3 className="text-2xl font-black uppercase tracking-wide text-white">{t.about.coachName}</h3>
-                      <span className="text-xs tracking-widest uppercase px-3 py-1 border border-amber-600/50 text-amber-500 rounded-lg">
+                      <span className="text-xs tracking-widest uppercase px-3 py-1 border border-teal-500/50 text-teal-400 rounded-lg">
                         {t.about.available}
                       </span>
                     </div>
-                    <p className="text-xs tracking-widest uppercase mb-4 text-amber-500">{t.about.coachRole}</p>
+                    <p className="text-xs tracking-widest uppercase mb-4 text-teal-400">{t.about.coachRole}</p>
                     <p className="text-sm leading-relaxed text-gray-300 mb-6">{t.about.coachBio}</p>
                     <div className="flex gap-6">
                       <div className="text-center">
-                        <div className="font-black text-xl text-amber-600">{t.about.allTypes}</div>
+                        <div className="font-black text-xl text-teal-500">{t.about.allTypes}</div>
                         <div className="text-xs uppercase tracking-widest mt-1 text-gray-500">{t.about.allTypesSub}</div>
                       </div>
-                      <div className="w-px bg-gray-700" />
+                      <div className="w-px bg-slate-700" />
                       <div className="text-center">
-                        <div className="font-black text-xl text-amber-600">{t.about.commit}</div>
+                        <div className="font-black text-xl text-teal-500">{t.about.commit}</div>
                         <div className="text-xs uppercase tracking-widest mt-1 text-gray-500">{t.about.commitSub}</div>
                       </div>
                     </div>
@@ -577,102 +577,101 @@ export default function Home() {
         </section>
 
         {/* ── CTA ── */}
-        <section className="relative py-32 overflow-hidden" id="register" style={{ background: "linear-gradient(135deg, #2D2A2A 0%, #1A1A1A 50%, #2D2A2A 100%)" }}>
-          <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(212,175,106,0.2), transparent)" }} />
+        <section className="relative py-32 overflow-hidden" id="register" style={{ background: "linear-gradient(135deg, #0f2a2a 0%, #030712 50%, #0f2a2a 100%)" }}>
+          <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(20,184,184,0.2), transparent)" }} />
           <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-            <p className="text-xs tracking-[0.3em] uppercase mb-4 font-semibold text-amber-500">Begin Your Transformation</p>
+            <p className="text-xs tracking-[0.3em] uppercase mb-4 font-semibold text-teal-400">Begin Your Transformation</p>
             <h2 className="font-black uppercase leading-tight mb-8 text-white" style={{ fontSize: "clamp(2.5rem,8vw,7rem)", letterSpacing: "-0.02em" }}>
-              Trust the <span className="text-amber-600">Process</span>
+              Trust the <span className="text-teal-500">Process</span>
             </h2>
             <p className="text-lg mb-4 max-w-2xl mx-auto text-gray-300">Join JJ Studio today and start your journey to strength, stability, and transformation. Your first class is free.</p>
             <p className="text-xs uppercase tracking-widest mb-10 text-gray-500">Xentric Lomas, Campanario Norte, Querétaro</p>
-            <a href="/signup" className="bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold tracking-widest uppercase px-12 py-5 rounded-lg inline-block transition-all shadow-lg hover:shadow-xl">
+            <a href="/signup" className="bg-teal-500 hover:bg-teal-600 text-white text-sm font-bold tracking-widest uppercase px-12 py-5 rounded-lg inline-block transition-all shadow-lg hover:shadow-xl">
               Start Your Free Trial
             </a>
           </div>
         </section>
 
-{/* ── NESSTY BOOKING ── */}
-<section className="py-24 bg-gray-900" id="nessty">
-  <div className="max-w-7xl mx-auto px-6">
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-      <div>
-        <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mb-6 rounded-full" />
-        <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
-          Book on <span className="text-amber-600">Nessty</span>
-        </h2>
-        <p className="text-base leading-relaxed mb-4 text-gray-300">
-          Nessty is the most popular fitness booking app in Mexico. Schedule classes, manage your membership, and stay connected with the JJ Studio community.
-        </p>
-        <p className="text-sm leading-relaxed mb-8 text-gray-400">
-          Available on iOS and Android. Download now and book your first Lagree class at JJ Studio.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <a 
-            href="https://nessty.mx/@jjstudio" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-flex items-center gap-2 transition-all"
-          >
-            Open Nessty App →
-          </a>
-        </div>
-      </div>
-      <div className="flex justify-center">
-        <div className="bg-white p-6 rounded-xl shadow-2xl">
-          <Image 
-            src="/images/nessty-qr.png" 
-            alt="Nessty QR Code - JJ Studio"
-            width={280}
-            height={280}
-          />
-          <p className="text-sm text-gray-700 text-center mt-4 font-semibold">Scan to book on Nessty</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+        {/* ── NESSTY BOOKING ── */}
+        <section className="py-24 bg-slate-950" id="nessty">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mb-6 rounded-full" />
+                <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
+                  Book on <span className="text-teal-500">Nessty</span>
+                </h2>
+                <p className="text-base leading-relaxed mb-4 text-gray-300">
+                  Nessty is the most popular fitness booking app in Mexico. Schedule classes, manage your membership, and stay connected with the JJ Studio community.
+                </p>
+                <p className="text-sm leading-relaxed mb-8 text-gray-400">
+                  Available on iOS and Android. Download now and book your first Lagree class at JJ Studio.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <a 
+                    href="https://nessty.mx/@jjstudio" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-flex items-center gap-2 transition-all"
+                  >
+                    Open Nessty App →
+                  </a>
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <div className="bg-white p-6 rounded-xl shadow-2xl">
+                  <Image 
+                    src="/images/nessty-qr.png" 
+                    alt="Nessty QR Code - JJ Studio"
+                    width={280}
+                    height={280}
+                  />
+                  <p className="text-sm text-gray-700 text-center mt-4 font-semibold">Scan to book on Nessty</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ── CONTACT ── */}
-        <section className="py-24 bg-gray-900" id="contact">
+        <section className="py-24 bg-slate-950" id="contact">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
               <div>
-                <div className="w-16 h-1 bg-gradient-to-r from-amber-600 to-amber-500 mb-6 rounded-full" />
+                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mb-6 rounded-full" />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-5xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
-                  Get in <span className="text-amber-600">Touch</span>
+                  Get in <span className="text-teal-500">Touch</span>
                 </h2>
                 <div className="space-y-8">
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">Location</p>
+                    <p className="text-xs tracking-widest uppercase mb-2 text-teal-400 font-semibold">Location</p>
                     <p className="text-sm text-gray-300">Xentric Lomas Norte<br />El Campanario, Lcl 211<br />Querétaro, Querétaro 76000<br />Mexico</p>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">Phone</p>
-                    <a href="tel:+5213318373447" className="text-sm text-gray-300 hover:text-amber-500 transition-colors font-semibold">
+                    <p className="text-xs tracking-widest uppercase mb-2 text-teal-400 font-semibold">Phone</p>
+                    <a href="tel:+5213318373447" className="text-sm text-gray-300 hover:text-teal-400 transition-colors font-semibold">
                       +52 1 33 1837 3447
                     </a>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">Hours</p>
+                    <p className="text-xs tracking-widest uppercase mb-2 text-teal-400 font-semibold">Hours</p>
                     <p className="text-sm text-gray-300">Monday - Friday: 6:00 AM - 8:00 PM</p>
                     <p className="text-sm text-gray-300">Saturday: 7:00 AM - 6:00 PM</p>
                     <p className="text-sm text-gray-300">Sunday: Closed</p>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-amber-500 font-semibold">Email</p>
-                    <a href="mailto:administracion@jjstudio.mx" className="text-sm text-gray-300 hover:text-amber-500 transition-colors font-semibold">
+                    <p className="text-xs tracking-widest uppercase mb-2 text-teal-400 font-semibold">Email</p>
+                    <a href="mailto:administracion@jjstudio.mx" className="text-sm text-gray-300 hover:text-teal-400 transition-colors font-semibold">
                       administracion@jjstudio.mx
                     </a>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-3 text-amber-500 font-semibold">Follow Us</p>
+                    <p className="text-xs tracking-widest uppercase mb-3 text-teal-400 font-semibold">Follow Us</p>
                     <div className="flex gap-4">
-                      <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-gray-400 hover:text-amber-500 transition-colors">
+                      <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-gray-400 hover:text-teal-400 transition-colors">
                         Instagram
                       </a>
-                      <a href="https://wa.me/5213318373447" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-gray-400 hover:text-amber-500 transition-colors">
+                      <a href="https://wa.me/5213318373447" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-gray-400 hover:text-teal-400 transition-colors">
                         WhatsApp
                       </a>
                     </div>
@@ -710,14 +709,14 @@ export default function Home() {
                     value={formData.firstName}
                     onChange={e => setFormData(p => ({ ...p, firstName: e.target.value }))}
                     required
-                    className="px-4 py-3 text-sm text-white w-full bg-gray-800 border border-gray-700 focus:outline-none focus:border-amber-600 transition-colors rounded-lg"
+                    className="px-4 py-3 text-sm text-white w-full bg-slate-900 border border-slate-700 focus:outline-none focus:border-teal-500 transition-colors rounded-lg"
                   />
                   <input
                     type="text"
                     placeholder="Last Name"
                     value={formData.lastName}
                     onChange={e => setFormData(p => ({ ...p, lastName: e.target.value }))}
-                    className="px-4 py-3 text-sm text-white w-full bg-gray-800 border border-gray-700 focus:outline-none focus:border-amber-600 transition-colors rounded-lg"
+                    className="px-4 py-3 text-sm text-white w-full bg-slate-900 border border-slate-700 focus:outline-none focus:border-teal-500 transition-colors rounded-lg"
                   />
                 </div>
                 <input
@@ -726,7 +725,7 @@ export default function Home() {
                   value={formData.email}
                   onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                   required
-                  className="px-4 py-3 text-sm text-white w-full bg-gray-800 border border-gray-700 focus:outline-none focus:border-amber-600 transition-colors rounded-lg"
+                  className="px-4 py-3 text-sm text-white w-full bg-slate-900 border border-slate-700 focus:outline-none focus:border-teal-500 transition-colors rounded-lg"
                 />
                 <textarea
                   placeholder="Your Message"
@@ -734,23 +733,23 @@ export default function Home() {
                   value={formData.message}
                   onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
                   required
-                  className="px-4 py-3 text-sm text-white w-full bg-gray-800 border border-gray-700 focus:outline-none focus:border-amber-600 transition-colors rounded-lg resize-none"
+                  className="px-4 py-3 text-sm text-white w-full bg-slate-900 border border-slate-700 focus:outline-none focus:border-teal-500 transition-colors rounded-lg resize-none"
                 />
                 <button
                   type="submit"
                   disabled={formState === "loading"}
-                  className="bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold tracking-widest uppercase px-8 py-4 w-full transition-all rounded-lg"
+                  className="bg-teal-500 hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold tracking-widest uppercase px-8 py-4 w-full transition-all rounded-lg"
                 >
                   {formState === "loading" ? "Sending..." : "Send Message"}
                 </button>
 
                 {formState === "success" && (
-                  <div className="border border-amber-600/50 bg-amber-600/10 px-4 py-3 text-sm text-amber-400 tracking-wide text-center rounded-lg">
+                  <div className="border border-teal-500/50 bg-teal-500/10 px-4 py-3 text-sm text-teal-400 tracking-wide text-center rounded-lg">
                     ✓ Message sent! We'll get back to you soon.
                   </div>
                 )}
                 {formState === "error" && (
-                  <div className="border border-gray-700 bg-gray-800 px-4 py-3 text-sm text-gray-400 tracking-wide text-center rounded-lg">
+                  <div className="border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-gray-400 tracking-wide text-center rounded-lg">
                     Something went wrong. Email us at administracion@jjstudio.mx
                   </div>
                 )}
@@ -760,9 +759,9 @@ export default function Home() {
         </section>
 
         {/* ── FOOTER ── */}
-        <footer className="bg-gray-950 border-t border-amber-600/20 py-12">
+        <footer className="bg-black border-t border-teal-500/20 py-12">
           <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
-            <span className="text-xl font-black tracking-widest uppercase text-white">JJ<span className="text-amber-600">Studio</span></span>
+            <span className="text-xl font-black tracking-widest uppercase text-white">JJ<span className="text-teal-500">Studio</span></span>
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center">
               <p className="text-xs uppercase tracking-widest text-gray-500">Premium Lagree Studio in Querétaro</p>
               <span className="text-gray-700 hidden sm:inline">|</span>
