@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { 
   LogOut, BookOpen, Calendar, ShoppingBag, Zap, Mail, AlertCircle, 
-  MessageCircle, Heart, X, CheckCircle, Loader 
+  MessageCircle, Heart, X, CheckCircle, Loader, AlertTriangle
 } from 'lucide-react';
 
 // ============================================================
@@ -51,9 +51,8 @@ type UserStats = {
 
 type TabType = 'dashboard' | 'book' | 'bookings' | 'packages';
 
-// ✅ FIXED: Package type now matches database schema exactly
 type Package = {
-  id: string;  // UUID from database
+  id: string;
   name: string;
   class_credits: number;
   beverage_credits: number;
@@ -69,10 +68,11 @@ type BookingResult = {
   creditsRemaining?: number;
 };
 
-type PurchaseResult = {
-  success: boolean;
+type ErrorModalState = {
+  isOpen: boolean;
+  title: string;
   message: string;
-  packageId?: string;
+  isDuplicateBooking: boolean;
 };
 
 // ============================================================
@@ -82,13 +82,13 @@ type PurchaseResult = {
 export default function Dashboard() {
   const router = useRouter();
   const supabase = createClient();
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   // State: Auth & UI
   const [user, setUser] = useState<any>(null);
   const [isEmailVerified, setIsEmailVerified] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // State: Data
   const [stats, setStats] = useState<UserStats>({
@@ -100,7 +100,7 @@ export default function Dashboard() {
     activePackages: [],
   });
 
-  // State: Packages (✅ NOW FETCHED FROM DB)
+  // State: Packages
   const [packages, setPackages] = useState<Package[]>([]);
   const [packagesLoading, setPackagesLoading] = useState(false);
 
@@ -110,11 +110,20 @@ export default function Dashboard() {
     new Date().toISOString().split('T')[0]
   );
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
+  const [bookedMegaformers, setBookedMegaformers] = useState<number[]>([]);
   const [megaformerState, setMegaformerState] = useState<{
     [key: number]: boolean;
   }>({});
   const [classPoints, setClassPoints] = useState(0);
   const [bookingLoading, setBookingLoading] = useState(false);
+
+  // State: Error Modal
+  const [errorModal, setErrorModal] = useState<ErrorModalState>({
+    isOpen: false,
+    title: '',
+    message: '',
+    isDuplicateBooking: false,
+  });
 
   // State: Payment Modal
   const [paymentModal, setPaymentModal] = useState<{
@@ -144,13 +153,11 @@ export default function Dashboard() {
           user.confirmed_at
         ));
 
-        // ✅ Fetch packages on component load
         await fetchPackages();
         await fetchDashboardStats(user.id);
         setLoading(false);
       } catch (err) {
         console.error('Auth error:', err);
-        setError('Failed to load dashboard');
         setLoading(false);
       }
     };
@@ -162,21 +169,19 @@ export default function Dashboard() {
   // FETCH PACKAGES FROM DATABASE
   // ============================================================
 
-  // ✅ NEW: Fetch packages from database instead of hardcoded
   const fetchPackages = async () => {
     try {
       setPackagesLoading(true);
       const { data, error: fetchError } = await supabase
         .from('packages')
         .select('id, name, class_credits, beverage_credits, price_mxn, expire_days, active')
-        .eq('active', true)  // Only fetch active packages
+        .eq('active', true)
         .order('price_mxn', { ascending: true });
 
       if (fetchError) throw fetchError;
       setPackages(data || []);
     } catch (err) {
       console.error('Error fetching packages:', err);
-      setError('Failed to load packages');
     } finally {
       setPackagesLoading(false);
     }
@@ -203,7 +208,6 @@ export default function Dashboard() {
         .lte('signed_up_at', monthEnd.toISOString())
         .eq('attended', true);
 
-      // ✅ Updated to match database schema
       const { data: packagesData } = await supabase
         .from('user_packages')
         .select('id, expires_at, class_credits_remaining, beverage_points, package_id')
@@ -286,9 +290,12 @@ export default function Dashboard() {
       await fetchClasses(userId, selectedDate);
     } catch (err) {
       console.error('Stats error:', err);
-      setError('Failed to load statistics');
     }
   };
+
+  // ============================================================
+  // FETCH CLASSES & BOOKED MEGAFORMERS (NEW!)
+  // ============================================================
 
   const fetchClasses = async (userId: string, date: string) => {
     try {
@@ -323,17 +330,51 @@ export default function Dashboard() {
       setClasses(formatted);
     } catch (err) {
       console.error('Classes fetch error:', err);
-      setError('Failed to load classes');
+    }
+  };
+
+  // ✅ NEW: Fetch booked megaformers for a specific class
+  const fetchBookedMegaformers = async (classId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('class_bookings')
+        .select('user_id')
+        .eq('class_id', classId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // If user already has a booking for this class, return all megaformers (user can't book multiple)
+      if (data && data.length > 0) {
+        setBookedMegaformers([1, 2, 3, 4, 5, 6, 7]); // Mark all as unavailable
+      } else {
+        setBookedMegaformers([]); // No booking, all available
+      }
+    } catch (err) {
+      console.error('Error fetching booked megaformers:', err);
     }
   };
 
   // ============================================================
-  // CLASS BOOKING (using RPC function)
+  // CLASS BOOKING (IMPROVED!)
   // ============================================================
+
+  const handleSelectClass = async (cls: Class) => {
+    setSelectedClass(cls);
+    setMegaformerState(
+      Object.fromEntries([1, 2, 3, 4, 5, 6, 7].map((i) => [i, false]))
+    );
+    await fetchBookedMegaformers(cls.id); // ✅ Fetch booked megaformers
+  };
 
   const handleBookClass = async () => {
     if (!selectedClass || !user || classPoints <= 0) {
-      setError('Invalid booking state');
+      setErrorModal({
+        isOpen: true,
+        title: 'Invalid Booking',
+        message: 'Please make sure you have available credits and a class selected.',
+        isDuplicateBooking: false,
+      });
       return;
     }
 
@@ -342,13 +383,17 @@ export default function Dashboard() {
       .map(([num]) => parseInt(num));
 
     if (selectedMegaformers.length === 0) {
-      setError('Select at least one megaformer');
+      setErrorModal({
+        isOpen: true,
+        title: 'No Equipment Selected',
+        message: 'Please select at least one megaformer to book this class.',
+        isDuplicateBooking: false,
+      });
       return;
     }
 
     try {
       setBookingLoading(true);
-      setError(null);
 
       const { data, error: rpcError } = await supabase.rpc(
         'book_class_and_deduct_credits',
@@ -365,23 +410,47 @@ export default function Dashboard() {
       }
 
       if (!data?.success) {
-        throw new Error(data?.message || 'Booking failed');
+        // ✅ Check if it's a duplicate booking error
+        const isDuplicate = data?.message?.toLowerCase().includes('already have');
+        
+        setErrorModal({
+          isOpen: true,
+          title: isDuplicate ? 'Already Booked' : 'Booking Failed',
+          message: isDuplicate 
+            ? 'You already have a megaformer in this class. Each user can only book one equipment per class.'
+            : (data?.message || 'Your booking could not be completed. Please try again.'),
+          isDuplicateBooking: isDuplicate,
+        });
+        return;
       }
 
-      setError(null);
-      alert(`✅ ${data.message}`);
+      // ✅ Success! Show success message and reset
+      setErrorModal({
+        isOpen: true,
+        title: 'Booking Successful! ✅',
+        message: `${data.message}\n\n${data.creditsRemaining} credits remaining`,
+        isDuplicateBooking: false,
+      });
+
       setSelectedClass(null);
       setMegaformerState({});
+      setBookedMegaformers([]);
       await fetchDashboardStats(user.id);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Booking failed');
+      console.error('Booking error:', err);
+      setErrorModal({
+        isOpen: true,
+        title: 'Booking Error',
+        message: err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.',
+        isDuplicateBooking: false,
+      });
     } finally {
       setBookingLoading(false);
     }
   };
 
   // ============================================================
-  // PACKAGE PURCHASE (using RPC function)
+  // PACKAGE PURCHASE
   // ============================================================
 
   const handlePackagePurchase = (pkg: Package) => {
@@ -394,19 +463,17 @@ export default function Dashboard() {
 
     setPaymentLoading(true);
 
-    // Simulate payment processing
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
-      // ✅ FIXED: Use real package data from database
       const { data, error: rpcError } = await supabase.rpc(
         'purchase_package',
         {
           p_user_id: user.id,
-          p_package_id: paymentModal.package.id,  // Real UUID from DB
-          p_class_credits: paymentModal.package.class_credits,  // Real value from DB
-          p_beverage_credits: paymentModal.package.beverage_credits,  // Real value from DB
-          p_expiration_days: paymentModal.package.expire_days,  // Real value from DB
+          p_package_id: paymentModal.package.id,
+          p_class_credits: paymentModal.package.class_credits,
+          p_beverage_credits: paymentModal.package.beverage_credits,
+          p_expiration_days: paymentModal.package.expire_days,
         }
       );
 
@@ -428,7 +495,12 @@ export default function Dashboard() {
       }, 2000);
     } catch (err) {
       console.error('Purchase error:', err);
-      setError(err instanceof Error ? err.message : 'Purchase failed');
+      setErrorModal({
+        isOpen: true,
+        title: 'Purchase Failed',
+        message: err instanceof Error ? err.message : 'Your purchase could not be completed.',
+        isDuplicateBooking: false,
+      });
       setPaymentLoading(false);
     }
   };
@@ -465,7 +537,6 @@ export default function Dashboard() {
       {/* NAVIGATION */}
       <nav className="fixed inset-x-0 top-0 z-50 h-16 bg-black/80 backdrop-blur-lg border-b border-slate-800">
         <div className="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
-          {/* Logo & Social */}
           <div className="flex items-center gap-4">
             <div>
               <span className="text-white font-black text-lg">JJ</span>
@@ -497,7 +568,6 @@ export default function Dashboard() {
             </a>
           </div>
 
-          {/* Nav Tabs */}
           <div className="hidden lg:flex gap-4 flex-1 justify-center">
             {[
               { id: 'dashboard' as const, label: 'Dashboard' },
@@ -519,7 +589,6 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* Logout */}
           <button
             onClick={handleLogout}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2"
@@ -532,7 +601,6 @@ export default function Dashboard() {
       {/* MAIN CONTENT */}
       <div className="pt-16 pb-12">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Email Verification Banner */}
           {!isEmailVerified && (
             <div className="mb-6 bg-amber-900/20 border border-amber-700 rounded-xl p-4 flex items-center justify-between text-sm">
               <div className="flex items-center gap-3">
@@ -544,14 +612,6 @@ export default function Dashboard() {
               <button className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-1 rounded-lg font-bold text-xs">
                 Verify Now
               </button>
-            </div>
-          )}
-
-          {/* Error Banner */}
-          {error && (
-            <div className="mb-6 bg-red-900/20 border border-red-700 rounded-xl p-4 flex items-center gap-3 text-sm text-red-200">
-              <AlertCircle size={18} />
-              {error}
             </div>
           )}
 
@@ -570,7 +630,6 @@ export default function Dashboard() {
                 </p>
               </div>
 
-              {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-red-600/50 transition">
                   <p className="text-gray-400 text-xs font-bold uppercase mb-2">
@@ -613,7 +672,6 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Active Packages */}
               {stats.activePackages.length > 0 && (
                 <div>
                   <h2 className="text-2xl font-black text-white mb-4">
@@ -688,14 +746,7 @@ export default function Dashboard() {
                     classes.map((cls) => (
                       <div
                         key={cls.id}
-                        onClick={() => {
-                          setSelectedClass(cls);
-                          setMegaformerState(
-                            Object.fromEntries(
-                              [1, 2, 3, 4, 5, 6, 7].map((i) => [i, false])
-                            )
-                          );
-                        }}
+                        onClick={() => handleSelectClass(cls)}
                         className={`bg-slate-800/50 border-2 rounded-xl p-4 cursor-pointer transition ${
                           selectedClass?.id === cls.id
                             ? 'border-red-600 bg-red-600/10'
@@ -734,6 +785,14 @@ export default function Dashboard() {
                       Select Equipment
                     </h3>
 
+                    {bookedMegaformers.length > 0 && (
+                      <div className="mb-4 bg-amber-900/30 border border-amber-700 rounded-lg p-3">
+                        <p className="text-amber-200 text-sm font-bold">
+                          ⚠️ You already have a booking for this class
+                        </p>
+                      </div>
+                    )}
+
                     <div className="space-y-4 mb-6">
                       <div className="bg-gray-600 h-6 rounded flex items-center justify-center text-xs font-bold text-black">
                         MIRROR
@@ -744,13 +803,17 @@ export default function Dashboard() {
                           <button
                             key={n}
                             onClick={() =>
+                              !bookedMegaformers.includes(n) &&
                               setMegaformerState({
                                 ...megaformerState,
                                 [n]: !megaformerState[n],
                               })
                             }
+                            disabled={bookedMegaformers.includes(n)}
                             className={`w-16 h-16 rounded-lg font-black transition ${
-                              megaformerState[n]
+                              bookedMegaformers.includes(n)
+                                ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
+                                : megaformerState[n]
                                 ? 'bg-red-600 text-white'
                                 : 'bg-slate-700 text-gray-400 hover:border-red-600'
                             }`}
@@ -765,13 +828,17 @@ export default function Dashboard() {
                           <button
                             key={n}
                             onClick={() =>
+                              !bookedMegaformers.includes(n) &&
                               setMegaformerState({
                                 ...megaformerState,
                                 [n]: !megaformerState[n],
                               })
                             }
+                            disabled={bookedMegaformers.includes(n)}
                             className={`w-14 h-14 rounded-lg font-bold transition ${
-                              megaformerState[n]
+                              bookedMegaformers.includes(n)
+                                ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
+                                : megaformerState[n]
                                 ? 'bg-red-600 text-white'
                                 : 'bg-slate-700 text-gray-400'
                             }`}
@@ -799,7 +866,8 @@ export default function Dashboard() {
                       disabled={
                         bookingLoading ||
                         Object.values(megaformerState).every((v) => !v) ||
-                        classPoints <= 0
+                        classPoints <= 0 ||
+                        bookedMegaformers.length > 0
                       }
                       className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-700 text-white font-bold py-3 rounded-lg transition"
                     >
@@ -843,7 +911,6 @@ export default function Dashboard() {
               ) : packages.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {packages.map((pkg) => {
-                    // ✅ Determine if package is popular (Unlimited = most expensive)
                     const isPopular = pkg.name.toLowerCase().includes('unlimited');
                     
                     return (
@@ -896,7 +963,6 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {/* Company Info */}
               <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6 mt-8">
                 <h3 className="text-xl font-black text-white mb-4">
                   Contact JJ Studio
@@ -928,11 +994,49 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* ✅ ERROR MODAL (NEW!) */}
+      {errorModal.isOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-8">
+            <div className="flex items-center justify-center mb-4">
+              {errorModal.isDuplicateBooking ? (
+                <AlertTriangle size={48} className="text-amber-500" />
+              ) : errorModal.title.includes('Successful') ? (
+                <CheckCircle size={48} className="text-green-500" />
+              ) : (
+                <AlertCircle size={48} className="text-red-500" />
+              )}
+            </div>
+
+            <h2 className="text-2xl font-black text-white text-center mb-2">
+              {errorModal.title}
+            </h2>
+
+            <p className="text-gray-400 text-center text-sm mb-6 whitespace-pre-wrap">
+              {errorModal.message}
+            </p>
+
+            <button
+              onClick={() =>
+                setErrorModal({
+                  isOpen: false,
+                  title: '',
+                  message: '',
+                  isDuplicateBooking: false,
+                })
+              }
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* PAYMENT MODAL */}
       {paymentModal.isOpen && paymentModal.package && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-8 relative">
-            {/* Close Button */}
             <button
               onClick={() =>
                 !paymentLoading &&
@@ -946,7 +1050,6 @@ export default function Dashboard() {
 
             {!paymentSuccess ? (
               <>
-                {/* Payment Form */}
                 <h2 className="text-2xl font-black text-white mb-2">
                   Complete Your Purchase
                 </h2>
@@ -954,7 +1057,6 @@ export default function Dashboard() {
                   Confirm your package purchase
                 </p>
 
-                {/* Package Details */}
                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 mb-6 space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400 font-bold">Package</span>
@@ -988,7 +1090,6 @@ export default function Dashboard() {
                   )}
                 </div>
 
-                {/* Payment Button */}
                 <button
                   onClick={simulatePayment}
                   disabled={paymentLoading}
@@ -1013,7 +1114,6 @@ export default function Dashboard() {
               </>
             ) : (
               <>
-                {/* Success State */}
                 <div className="flex flex-col items-center justify-center py-8">
                   <div className="mb-4 animate-bounce">
                     <CheckCircle size={64} className="text-green-500" />
