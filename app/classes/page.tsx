@@ -19,7 +19,6 @@ type Coach = {
   email: string;
 };
 
-// FIXED: coaches is now an array (matches Supabase nested relation)
 type Class = {
   id: string;
   name: string;
@@ -29,8 +28,8 @@ type Class = {
   capacity: number;
   spots_remaining: number;
   coach_id: string;
-  coaches?: Coach[] | null;  // ✅ FIXED: Array instead of single object
-  coach_name?: string;       // Computed property for convenience
+  coaches?: Coach[] | null;
+  coach_name?: string;
 };
 
 type UserStats = {
@@ -43,7 +42,7 @@ type UserStats = {
     id: string;
     name: string;
     classCreditsRemaining: number;
-    beveragePoints: number;  // ✅ NEW: beverage_points column
+    beveragePoints: number;
     expiresIn: number;
     expiryDate: string;
     isNextToUse: boolean;
@@ -52,16 +51,16 @@ type UserStats = {
 
 type TabType = 'dashboard' | 'book' | 'bookings' | 'packages';
 
+// ✅ FIXED: Package type now matches database schema exactly
 type Package = {
-  id: string;  // ✅ FIXED: UUID string, not number
+  id: string;  // UUID from database
   name: string;
-  price: number;
-  currency: string;
-  classes: number | string;
-  expirationDays: number;
-  beveragePoints: number;
-  popular?: boolean;
-  color: string;
+  class_credits: number;
+  beverage_credits: number;
+  price_mxn: number;
+  expire_days: number;
+  active?: boolean;
+  created_at?: string;
 };
 
 type BookingResult = {
@@ -75,54 +74,6 @@ type PurchaseResult = {
   message: string;
   packageId?: string;
 };
-
-// ============================================================
-// CONSTANTS
-// ============================================================
-
-const PACKAGES: Package[] = [
-  {
-    id: '550e8400-e29b-41d4-a716-446655440000',  // ✅ UUID format
-    name: '1 Class',
-    price: 370,
-    currency: 'MXN',
-    classes: 1,
-    expirationDays: 5,
-    beveragePoints: 0,
-    color: 'border-blue-600',
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440001',
-    name: '10 Classes',
-    price: 3300,
-    currency: 'MXN',
-    classes: 10,
-    expirationDays: 14,
-    beveragePoints: 0,
-    color: 'border-yellow-600',
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440002',
-    name: '24 Classes',
-    price: 7200,
-    currency: 'MXN',
-    classes: 24,
-    expirationDays: 30,
-    beveragePoints: 0,
-    color: 'border-purple-600',
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440003',
-    name: 'Unlimited',
-    price: 8000,
-    currency: 'MXN',
-    classes: '∞',
-    expirationDays: 30,
-    beveragePoints: 2,
-    popular: true,
-    color: 'border-red-600',
-  },
-];
 
 // ============================================================
 // COMPONENT
@@ -148,6 +99,10 @@ export default function Dashboard() {
     favoriteCoach: null,
     activePackages: [],
   });
+
+  // State: Packages (✅ NOW FETCHED FROM DB)
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [packagesLoading, setPackagesLoading] = useState(false);
 
   // State: Class Booking
   const [classes, setClasses] = useState<Class[]>([]);
@@ -189,6 +144,8 @@ export default function Dashboard() {
           user.confirmed_at
         ));
 
+        // ✅ Fetch packages on component load
+        await fetchPackages();
         await fetchDashboardStats(user.id);
         setLoading(false);
       } catch (err) {
@@ -200,6 +157,30 @@ export default function Dashboard() {
 
     getUser();
   }, [router, supabase]);
+
+  // ============================================================
+  // FETCH PACKAGES FROM DATABASE
+  // ============================================================
+
+  // ✅ NEW: Fetch packages from database instead of hardcoded
+  const fetchPackages = async () => {
+    try {
+      setPackagesLoading(true);
+      const { data, error: fetchError } = await supabase
+        .from('packages')
+        .select('id, name, class_credits, beverage_credits, price_mxn, expire_days, active')
+        .eq('active', true)  // Only fetch active packages
+        .order('price_mxn', { ascending: true });
+
+      if (fetchError) throw fetchError;
+      setPackages(data || []);
+    } catch (err) {
+      console.error('Error fetching packages:', err);
+      setError('Failed to load packages');
+    } finally {
+      setPackagesLoading(false);
+    }
+  };
 
   // ============================================================
   // DATA FETCHING
@@ -214,7 +195,6 @@ export default function Dashboard() {
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-      // ✅ Fetch bookings for this month
       const { data: bookings } = await supabase
         .from('class_bookings')
         .select('classes(id, name, focus)')
@@ -223,7 +203,7 @@ export default function Dashboard() {
         .lte('signed_up_at', monthEnd.toISOString())
         .eq('attended', true);
 
-      // ✅ Fetch user packages with beverage_points
+      // ✅ Updated to match database schema
       const { data: packagesData } = await supabase
         .from('user_packages')
         .select('id, expires_at, class_credits_remaining, beverage_points, package_id')
@@ -249,7 +229,7 @@ export default function Dashboard() {
               id: up.id,
               name: pkgInfo?.name || 'Package',
               classCreditsRemaining: up.class_credits_remaining || 0,
-              beveragePoints: up.beverage_points || 0,  // ✅ NEW
+              beveragePoints: up.beverage_points || 0,
               expiresIn: daysRemaining,
               expiryDate: expiryDate.toLocaleDateString(),
               isNextToUse: false,
@@ -310,7 +290,6 @@ export default function Dashboard() {
     }
   };
 
-  // ✅ FIXED: Handle coaches as array from nested relation
   const fetchClasses = async (userId: string, date: string) => {
     try {
       const { data, error: fetchError } = await supabase
@@ -336,7 +315,6 @@ export default function Dashboard() {
 
       if (fetchError) throw fetchError;
 
-      // ✅ FIXED: Extract coach name from coaches array
       const formatted = data?.map((cls: any) => ({
         ...cls,
         coach_name: cls.coaches?.[0]?.name || 'Unassigned',
@@ -372,12 +350,11 @@ export default function Dashboard() {
       setBookingLoading(true);
       setError(null);
 
-      // ✅ Call corrected RPC function with UUID parameters
       const { data, error: rpcError } = await supabase.rpc(
         'book_class_and_deduct_credits',
         {
           p_user_id: user.id,
-          p_class_id: selectedClass.id,  // ✅ UUID
+          p_class_id: selectedClass.id,
           p_megaformer_ids: selectedMegaformers,
         }
       );
@@ -421,20 +398,15 @@ export default function Dashboard() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
-      // ✅ Call corrected RPC function with UUID parameters
-      const creditAmount =
-        typeof paymentModal.package.classes === 'string'
-          ? 999
-          : paymentModal.package.classes;
-
+      // ✅ FIXED: Use real package data from database
       const { data, error: rpcError } = await supabase.rpc(
         'purchase_package',
         {
           p_user_id: user.id,
-          p_package_id: paymentModal.package.id,  // ✅ UUID
-          p_class_credits: creditAmount,
-          p_beverage_credits: paymentModal.package.beveragePoints,
-          p_expiration_days: paymentModal.package.expirationDays,
+          p_package_id: paymentModal.package.id,  // Real UUID from DB
+          p_class_credits: paymentModal.package.class_credits,  // Real value from DB
+          p_beverage_credits: paymentModal.package.beverage_credits,  // Real value from DB
+          p_expiration_days: paymentModal.package.expire_days,  // Real value from DB
         }
       );
 
@@ -864,52 +836,65 @@ export default function Dashboard() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {PACKAGES.map((pkg) => (
-                  <div
-                    key={pkg.id}
-                    className={`bg-slate-800/50 border-2 ${
-                      pkg.color
-                    } rounded-xl p-6 relative hover:shadow-xl hover:shadow-red-600/20 transition ${
-                      pkg.popular ? 'ring-2 ring-red-600 scale-105' : ''
-                    }`}
-                  >
-                    {pkg.popular && (
-                      <div className="absolute top-0 right-0 bg-red-600 text-white px-2 py-1 rounded-bl-lg font-bold text-xs">
-                        POPULAR
-                      </div>
-                    )}
+              {packagesLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="w-12 h-12 border-4 border-slate-700 border-t-red-600 rounded-full animate-spin" />
+                </div>
+              ) : packages.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {packages.map((pkg) => {
+                    // ✅ Determine if package is popular (Unlimited = most expensive)
+                    const isPopular = pkg.name.toLowerCase().includes('unlimited');
+                    
+                    return (
+                      <div
+                        key={pkg.id}
+                        className={`bg-slate-800/50 border-2 border-slate-700 rounded-xl p-6 relative hover:shadow-xl hover:shadow-red-600/20 transition ${
+                          isPopular ? 'ring-2 ring-red-600 scale-105' : ''
+                        }`}
+                      >
+                        {isPopular && (
+                          <div className="absolute top-0 right-0 bg-red-600 text-white px-2 py-1 rounded-bl-lg font-bold text-xs">
+                            POPULAR
+                          </div>
+                        )}
 
-                    <h3 className="text-lg font-black text-white mb-1">
-                      {pkg.name}
-                    </h3>
-                    <p className="text-3xl font-black text-red-600 mb-1">
-                      ${pkg.price.toLocaleString()}
-                    </p>
-                    <p className="text-gray-400 text-xs uppercase mb-4 font-bold">
-                      {pkg.classes === '∞'
-                        ? 'Unlimited'
-                        : `${pkg.classes} Classes`}
-                    </p>
-
-                    <div className="space-y-2 mb-4 text-xs text-gray-300">
-                      <p>✓ Expires in {pkg.expirationDays} days</p>
-                      {pkg.beveragePoints > 0 && (
-                        <p className="text-green-400 font-bold">
-                          ✓ +{pkg.beveragePoints} Beverage Points
+                        <h3 className="text-lg font-black text-white mb-1">
+                          {pkg.name}
+                        </h3>
+                        <p className="text-3xl font-black text-red-600 mb-1">
+                          ${pkg.price_mxn.toLocaleString()}
                         </p>
-                      )}
-                    </div>
+                        <p className="text-gray-400 text-xs uppercase mb-4 font-bold">
+                          {pkg.class_credits === 999
+                            ? 'Unlimited'
+                            : `${pkg.class_credits} Classes`}
+                        </p>
 
-                    <button
-                      onClick={() => handlePackagePurchase(pkg)}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition text-sm"
-                    >
-                      Get Package
-                    </button>
-                  </div>
-                ))}
-              </div>
+                        <div className="space-y-2 mb-4 text-xs text-gray-300">
+                          <p>✓ Expires in {pkg.expire_days} days</p>
+                          {pkg.beverage_credits > 0 && (
+                            <p className="text-green-400 font-bold">
+                              ✓ +{pkg.beverage_credits} Beverage Points
+                            </p>
+                          )}
+                        </div>
+
+                        <button
+                          onClick={() => handlePackagePurchase(pkg)}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition text-sm"
+                        >
+                          Get Package
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-8 text-center text-gray-400">
+                  No packages available
+                </div>
+              )}
 
               {/* Company Info */}
               <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6 mt-8">
@@ -980,25 +965,24 @@ export default function Dashboard() {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400 font-bold">Amount</span>
                     <span className="text-red-500 font-black text-lg">
-                      ${paymentModal.package.price.toLocaleString()}{' '}
-                      {paymentModal.package.currency}
+                      ${paymentModal.package.price_mxn.toLocaleString()} MXN
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400 font-bold">Credits</span>
                     <span className="text-green-400 font-black">
-                      {paymentModal.package.classes === '∞'
+                      {paymentModal.package.class_credits === 999
                         ? 'Unlimited'
-                        : paymentModal.package.classes}
+                        : paymentModal.package.class_credits}
                     </span>
                   </div>
-                  {paymentModal.package.beveragePoints > 0 && (
+                  {paymentModal.package.beverage_credits > 0 && (
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400 font-bold">
                         Beverage Points
                       </span>
                       <span className="text-green-400 font-black">
-                        +{paymentModal.package.beveragePoints}
+                        +{paymentModal.package.beverage_credits}
                       </span>
                     </div>
                   )}
@@ -1044,9 +1028,9 @@ export default function Dashboard() {
                   <div className="bg-green-900/20 border border-green-700/50 rounded-lg p-3 w-full text-center">
                     <p className="text-green-400 font-bold text-sm">
                       +
-                      {paymentModal.package.classes === '∞'
+                      {paymentModal.package.class_credits === 999
                         ? '∞'
-                        : paymentModal.package.classes}{' '}
+                        : paymentModal.package.class_credits}{' '}
                       Credits Added
                     </p>
                   </div>
