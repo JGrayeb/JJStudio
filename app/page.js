@@ -191,7 +191,7 @@ export default function Home() {
         <meta name="language" content="English, Spanish" />
         <meta name="author" content="JJ Studio" />
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-        <meta name="theme-color" content="#030712" />
+        <meta name="theme-color" content="#0a0a0a" />
         <link rel="canonical" href="https://jjstudio.mx" />
         
         {/* STRUCTURED DATA */}
@@ -201,25 +201,124 @@ export default function Home() {
         />
       </Head>
 
-      <main className="text-gray-900 overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif", background: "#030712" }}>
+      <style>{`
+        /* GLOBAL RED THEME STYLES */
+        :root {
+          --primary-red: #c41e1e;
+          --dark-red: #690606;
+          --blood-red: #8a0303;
+          --bg-black: #0a0a0a;
+          --bg-dark: #1a1a1a;
+          --bg-card: #2a2a2a;
+          --red-glow: rgba(196, 30, 30, 0.3);
+          --red-glow-bright: rgba(196, 30, 30, 0.2);
+        }
+
+        /* SOCIAL ICON HOVER */
+        .social-icon {
+          transition: all 0.3s ease;
+        }
+        .social-icon:hover {
+          background-color: rgba(196, 30, 30, 0.2);
+          color: #c41e1e;
+        }
+
+        /* NAV LINK HOVER */
+        .nav-link {
+          transition: all 0.3s ease;
+          position: relative;
+          color: #d1d5db;
+        }
+        .nav-link:hover {
+          color: #c41e1e;
+        }
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0;
+          height: 1px;
+          background: #690606;
+          transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+          width: 100%;
+        }
+
+        /* BUTTON STYLES */
+        .btn-primary {
+          background: #c41e1e;
+          color: white;
+          transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+          background: #690606;
+          box-shadow: 0 10px 25px rgba(196, 30, 30, 0.3);
+        }
+
+        .btn-secondary {
+          border: 2px solid #c41e1e;
+          color: #c41e1e;
+          transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+          background: #c41e1e;
+          color: white;
+        }
+
+        /* CARD HOVER */
+        .card-hover {
+          transition: all 0.3s ease;
+          border-color: #3a3a3a;
+        }
+        .card-hover:hover {
+          border-color: #690606;
+          box-shadow: 0 20px 25px -5px rgba(196, 30, 30, 0.2);
+        }
+
+        /* FORM INPUT FOCUS */
+        .form-input {
+          background: var(--bg-card);
+          border: 1px solid #3a3a3a;
+          color: white;
+          transition: border-color 0.3s ease;
+        }
+        .form-input:focus {
+          border-color: #690606;
+          outline: none;
+        }
+
+        /* MARQUEE ANIMATION */
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        
+        html {
+          scroll-behavior: smooth;
+        }
+      `}</style>
+
+      <main className="text-gray-900 overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif", background: "#0a0a0a" }}>
 
         {/* ── NAVBAR ── */}
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-slate-950/95 shadow-lg" : "bg-slate-950/90"}`} role="navigation" aria-label="Main navigation">
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "shadow-lg" : ""}`} style={{ background: scrolled ? "rgba(10, 10, 10, 0.95)" : "rgba(10, 10, 10, 0.90)" }} role="navigation" aria-label="Main navigation">
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               {/* LOGO */}
               <span className="text-xl font-black tracking-widest uppercase cursor-default select-none text-white">
-                JJ<span className="text-teal-500">Studio</span>
+                JJ<span style={{ color: "#c41e1e" }}>Studio</span>
               </span>
 
-              <div className="h-6 w-px bg-teal-500/40 hidden sm:block" />
+              <div className="h-6 w-px" style={{ background: "rgba(196, 30, 30, 0.4)" }} />
 
               {/* INSTAGRAM */}
               <a
                 href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg=="
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg hover:bg-teal-500/20 transition text-gray-400 hover:text-teal-400"
+                className="social-icon p-2 rounded-lg text-gray-400"
                 title="Follow JJ Studio on Instagram"
                 aria-label="Instagram"
               >
@@ -235,7 +334,7 @@ export default function Home() {
                 href="https://wa.me/5213318373447?text=Hola%20JJ%20Studio"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg hover:bg-teal-500/20 transition text-gray-400 hover:text-green-500"
+                className="social-icon p-2 rounded-lg text-gray-400"
                 title="Contact JJ Studio on WhatsApp"
                 aria-label="WhatsApp"
               >
@@ -258,10 +357,9 @@ export default function Home() {
                 <button
                   key={label}
                   onClick={handler}
-                  className="text-xs font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400 transition-colors relative group"
+                  className="nav-link text-xs font-medium tracking-widest uppercase"
                 >
                   {label}
-                  <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-teal-500 group-hover:w-full transition-all duration-300" />
                 </button>
               ))}
             </div>
@@ -270,8 +368,8 @@ export default function Home() {
             <div className="hidden lg:flex items-center gap-5">
               <button onClick={toggleLang} className="flex items-center gap-2 cursor-pointer select-none">
                 <span className={`text-xs font-bold tracking-widest transition-colors ${lang === "es" ? "text-white" : "text-gray-400"}`}>ES</span>
-                <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-gray-700 border-gray-600" : "bg-teal-500/40 border-teal-500"}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-teal-500 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
+                <div className={`relative w-12 h-6 rounded-full border transition-all duration-300`} style={{ background: lang === "en" ? "#2a2a2a" : "rgba(196, 30, 30, 0.4)", borderColor: lang === "en" ? "#444" : "#690606" }}>
+                  <div className={`absolute top-1 w-4 h-4 rounded-full transition-all duration-300`} style={{ background: "#c41e1e", left: lang === "en" ? "4px" : "24px" }} />
                 </div>
                 <span className={`text-xs font-bold tracking-widest transition-colors ${lang === "en" ? "text-white" : "text-gray-400"}`}>EN</span>
               </button>
@@ -282,23 +380,23 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={handleProfileClick}
-                        className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg transition-all duration-200"
+                        className="btn-primary text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg"
                       >
                         PROFILE
                       </button>
                       <button
                         onClick={handleLogout}
-                        className="text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-teal-400 transition-colors"
+                        className="nav-link text-xs font-bold tracking-widest uppercase text-gray-400"
                       >
                         LOGOUT
                       </button>
                     </div>
                   ) : (
                     <>
-                      <a href="/login" className="text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-teal-400 transition-colors">
+                      <a href="/login" className="nav-link text-xs font-bold tracking-widest uppercase text-gray-400">
                         LOGIN
                       </a>
-                      <a href="/signup" className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg transition-all">
+                      <a href="/signup" className="btn-primary text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg">
                         {t.nav.register}
                       </a>
                     </>
@@ -316,32 +414,32 @@ export default function Home() {
           </div>
 
           {/* Mobile Menu */}
-          <div className={`lg:hidden bg-slate-950 border-t border-teal-500/20 overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-screen py-6" : "max-h-0"}`}>
+          <div className={`lg:hidden border-t overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-screen py-6" : "max-h-0"}`} style={{ background: "#1a1a1a", borderColor: "rgba(196, 30, 30, 0.2)" }}>
             <div className="flex flex-col px-6 gap-5">
-              <button onClick={(e) => { handleHomeClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
+              <button onClick={(e) => { handleHomeClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">
                 {t.nav.home}
               </button>
-              <button onClick={(e) => { handleScheduleClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
+              <button onClick={(e) => { handleScheduleClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">
                 {t.nav.schedule}
               </button>
-              <button onClick={(e) => { handlePackageClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
+              <button onClick={(e) => { handlePackageClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">
                 {t.nav.packages}
               </button>
-              <button onClick={(e) => { handleBeveragesClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
+              <button onClick={(e) => { handleBeveragesClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">
                 {t.nav.beverages}
               </button>
-              <button onClick={(e) => { handleAboutClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
+              <button onClick={(e) => { handleAboutClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">
                 {t.nav.about}
               </button>
-              <button onClick={(e) => { handleContactClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-gray-300 hover:text-teal-400">
+              <button onClick={(e) => { handleContactClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">
                 {t.nav.contact}
               </button>
               
-              <div className="border-t border-teal-500/20 pt-5">
+              <div className="border-t pt-5" style={{ borderColor: "rgba(196, 30, 30, 0.2)" }}>
                 <button onClick={toggleLang} className="flex items-center gap-2 self-start mb-4">
                   <span className={`text-xs font-bold tracking-widest ${lang === "es" ? "text-white" : "text-gray-400"}`}>ES</span>
-                  <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-gray-700 border-gray-600" : "bg-teal-500/40 border-teal-500"}`}>
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-teal-500 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
+                  <div className={`relative w-12 h-6 rounded-full border transition-all duration-300`} style={{ background: lang === "en" ? "#2a2a2a" : "rgba(196, 30, 30, 0.4)", borderColor: lang === "en" ? "#444" : "#690606" }}>
+                    <div className={`absolute top-1 w-4 h-4 rounded-full transition-all duration-300`} style={{ background: "#c41e1e", left: lang === "en" ? "4px" : "24px" }} />
                   </div>
                   <span className={`text-xs font-bold tracking-widest ${lang === "en" ? "text-white" : "text-gray-400"}`}>EN</span>
                 </button>
@@ -350,19 +448,19 @@ export default function Home() {
                   <>
                     {user ? (
                       <>
-                        <button onClick={() => { handleProfileClick(); setMenuOpen(false) }} className="w-full bg-teal-500 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 rounded-lg mb-2">
+                        <button onClick={() => { handleProfileClick(); setMenuOpen(false) }} className="btn-primary w-full text-white text-xs font-bold tracking-widest uppercase px-5 py-3 rounded-lg mb-2">
                           PROFILE
                         </button>
-                        <button onClick={() => { handleLogout(); setMenuOpen(false) }} className="w-full text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-teal-400 py-2">
+                        <button onClick={() => { handleLogout(); setMenuOpen(false) }} className="nav-link w-full text-xs font-bold tracking-widest uppercase text-gray-400 py-2">
                           LOGOUT
                         </button>
                       </>
                     ) : (
                       <>
-                        <a href="/login" className="block bg-gray-800 border border-gray-700 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center rounded-lg mb-2">
+                        <a href="/login" className="block text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center rounded-lg mb-2" style={{ background: "#2a2a2a", border: "1px solid #444" }}>
                           LOGIN
                         </a>
-                        <a href="/signup" className="block bg-teal-500 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center rounded-lg">
+                        <a href="/signup" className="btn-primary block text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center rounded-lg">
                           {t.nav.register}
                         </a>
                       </>
@@ -375,26 +473,26 @@ export default function Home() {
         </nav>
 
         {/* ── HERO SECTION ── */}
-        <section className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20" id="home" style={{ background: "linear-gradient(135deg, #030712 0%, #0f2a2a 40%, #030712 100%)" }}>
-          <div className="absolute inset-0 opacity-30" style={{ background: "radial-gradient(ellipse at 70% 50%, rgba(20,184,184,0.15) 0%, transparent 70%)" }} />
+        <section className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20" id="home" style={{ background: "linear-gradient(135deg, #0a0a0a 0%, #2a0a0a 40%, #0a0a0a 100%)" }}>
+          <div className="absolute inset-0 opacity-30" style={{ background: "radial-gradient(ellipse at 70% 50%, rgba(196, 30, 30, 0.15) 0%, transparent 70%)" }} />
 
           <div className="relative z-10 max-w-7xl mx-auto px-6">
             <div className="max-w-4xl">
-              <p className="text-xs font-semibold tracking-[0.3em] mb-6 uppercase text-teal-400">Premium Fitness Studio in Querétaro</p>
+              <p className="text-xs font-semibold tracking-[0.3em] mb-6 uppercase" style={{ color: "#c41e1e" }}>Premium Fitness Studio in Querétaro</p>
               
               <h1 className="font-black uppercase leading-tight mb-8" style={{ fontSize: "clamp(3rem,9vw,7rem)", letterSpacing: "-0.02em", color: "#FFFFFF" }}>
-                <span className="text-teal-500">Trust the</span><br />
+                <span style={{ color: "#c41e1e" }}>Trust the</span><br />
                 <span className="text-gray-300">Process</span><br />
-                <span className="text-teal-500">Transform</span>
+                <span style={{ color: "#690606" }}>Transform</span>
               </h1>
 
               <p className="text-lg font-light max-w-2xl mb-12 leading-relaxed text-gray-300">High-intensity, low-impact Lagree classes designed for serious results. Build strength, improve posture, and develop stability from your core.</p>
 
               <div className="flex flex-wrap gap-4">
-                <a href="/signup" className="bg-teal-500 hover:bg-teal-600 text-white text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg transition-all shadow-lg hover:shadow-xl">
+                <a href="/signup" className="btn-primary text-white text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg shadow-lg">
                   Start Free Trial
                 </a>
-                <button onClick={handleAboutClick} className="border-2 border-teal-500 text-teal-400 text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg hover:bg-teal-500 hover:text-white transition-all">
+                <button onClick={handleAboutClick} className="btn-secondary text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg">
                   Learn More
                 </button>
               </div>
@@ -405,25 +503,25 @@ export default function Home() {
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
             <span className="text-xs tracking-widest uppercase text-gray-500">Scroll to explore</span>
             <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
-              <path d="M8 0v20M1 13l7 7 7-7" stroke="rgba(20,184,184,0.6)" strokeWidth="1.5" />
+              <path d="M8 0v20M1 13l7 7 7-7" stroke="rgba(196, 30, 30, 0.6)" strokeWidth="1.5" />
             </svg>
           </div>
         </section>
 
         {/* ── MARQUEE ── */}
-        <div className="py-6 overflow-hidden border-y border-teal-500/30" style={{ background: "linear-gradient(90deg, #0f2a2a 0%, #030712 50%, #0f2a2a 100%)" }}>
+        <div className="py-6 overflow-hidden" style={{ background: "linear-gradient(90deg, #2a0a0a 0%, #0a0a0a 50%, #2a0a0a 100%)", borderTop: "1px solid rgba(196, 30, 30, 0.3)", borderBottom: "1px solid rgba(196, 30, 30, 0.3)" }}>
           <div className="flex whitespace-nowrap" style={{ animation: "marquee 25s linear infinite" }}>
             {[...Array(2)].map((_, i) => (
               <span key={i} className="flex items-center gap-0 shrink-0">
                 <span className="flex items-center">
                   <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Trust the Process</span>
-                  <span className="text-xs text-teal-500 mx-2">✦</span>
+                  <span className="text-xs mx-2" style={{ color: "#c41e1e" }}>✦</span>
                   <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">High-Intensity Training</span>
-                  <span className="text-xs text-teal-500 mx-2">✦</span>
+                  <span className="text-xs mx-2" style={{ color: "#c41e1e" }}>✦</span>
                   <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Low-Impact Results</span>
-                  <span className="text-xs text-teal-500 mx-2">✦</span>
+                  <span className="text-xs mx-2" style={{ color: "#c41e1e" }}>✦</span>
                   <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Premium Experience</span>
-                  <span className="text-xs text-teal-500 mx-2">✦</span>
+                  <span className="text-xs mx-2" style={{ color: "#c41e1e" }}>✦</span>
                 </span>
               </span>
             ))}
@@ -431,26 +529,26 @@ export default function Home() {
         </div>
 
         {/* ── CLASSES SECTION ── */}
-        <section className="py-24 bg-slate-950" id="schedule">
+        <section className="py-24" id="schedule" style={{ background: "#1a1a1a" }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
               <div>
-                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mb-6 rounded-full" />
+                <div className="w-16 h-1 mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl text-white" style={{ letterSpacing: "-0.02em" }}>
-                  Our Classes<br /><span className="text-teal-500">Transform Your Body</span>
+                  Our Classes<br /><span style={{ color: "#c41e1e" }}>Transform Your Body</span>
                 </h2>
               </div>
-              <button onClick={handleScheduleClick} className="border-2 border-teal-500 text-teal-400 text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-lg hover:bg-teal-500 hover:text-white transition-all">
+              <button onClick={handleScheduleClick} className="btn-secondary text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-lg">
                 Book a Class
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {t.classes.items.map((cls, i) => (
-                <div key={i} className="bg-slate-900 p-8 rounded-xl group hover:shadow-xl hover:shadow-teal-500/20 hover:-translate-y-2 transition-all duration-300 border border-slate-800 hover:border-teal-500/50">
+                <div key={i} className="card-hover p-8 rounded-xl group transition-all duration-300 border" style={{ background: "#2a2a2a", borderColor: "#3a3a3a" }}>
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-4xl font-black text-teal-500">{cls.num}</span>
-                    {cls.badge && <span className="text-xs tracking-widest uppercase px-3 py-1 border border-teal-500/50 text-teal-400 rounded-lg">{cls.badge}</span>}
+                    <span className="text-4xl font-black" style={{ color: "#c41e1e" }}>{cls.num}</span>
+                    {cls.badge && <span className="text-xs tracking-widest uppercase px-3 py-1 rounded-lg" style={{ border: "1px solid rgba(196, 30, 30, 0.5)", color: "#c41e1e" }}>{cls.badge}</span>}
                   </div>
                   <h3 className="text-xl font-bold uppercase tracking-wide mb-3 text-white">{cls.name}</h3>
                   <p className="text-sm leading-relaxed mb-6 text-gray-400">{cls.desc}</p>
@@ -464,38 +562,49 @@ export default function Home() {
         </section>
 
         {/* ── PACKAGES SECTION ── */}
-        <section className="py-24 bg-black" id="packages">
+        <section className="py-24" id="packages" style={{ background: "#0a0a0a" }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
-              <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mx-auto mb-6 rounded-full" />
+              <div className="w-16 h-1 mx-auto mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
               <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl text-white" style={{ letterSpacing: "-0.02em" }}>
-                Membership <span className="text-teal-500">Plans</span>
+                Membership <span style={{ color: "#c41e1e" }}>Plans</span>
               </h2>
               <p className="mt-4 max-w-2xl mx-auto text-sm text-gray-400">Choose the perfect plan for your fitness journey. All memberships include unlimited class access and beverage options.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {t.packages.plans.map((plan, i) => (
-                <div key={i} className={`p-8 rounded-xl flex flex-col transition-all duration-300 relative border-2 ${plan.popular ? "border-teal-500 bg-teal-500/5 hover:shadow-lg hover:shadow-teal-500/30" : "border-slate-800 bg-slate-900 hover:border-teal-500/50"}`}>
+                <div key={i} className={`p-8 rounded-xl flex flex-col transition-all duration-300 relative border-2`}
+                  style={{
+                    background: plan.popular ? "rgba(196, 30, 30, 0.1)" : "#2a2a2a",
+                    borderColor: plan.popular ? "#c41e1e" : "#3a3a3a"
+                  }}
+                >
                   {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal-500 text-white text-xs px-4 py-1 tracking-widest uppercase rounded-lg">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-white text-xs px-4 py-1 tracking-widest uppercase rounded-lg" style={{ background: "#c41e1e" }}>
                       Most Popular
                     </div>
                   )}
-                  <p className={`text-xs tracking-widest uppercase mb-4 font-semibold ${plan.popular ? "text-teal-400" : "text-gray-500"}`}>{plan.label}</p>
+                  <p className={`text-xs tracking-widest uppercase mb-4 font-semibold ${plan.popular ? "text-red-400" : "text-gray-500"}`}>{plan.label}</p>
                   <div className="font-black leading-none mb-2 text-white" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>{plan.price}</div>
                   <p className="text-xs mb-6 text-gray-400">{plan.sub}</p>
-                  <div className="w-8 h-1 bg-teal-500 rounded-full mb-6" />
+                  <div className="w-8 h-1 rounded-full mb-6" style={{ background: "#c41e1e" }} />
                   <ul className="space-y-3 mb-8 flex-1">
-                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-teal-400 text-lg">✓</span>{plan.classes}</li>
-                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-teal-400 text-lg">✓</span>All class types</li>
-                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-teal-400 text-lg">✓</span>{plan.expire}</li>
+                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-lg" style={{ color: "#c41e1e" }}>✓</span>{plan.classes}</li>
+                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-lg" style={{ color: "#c41e1e" }}>✓</span>All class types</li>
+                    <li className="text-sm flex items-center gap-3 text-gray-300"><span className="text-lg" style={{ color: "#c41e1e" }}>✓</span>{plan.expire}</li>
                     <li className={`text-sm flex items-center gap-3 ${plan.beverage ? "text-gray-300" : "text-gray-600"}`}>
-                      <span className={plan.beverage ? "text-teal-400 text-lg" : "text-gray-600"}>{plan.beverage ? "✓" : "–"}</span>
+                      <span className="text-lg" style={{ color: plan.beverage ? "#c41e1e" : "#666" }}>{plan.beverage ? "✓" : "–"}</span>
                       {plan.beverage ? t.packages.bev : t.packages.noBev}
                     </li>
                   </ul>
-                  <button onClick={handlePackageClick} className={`text-center text-xs font-bold tracking-widest uppercase px-4 py-3 rounded-lg transition-all ${plan.popular ? "bg-teal-500 hover:bg-teal-600 text-white" : "border-2 border-teal-500 text-teal-400 hover:bg-teal-500 hover:text-white"}`}>
+                  <button onClick={handlePackageClick} className={`text-center text-xs font-bold tracking-widest uppercase px-4 py-3 rounded-lg transition-all text-white`}
+                    style={{
+                      background: plan.popular ? "#c41e1e" : "transparent",
+                      border: plan.popular ? "none" : "2px solid #c41e1e",
+                      color: plan.popular ? "white" : "#c41e1e"
+                    }}
+                  >
                     Get Started
                   </button>
                 </div>
@@ -505,23 +614,23 @@ export default function Home() {
         </section>
 
         {/* ── BEVERAGES ── */}
-        <section className="py-24 bg-slate-950" id="beverages">
+        <section className="py-24" id="beverages" style={{ background: "#1a1a1a" }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
-                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mb-6 rounded-full" />
+                <div className="w-16 h-1 mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
-                  Premium <span className="text-teal-500">Beverages</span>
+                  Premium <span style={{ color: "#c41e1e" }}>Beverages</span>
                 </h2>
                 <p className="text-base leading-relaxed mb-4 text-gray-300">Fuel your recovery and wellness with our carefully curated beverage selection. Perfect for before, during, and after your workout.</p>
                 <p className="text-sm leading-relaxed mb-8 text-gray-400">Included with premium memberships. Enhance your JJ Studio experience with nutritional support that complements your fitness journey.</p>
-                <button onClick={handleBeveragesClick} className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-block transition-all">
+                <button onClick={handleBeveragesClick} className="btn-primary text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-block">
                   View All Options
                 </button>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {t.beverages.items.map((item, i) => (
-                  <div key={i} className="p-6 border border-teal-500/30 bg-slate-900 rounded-xl hover:border-teal-500/60 hover:bg-slate-800 transition-all duration-300">
+                  <div key={i} className="card-hover p-6 rounded-xl transition-all duration-300 border" style={{ borderColor: "rgba(196, 30, 30, 0.3)", background: "#2a2a2a" }}>
                     <div className="text-3xl mb-3">{item.icon}</div>
                     <h4 className="font-bold uppercase text-sm tracking-wide mb-2 text-white">{item.name}</h4>
                     <p className="text-xs leading-relaxed text-gray-400">{item.desc}</p>
@@ -533,39 +642,39 @@ export default function Home() {
         </section>
 
         {/* ── ABOUT ── */}
-        <section className="py-24 bg-black" id="about">
+        <section className="py-24" id="about" style={{ background: "#0a0a0a" }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
-              <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mx-auto mb-6 rounded-full" />
+              <div className="w-16 h-1 mx-auto mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
               <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl text-white" style={{ letterSpacing: "-0.02em" }}>
-                Meet Your <span className="text-teal-500">Coach</span>
+                Meet Your <span style={{ color: "#c41e1e" }}>Coach</span>
               </h2>
               <p className="mt-4 max-w-2xl mx-auto text-sm text-gray-400">Dedicated to your success and transformation. Our coaches are certified and passionate about helping you achieve your fitness goals.</p>
             </div>
 
             <div className="max-w-3xl mx-auto">
-              <div className="border-2 border-teal-500/30 p-10 rounded-xl bg-slate-900 relative overflow-hidden">
+              <div className="p-10 rounded-xl relative overflow-hidden card-hover border" style={{ borderColor: "rgba(196, 30, 30, 0.3)", background: "#2a2a2a" }}>
                 <div className="flex flex-col sm:flex-row items-start gap-8">
-                  <div className="w-40 h-40 flex-shrink-0 relative overflow-hidden rounded-lg border-2 border-teal-500">
+                  <div className="w-40 h-40 flex-shrink-0 relative overflow-hidden rounded-lg" style={{ border: "2px solid #c41e1e" }}>
                     <Image src="/images/coach-javi.jpeg" alt="Coach Javi - JJ Studio Querétaro" fill className="object-cover object-top" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
                       <h3 className="text-2xl font-black uppercase tracking-wide text-white">{t.about.coachName}</h3>
-                      <span className="text-xs tracking-widest uppercase px-3 py-1 border border-teal-500/50 text-teal-400 rounded-lg">
+                      <span className="text-xs tracking-widest uppercase px-3 py-1 rounded-lg" style={{ border: "1px solid rgba(196, 30, 30, 0.5)", color: "#c41e1e" }}>
                         {t.about.available}
                       </span>
                     </div>
-                    <p className="text-xs tracking-widest uppercase mb-4 text-teal-400">{t.about.coachRole}</p>
+                    <p className="text-xs tracking-widest uppercase mb-4" style={{ color: "#c41e1e" }}>{t.about.coachRole}</p>
                     <p className="text-sm leading-relaxed text-gray-300 mb-6">{t.about.coachBio}</p>
                     <div className="flex gap-6">
                       <div className="text-center">
-                        <div className="font-black text-xl text-teal-500">{t.about.allTypes}</div>
+                        <div className="font-black text-xl" style={{ color: "#c41e1e" }}>{t.about.allTypes}</div>
                         <div className="text-xs uppercase tracking-widest mt-1 text-gray-500">{t.about.allTypesSub}</div>
                       </div>
-                      <div className="w-px bg-slate-700" />
+                      <div className="w-px" style={{ background: "#3a3a3a" }} />
                       <div className="text-center">
-                        <div className="font-black text-xl text-teal-500">{t.about.commit}</div>
+                        <div className="font-black text-xl" style={{ color: "#c41e1e" }}>{t.about.commit}</div>
                         <div className="text-xs uppercase tracking-widest mt-1 text-gray-500">{t.about.commitSub}</div>
                       </div>
                     </div>
@@ -577,29 +686,29 @@ export default function Home() {
         </section>
 
         {/* ── CTA ── */}
-        <section className="relative py-32 overflow-hidden" id="register" style={{ background: "linear-gradient(135deg, #0f2a2a 0%, #030712 50%, #0f2a2a 100%)" }}>
-          <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(20,184,184,0.2), transparent)" }} />
+        <section className="relative py-32 overflow-hidden" id="register" style={{ background: "linear-gradient(135deg, #2a0a0a 0%, #0a0a0a 50%, #2a0a0a 100%)" }}>
+          <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(196, 30, 30, 0.2), transparent)" }} />
           <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-            <p className="text-xs tracking-[0.3em] uppercase mb-4 font-semibold text-teal-400">Begin Your Transformation</p>
+            <p className="text-xs tracking-[0.3em] uppercase mb-4 font-semibold" style={{ color: "#c41e1e" }}>Begin Your Transformation</p>
             <h2 className="font-black uppercase leading-tight mb-8 text-white" style={{ fontSize: "clamp(2.5rem,8vw,7rem)", letterSpacing: "-0.02em" }}>
-              Trust the <span className="text-teal-500">Process</span>
+              Trust the <span style={{ color: "#c41e1e" }}>Process</span>
             </h2>
             <p className="text-lg mb-4 max-w-2xl mx-auto text-gray-300">Join JJ Studio today and start your journey to strength, stability, and transformation. Your first class is free.</p>
             <p className="text-xs uppercase tracking-widest mb-10 text-gray-500">Xentric Lomas, Campanario Norte, Querétaro</p>
-            <a href="/signup" className="bg-teal-500 hover:bg-teal-600 text-white text-sm font-bold tracking-widest uppercase px-12 py-5 rounded-lg inline-block transition-all shadow-lg hover:shadow-xl">
+            <a href="/signup" className="btn-primary text-white text-sm font-bold tracking-widest uppercase px-12 py-5 rounded-lg inline-block shadow-lg">
               Start Your Free Trial
             </a>
           </div>
         </section>
 
         {/* ── NESSTY BOOKING ── */}
-        <section className="py-24 bg-slate-950" id="nessty">
+        <section className="py-24" id="nessty" style={{ background: "#1a1a1a" }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mb-6 rounded-full" />
+                <div className="w-16 h-1 mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-6xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
-                  Book on <span className="text-teal-500">Nessty</span>
+                  Book on <span style={{ color: "#c41e1e" }}>Nessty</span>
                 </h2>
                 <p className="text-base leading-relaxed mb-4 text-gray-300">
                   Nessty is the most popular fitness booking app in Mexico. Schedule classes, manage your membership, and stay connected with the JJ Studio community.
@@ -612,7 +721,7 @@ export default function Home() {
                     href="https://nessty.mx/@jjstudio" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-flex items-center gap-2 transition-all"
+                    className="btn-primary text-white text-xs font-bold tracking-widest uppercase px-8 py-4 rounded-lg inline-flex items-center gap-2"
                   >
                     Open Nessty App →
                   </a>
@@ -634,44 +743,44 @@ export default function Home() {
         </section>
 
         {/* ── CONTACT ── */}
-        <section className="py-24 bg-slate-950" id="contact">
+        <section className="py-24" id="contact" style={{ background: "#1a1a1a" }}>
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
               <div>
-                <div className="w-16 h-1 bg-gradient-to-r from-teal-500 to-teal-400 mb-6 rounded-full" />
+                <div className="w-16 h-1 mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
                 <h2 className="font-black uppercase leading-tight text-4xl lg:text-5xl mb-8 text-white" style={{ letterSpacing: "-0.02em" }}>
-                  Get in <span className="text-teal-500">Touch</span>
+                  Get in <span style={{ color: "#c41e1e" }}>Touch</span>
                 </h2>
                 <div className="space-y-8">
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-teal-400 font-semibold">Location</p>
+                    <p className="text-xs tracking-widest uppercase mb-2 font-semibold" style={{ color: "#c41e1e" }}>Location</p>
                     <p className="text-sm text-gray-300">Xentric Lomas Norte<br />El Campanario, Lcl 211<br />Querétaro, Querétaro 76000<br />Mexico</p>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-teal-400 font-semibold">Phone</p>
-                    <a href="tel:+5213318373447" className="text-sm text-gray-300 hover:text-teal-400 transition-colors font-semibold">
+                    <p className="text-xs tracking-widest uppercase mb-2 font-semibold" style={{ color: "#c41e1e" }}>Phone</p>
+                    <a href="tel:+5213318373447" className="text-sm text-gray-300 transition-colors font-semibold nav-link">
                       +52 1 33 1837 3447
                     </a>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-teal-400 font-semibold">Hours</p>
+                    <p className="text-xs tracking-widest uppercase mb-2 font-semibold" style={{ color: "#c41e1e" }}>Hours</p>
                     <p className="text-sm text-gray-300">Monday - Friday: 6:00 AM - 8:00 PM</p>
                     <p className="text-sm text-gray-300">Saturday: 7:00 AM - 6:00 PM</p>
                     <p className="text-sm text-gray-300">Sunday: Closed</p>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 text-teal-400 font-semibold">Email</p>
-                    <a href="mailto:administracion@jjstudio.mx" className="text-sm text-gray-300 hover:text-teal-400 transition-colors font-semibold">
+                    <p className="text-xs tracking-widest uppercase mb-2 font-semibold" style={{ color: "#c41e1e" }}>Email</p>
+                    <a href="mailto:administracion@jjstudio.mx" className="text-sm text-gray-300 transition-colors font-semibold nav-link">
                       administracion@jjstudio.mx
                     </a>
                   </div>
                   <div>
-                    <p className="text-xs tracking-widest uppercase mb-3 text-teal-400 font-semibold">Follow Us</p>
+                    <p className="text-xs tracking-widest uppercase mb-3 font-semibold" style={{ color: "#c41e1e" }}>Follow Us</p>
                     <div className="flex gap-4">
-                      <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-gray-400 hover:text-teal-400 transition-colors">
+                      <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="nav-link text-xs tracking-widest uppercase text-gray-400">
                         Instagram
                       </a>
-                      <a href="https://wa.me/5213318373447" target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-gray-400 hover:text-teal-400 transition-colors">
+                      <a href="https://wa.me/5213318373447" target="_blank" rel="noopener noreferrer" className="nav-link text-xs tracking-widest uppercase text-gray-400">
                         WhatsApp
                       </a>
                     </div>
@@ -709,14 +818,14 @@ export default function Home() {
                     value={formData.firstName}
                     onChange={e => setFormData(p => ({ ...p, firstName: e.target.value }))}
                     required
-                    className="px-4 py-3 text-sm text-white w-full bg-slate-900 border border-slate-700 focus:outline-none focus:border-teal-500 transition-colors rounded-lg"
+                    className="form-input px-4 py-3 text-sm text-white w-full rounded-lg"
                   />
                   <input
                     type="text"
                     placeholder="Last Name"
                     value={formData.lastName}
                     onChange={e => setFormData(p => ({ ...p, lastName: e.target.value }))}
-                    className="px-4 py-3 text-sm text-white w-full bg-slate-900 border border-slate-700 focus:outline-none focus:border-teal-500 transition-colors rounded-lg"
+                    className="form-input px-4 py-3 text-sm text-white w-full rounded-lg"
                   />
                 </div>
                 <input
@@ -725,7 +834,7 @@ export default function Home() {
                   value={formData.email}
                   onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                   required
-                  className="px-4 py-3 text-sm text-white w-full bg-slate-900 border border-slate-700 focus:outline-none focus:border-teal-500 transition-colors rounded-lg"
+                  className="form-input px-4 py-3 text-sm text-white w-full rounded-lg"
                 />
                 <textarea
                   placeholder="Your Message"
@@ -733,23 +842,23 @@ export default function Home() {
                   value={formData.message}
                   onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
                   required
-                  className="px-4 py-3 text-sm text-white w-full bg-slate-900 border border-slate-700 focus:outline-none focus:border-teal-500 transition-colors rounded-lg resize-none"
+                  className="form-input px-4 py-3 text-sm text-white w-full rounded-lg resize-none"
                 />
                 <button
                   type="submit"
                   disabled={formState === "loading"}
-                  className="bg-teal-500 hover:bg-teal-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold tracking-widest uppercase px-8 py-4 w-full transition-all rounded-lg"
+                  className="btn-primary text-white text-xs font-bold tracking-widest uppercase px-8 py-4 w-full rounded-lg disabled:opacity-50"
                 >
                   {formState === "loading" ? "Sending..." : "Send Message"}
                 </button>
 
                 {formState === "success" && (
-                  <div className="border border-teal-500/50 bg-teal-500/10 px-4 py-3 text-sm text-teal-400 tracking-wide text-center rounded-lg">
+                  <div className="px-4 py-3 text-sm tracking-wide text-center rounded-lg" style={{ border: "1px solid rgba(196, 30, 30, 0.5)", background: "rgba(196, 30, 30, 0.1)", color: "#c41e1e" }}>
                     ✓ Message sent! We'll get back to you soon.
                   </div>
                 )}
                 {formState === "error" && (
-                  <div className="border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-gray-400 tracking-wide text-center rounded-lg">
+                  <div className="px-4 py-3 text-sm tracking-wide text-center rounded-lg" style={{ border: "1px solid #3a3a3a", background: "#2a2a2a", color: "#9ca3af" }}>
                     Something went wrong. Email us at administracion@jjstudio.mx
                   </div>
                 )}
@@ -759,9 +868,9 @@ export default function Home() {
         </section>
 
         {/* ── FOOTER ── */}
-        <footer className="bg-black border-t border-teal-500/20 py-12">
+        <footer className="py-12" style={{ background: "#0a0a0a", borderTop: "1px solid rgba(196, 30, 30, 0.2)" }}>
           <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
-            <span className="text-xl font-black tracking-widest uppercase text-white">JJ<span className="text-teal-500">Studio</span></span>
+            <span className="text-xl font-black tracking-widest uppercase text-white">JJ<span style={{ color: "#c41e1e" }}>Studio</span></span>
             <div className="flex flex-col sm:flex-row items-center gap-4 text-center">
               <p className="text-xs uppercase tracking-widest text-gray-500">Premium Lagree Studio in Querétaro</p>
               <span className="text-gray-700 hidden sm:inline">|</span>
@@ -770,17 +879,6 @@ export default function Home() {
             <p className="text-xs text-gray-600">© 2024 JJ Studio. All rights reserved.</p>
           </div>
         </footer>
-
-        <style>{`
-          @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          
-          html {
-            scroll-behavior: smooth;
-          }
-        `}</style>
       </main>
     </>
   )
