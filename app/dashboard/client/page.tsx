@@ -1,4 +1,3 @@
-//app/dashboard/client/page.tsx
 
 'use client';
 
@@ -65,7 +64,6 @@ export default function ClientDashboard() {
         
         setUser(user);
         
-        // ✅ CHECK EMAIL VERIFICATION - Try multiple fields
         const isVerified = !!(
           user.user_metadata?.email_confirmed_at || 
           user.user_metadata?.email_verified ||
@@ -93,7 +91,6 @@ export default function ClientDashboard() {
     getUser();
   }, [router, supabase]);
 
-  // ✅ RESEND VERIFICATION EMAIL using Supabase auth.resend()
   const handleResendVerification = async () => {
     if (!user?.email) {
       setError('Email not found');
@@ -133,13 +130,24 @@ export default function ClientDashboard() {
 
   const fetchDashboardStats = async (userId: string) => {
     try {
+      // ✅ DEBUG: Check if session exists
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('🔐 Session:', session);
+      console.log('🔑 Access Token:', session?.access_token ? '✓ Present' : '❌ Missing');
+
+      if (!session) {
+        throw new Error('❌ No active session - JWT token missing! Try logging out and back in.');
+      }
+
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
       console.log('🔍 Fetching dashboard stats for user:', userId);
+      console.log('📅 Date range:', monthStart.toISOString(), '-', monthEnd.toISOString());
 
       // ✅ STEP 1: Get bookings with classes
+      // NOTE: We ALWAYS filter by user_id to help the query optimizer
       const { data: bookings, error: bookingsError } = await supabase
         .from('class_bookings')
         .select(`
@@ -161,6 +169,7 @@ export default function ClientDashboard() {
         throw new Error(`Bookings fetch failed: ${bookingsError.message}`);
       }
       console.log('✅ Bookings fetched:', bookings?.length || 0);
+      console.log('📊 Bookings data:', bookings);
 
       // ✅ STEP 2: Get all coaches for the classes
       const classIds = [...new Set(bookings?.map((b: any) => b.classes?.id).filter(Boolean) || [])];
@@ -185,6 +194,7 @@ export default function ClientDashboard() {
       }
 
       // ✅ STEP 3: Fetch packages
+      // NOTE: We ALWAYS filter by user_id
       const { data: packagesData, error: pkgError } = await supabase
         .from('user_packages')
         .select('id, created_at, expires_at, class_credits_remaining, package_id')
@@ -353,7 +363,7 @@ export default function ClientDashboard() {
           <div className="h-1.5 w-20 bg-gradient-to-r from-red-800 via-red-600 to-red-500" style={{ boxShadow: '0 0 10px #C41E3A' }} />
         </div>
 
-        {/* ✅ EMAIL VERIFICATION BANNER - VISIBLE WHEN NOT VERIFIED */}
+        {/* ✅ EMAIL VERIFICATION BANNER */}
         {!isEmailVerified && (
           <div className="mb-8 bg-yellow-900/30 border-2 border-yellow-700 rounded-lg p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ boxShadow: '0 0 15px rgba(234, 179, 8, 0.2)' }}>
             <div className="flex items-start gap-4 flex-1">
@@ -384,7 +394,6 @@ export default function ClientDashboard() {
               )}
             </button>
 
-            {/* Verification Sent Success Message */}
             {verificationSent && (
               <div className="w-full sm:w-auto col-span-full mt-4 p-3 bg-green-900/40 border border-green-700 rounded flex items-center gap-2">
                 <Check size={20} className="text-green-400 flex-shrink-0" />
