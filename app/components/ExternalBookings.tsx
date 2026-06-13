@@ -20,7 +20,6 @@ const PARTNERS: Partner[] = [
     supportsIframe: true, 
     description: 'Book directly from Nessty without leaving the site.' 
   },
-  // Replace these URLs with the real partner booking links when you have them
   { 
     id: 'fitpass', 
     name: 'Fitpass', 

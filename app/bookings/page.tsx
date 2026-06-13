@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { LogOut, AlertCircle, X, Trash2 } from 'lucide-react';
-import ExternalBookings from '@/components/ExternalBookings';
+import ExternalBookings from '../components/ExternalBookings';
 
 type Booking = {
   id: string;
@@ -222,7 +222,7 @@ export default function BookingsPage() {
           )}
         </div>
 
-        {/* External Bookings Section (NEW) */}
+        {/* External Bookings Section */}
         <ExternalBookings userId={user?.id} />
 
         {/* Past Bookings */}
