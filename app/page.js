@@ -1,4 +1,3 @@
-
 "use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -42,61 +41,69 @@ export default function Home() {
 
   const toggleLang = () => setLang(l => l === "en" ? "es" : "en")
 
-  // ✅ FIXED: Navigation handlers with proper hash scrolling
+  // NAVIGATION HANDLERS
+
+  // Home: scroll to top
+  const handleHomeClick = (e) => {
+    e?.preventDefault()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    setMenuOpen(false)
+  }
+
+  // Schedule: if logged in navigate to dashboard#book-class without automatic scrolling, then scroll to the anchor
   const handleScheduleClick = (e) => {
     e?.preventDefault()
+    setMenuOpen(false)
     if (user) {
-      router.push('/dashboard/client#book-class')
-      // Scroll to section if already on dashboard
+      // push without automatic scroll
+      router.push('/dashboard/client#book-class', { scroll: false })
+      // after navigation (or if already there) attempt to scroll to anchor
       setTimeout(() => {
-        const element = document.getElementById('book-class')
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' })
-        }
-      }, 100)
+        const el = document.getElementById('book-class')
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+      }, 300)
     } else {
       router.push('/login')
     }
   }
 
+  // Packages: if logged in navigate to dashboard#packages without automatic scrolling, then scroll to anchor
   const handlePackageClick = (e) => {
     e?.preventDefault()
+    setMenuOpen(false)
     if (user) {
-      router.push('/dashboard/client#packages')
-      // Scroll to section if already on dashboard
+      router.push('/dashboard/client#packages', { scroll: false })
       setTimeout(() => {
-        const element = document.getElementById('packages')
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' })
-        }
-      }, 100)
+        const el = document.getElementById('packages')
+        if (el) el.scrollIntoView({ behavior: 'smooth' })
+      }, 300)
     } else {
       router.push('/login')
     }
   }
 
+  // Beverages: do NOT navigate away — just scroll to the beverages section on the home page
   const handleBeveragesClick = (e) => {
     e?.preventDefault()
-    const element = document.getElementById('beverages')
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+    setMenuOpen(false)
+    const el = document.getElementById('beverages')
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
 
+  // About: scroll to #about
   const handleAboutClick = (e) => {
     e?.preventDefault()
-    const element = document.getElementById('about')
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+    setMenuOpen(false)
+    const el = document.getElementById('about')
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
 
+  // Contact: scroll to #contact
   const handleContactClick = (e) => {
     e?.preventDefault()
-    const element = document.getElementById('contact')
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
+    setMenuOpen(false)
+    const el = document.getElementById('contact')
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
   }
 
   const handleProfileClick = () => {
@@ -125,11 +132,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* JJ STUDIO LOGO - NOT CLICKABLE */}
-            <a href="#" className="text-xl font-black tracking-widest uppercase cursor-default">
+            <span className="text-xl font-black tracking-widest uppercase cursor-default select-none">
               JJ<span className="text-red-900">Studio</span>
-            </a>
+            </span>
 
-            {/* DIVIDER */}
             <div className="h-6 w-px bg-red-900/30 hidden sm:block" />
 
             {/* INSTAGRAM ICON */}
@@ -182,24 +188,16 @@ export default function Home() {
           {/* Desktop links */}
           <div className="hidden lg:flex items-center gap-8">
             {[
-              ["#", t.nav.home],
-              ["#schedule", t.nav.schedule],
-              ["#packages", t.nav.packages],
-              ["#beverages", t.nav.beverages],
-              ["#about", t.nav.about],
-              ["#contact", t.nav.contact],
-            ].map(([href, label], idx) => (
-              <button key={href}
-                onClick={(e) => {
-                  if (idx === 1) handleScheduleClick(e)
-                  else if (idx === 2) handlePackageClick(e)
-                  else if (idx === 3) handleBeveragesClick(e)
-                  else if (idx === 4) handleAboutClick(e)
-                  else if (idx === 5) handleContactClick(e)
-                  else {
-                    e.preventDefault()
-                  }
-                }}
+              { label: t.nav.home, handler: handleHomeClick },
+              { label: t.nav.schedule, handler: handleScheduleClick },
+              { label: t.nav.packages, handler: handlePackageClick },
+              { label: t.nav.beverages, handler: handleBeveragesClick },
+              { label: t.nav.about, handler: handleAboutClick },
+              { label: t.nav.contact, handler: handleContactClick },
+            ].map(({ label, handler }) => (
+              <button
+                key={label}
+                onClick={handler}
                 className="text-xs font-medium tracking-widest uppercase text-white/70 hover:text-white transition-colors relative group"
               >
                 {label}
@@ -262,6 +260,9 @@ export default function Home() {
         {/* Mobile menu */}
         <div className={`lg:hidden bg-black border-t border-white/10 overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-screen py-6" : "max-h-0"}`}>
           <div className="flex flex-col px-6 gap-5">
+            <button onClick={(e) => { handleHomeClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+              {t.nav.home}
+            </button>
             <button onClick={(e) => { handleScheduleClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
               {t.nav.schedule}
             </button>
