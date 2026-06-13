@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { LogOut, BookOpen, Calendar, ShoppingBag, Zap, Clock, Users, Award, AlertCircle, Mail, Check, Plus } from 'lucide-react';
+import { LogOut, BookOpen, Calendar, ShoppingBag, Zap, Mail, AlertCircle, MessageCircle } from 'lucide-react';
 
 type UserStats = {
   classesThisMonth: number;
@@ -35,6 +35,50 @@ type Class = {
 
 type TabType = 'dashboard' | 'book' | 'bookings' | 'packages';
 
+const PACKAGES = [
+  {
+    id: 1,
+    name: '1 Class',
+    price: 370,
+    currency: 'MXN',
+    classes: 1,
+    expirationDays: 5,
+    beveragePoints: 0,
+    color: 'border-blue-600',
+  },
+  {
+    id: 2,
+    name: '10 Classes',
+    price: 3300,
+    currency: 'MXN',
+    classes: 10,
+    expirationDays: 14,
+    beveragePoints: 0,
+    color: 'border-yellow-600',
+  },
+  {
+    id: 3,
+    name: '24 Classes',
+    price: 7200,
+    currency: 'MXN',
+    classes: 24,
+    expirationDays: 30,
+    beveragePoints: 0,
+    color: 'border-purple-600',
+  },
+  {
+    id: 4,
+    name: 'Unlimited',
+    price: 9999,
+    currency: 'MXN',
+    classes: '∞',
+    expirationDays: 30,
+    beveragePoints: 2,
+    popular: true,
+    color: 'border-red-600',
+  },
+];
+
 export default function Dashboard() {
   const router = useRouter();
   const supabase = createClient();
@@ -52,7 +96,6 @@ export default function Dashboard() {
     activePackages: [],
   });
 
-  // Book Classes state
   const [classes, setClasses] = useState<Class[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [selectedClass, setSelectedClass] = useState<Class | null>(null);
@@ -97,7 +140,6 @@ export default function Dashboard() {
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-      // Fetch bookings
       const { data: bookings } = await supabase
         .from('class_bookings')
         .select('classes(id, name, focus)')
@@ -106,7 +148,6 @@ export default function Dashboard() {
         .lte('signed_up_at', monthEnd.toISOString())
         .eq('attended', true);
 
-      // Fetch packages
       const { data: packagesData } = await supabase
         .from('user_packages')
         .select('id, expires_at, class_credits_remaining, package_id')
@@ -144,11 +185,9 @@ export default function Dashboard() {
       const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
       const goalTarget = Math.ceil(daysInMonth * 0.8);
 
-      // Calculate total credits
       const totalCredits = activePackages.reduce((sum: number, p: any) => sum + p.classCreditsRemaining, 0);
       setClassPoints(totalCredits);
 
-      // Favorites
       const classCount = new Map<string, number>();
       bookings?.forEach((b: any) => {
         const name = b.classes?.name || 'Unknown';
@@ -173,7 +212,6 @@ export default function Dashboard() {
         activePackages,
       });
 
-      // Fetch classes for booking
       await fetchClasses(userId, selectedDate);
     } catch (err) {
       console.error('Stats error:', err);
@@ -258,19 +296,45 @@ export default function Dashboard() {
       {/* Fixed Navigation */}
       <nav className="fixed inset-x-0 top-0 z-50 h-16 bg-black/80 backdrop-blur-lg border-b border-slate-800">
         <div className="max-w-7xl mx-auto h-full px-4 flex items-center justify-between">
-          <div>
-            <span className="text-white font-black text-lg">JJ</span>
-            <span className="text-red-600 font-black text-lg ml-0.5">STUDIO</span>
+          {/* Logo & Social Links */}
+          <div className="flex items-center gap-4">
+            <div>
+              <span className="text-white font-black text-lg">JJ</span>
+              <span className="text-red-600 font-black text-lg ml-0.5">STUDIO</span>
+            </div>
+
+            {/* Social Icons */}
+            <div className="h-10 w-px bg-slate-700" />
+            
+            <a
+              href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg=="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg hover:bg-slate-800 transition text-gray-400 hover:text-pink-500"
+              title="Follow us on Instagram"
+            >
+              <Instagram size={20} />
+            </a>
+
+            <a
+              href={`https://wa.me/5213318373447?text=Hola%20JJ%20Studio`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg hover:bg-slate-800 transition text-gray-400 hover:text-green-500"
+              title="Contact us on WhatsApp"
+            >
+              <MessageCircle size={20} />
+            </a>
           </div>
 
-          {/* Nav Tabs */}
-          <div className="hidden md:flex gap-1">
+          {/* Nav Tabs - Distributed */}
+          <div className="hidden lg:flex gap-4 flex-1 justify-center">
             {[
-              { id: 'dashboard' as const, label: 'Dashboard', icon: '📊' },
-              { id: 'book' as const, label: 'Book Class', icon: '📅' },
-              { id: 'bookings' as const, label: 'My Bookings', icon: '✓' },
-              { id: 'packages' as const, label: 'Packages', icon: '🎁' },
-            ].map(({ id, label, icon }) => (
+              { id: 'dashboard' as const, label: 'Dashboard' },
+              { id: 'book' as const, label: 'Book Class' },
+              { id: 'bookings' as const, label: 'My Bookings' },
+              { id: 'packages' as const, label: 'Packages' },
+            ].map(({ id, label }) => (
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
@@ -280,21 +344,22 @@ export default function Dashboard() {
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
-                {icon} {label}
+                {label}
               </button>
             ))}
           </div>
 
+          {/* Logout */}
           <button
             onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition"
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2"
           >
-            <LogOut size={16} className="inline mr-2" /> Logout
+            <LogOut size={16} /> Logout
           </button>
         </div>
       </nav>
 
-      {/* Main Content - with top padding for fixed nav */}
+      {/* Main Content */}
       <div className="pt-16 pb-12">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Email Verification */}
@@ -338,7 +403,9 @@ export default function Dashboard() {
                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-red-600/50 transition">
                   <p className="text-gray-400 text-xs font-bold uppercase mb-2">Monthly Progress</p>
                   <p className="text-4xl font-black text-white mb-2">{Math.round(stats.progressToGoal)}%</p>
-                  <div className="w-full bg-slate-700 rounded-full h-2"><div className="bg-red-600 h-full rounded-full" style={{ width: `${stats.progressToGoal}%` }} /></div>
+                  <div className="w-full bg-slate-700 rounded-full h-2">
+                    <div className="bg-red-600 h-full rounded-full" style={{ width: `${stats.progressToGoal}%` }} />
+                  </div>
                 </div>
 
                 <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 hover:border-red-600/50 transition">
@@ -391,13 +458,11 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Classes List */}
                 <div className="lg:col-span-2 space-y-4">
-                  {/* Date Picker */}
                   <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 text-center">
                     <p className="text-gray-400 text-xs font-bold uppercase mb-2">Selected Date</p>
                     <p className="text-3xl font-black text-white">{dateString}</p>
                   </div>
 
-                  {/* Classes */}
                   {classes.length > 0 ? (
                     classes.map((cls) => (
                       <div
@@ -435,10 +500,8 @@ export default function Dashboard() {
                     <h3 className="text-xl font-black text-white mb-4">Select Equipment</h3>
 
                     <div className="space-y-4 mb-6">
-                      {/* Mirror */}
                       <div className="bg-gray-600 h-6 rounded flex items-center justify-center text-xs font-bold text-black">MIRROR</div>
 
-                      {/* Row 1 */}
                       <div className="flex justify-center gap-3">
                         {[1, 2].map((n) => (
                           <button
@@ -455,7 +518,6 @@ export default function Dashboard() {
                         ))}
                       </div>
 
-                      {/* Row 2 */}
                       <div className="flex justify-center gap-2">
                         {[3, 4, 5, 6, 7].map((n) => (
                           <button
@@ -503,24 +565,61 @@ export default function Dashboard() {
 
           {/* Packages Tab */}
           {activeTab === 'packages' && (
-            <div className="space-y-6">
-              <h1 className="text-4xl font-black text-white">Choose Your Package</h1>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  { name: 'Starter', price: 29, classes: 10, color: 'border-blue-600' },
-                  { name: 'Pro', price: 59, classes: 25, color: 'border-red-600', popular: true },
-                  { name: 'Elite', price: 99, classes: '∞', color: 'border-purple-600' },
-                ].map((pkg, i) => (
-                  <div key={i} className={`bg-slate-800/50 border-2 ${pkg.color} rounded-xl p-6 relative hover:shadow-xl hover:shadow-red-600/20 transition ${pkg.popular ? 'ring-2 ring-red-600' : ''}`}>
-                    {pkg.popular && <div className="absolute top-0 right-0 bg-red-600 text-white px-3 py-1 rounded-bl-xl font-bold text-xs">POPULAR</div>}
-                    <h3 className="text-2xl font-black text-white mb-2">{pkg.name}</h3>
-                    <p className="text-4xl font-black text-red-600 mb-1">${pkg.price}</p>
-                    <p className="text-gray-400 text-sm mb-6">{pkg.classes} classes/month</p>
-                    <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition">
-                      Choose Plan
+            <div className="space-y-8">
+              <div>
+                <h1 className="text-4xl font-black text-white">Choose Your Package</h1>
+                <p className="text-gray-400 mt-2">Select the perfect plan for your fitness goals</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {PACKAGES.map((pkg) => (
+                  <div
+                    key={pkg.id}
+                    className={`bg-slate-800/50 border-2 ${pkg.color} rounded-xl p-6 relative hover:shadow-xl hover:shadow-red-600/20 transition ${
+                      pkg.popular ? 'ring-2 ring-red-600 scale-105' : ''
+                    }`}
+                  >
+                    {pkg.popular && (
+                      <div className="absolute top-0 right-0 bg-red-600 text-white px-2 py-1 rounded-bl-lg font-bold text-xs">
+                        POPULAR
+                      </div>
+                    )}
+
+                    <h3 className="text-lg font-black text-white mb-1">{pkg.name}</h3>
+                    <p className="text-3xl font-black text-red-600 mb-1">${pkg.price.toLocaleString()}</p>
+                    <p className="text-gray-400 text-xs uppercase mb-4 font-bold">
+                      {pkg.classes === '∞' ? 'Unlimited' : `${pkg.classes} Classes`}
+                    </p>
+
+                    <div className="space-y-2 mb-4 text-xs text-gray-300">
+                      <p>✓ Expires in {pkg.expirationDays} days</p>
+                      {pkg.beveragePoints > 0 && (
+                        <p className="text-green-400 font-bold">✓ +{pkg.beveragePoints} Beverage Points</p>
+                      )}
+                    </div>
+
+                    <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition text-sm">
+                      Get Package
                     </button>
                   </div>
                 ))}
+              </div>
+
+              {/* Company Info */}
+              <div className="bg-slate-800/30 border border-slate-700 rounded-xl p-6 mt-8">
+                <h3 className="text-xl font-black text-white mb-4">Contact JJ Studio</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                  <div>
+                    <p className="text-gray-400 uppercase font-bold mb-1">Phone</p>
+                    <a href="tel:+5213318373447" className="text-red-500 hover:text-red-400 font-bold">
+                      +52 1 33 1837 3447
+                    </a>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 uppercase font-bold mb-1">Address</p>
+                    <p className="text-gray-300">Xentric Lomas Norte, El Campanario, Lcl 211</p>
+                  </div>
+                </div>
               </div>
             </div>
           )}
