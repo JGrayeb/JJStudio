@@ -1,9 +1,11 @@
+
 "use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
 import { content } from "./lib/i18n"
+import { Calendar, Package, Droplet, Users, Zap, ArrowRight } from "lucide-react"
 
 export default function Home() {
   const [lang, setLang] = useState("en")
@@ -41,11 +43,11 @@ export default function Home() {
 
   const toggleLang = () => setLang(l => l === "en" ? "es" : "en")
 
-  // Navigation handlers with auth checks
+  // ✅ FIXED: Proper navigation handlers
   const handleScheduleClick = (e) => {
     e?.preventDefault()
     if (user) {
-      router.push('/bookings')
+      router.push('/dashboard/client?tab=book')
     } else {
       router.push('/login')
     }
@@ -53,12 +55,11 @@ export default function Home() {
 
   const handlePackageClick = (e) => {
     e?.preventDefault()
-    router.push('/packages')
-  }
-
-  const handleBeveragesClick = (e) => {
-    e?.preventDefault()
-    router.push('/beverages')
+    if (user) {
+      router.push('/dashboard/client?tab=packages')
+    } else {
+      router.push('/signup')
+    }
   }
 
   const handleAboutClick = (e) => {
@@ -85,22 +86,25 @@ export default function Home() {
   }
 
   return (
-    <main className="bg-black text-white overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <main className="bg-black text-white overflow-x-hidden" style={{ fontFamily: "'Montserrat', sans-serif" }}>
 
       {/* ── NAVBAR ── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-black/95 shadow-lg shadow-red-900/20" : ""}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-black/95 shadow-lg shadow-red-900/30 border-b border-red-900/20" : ""}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="#" className="text-xl font-black tracking-widest uppercase">
-            JJ<span className="text-red-900">Studio</span>
+          <a href="/" className="flex items-center gap-2 group">
+            <div className="font-black text-2xl tracking-tight">
+              <span className="text-white">JJ</span>
+              <span className="text-red-600 ml-1">STUDIO</span>
+            </div>
+            <Zap size={24} className="text-red-600 group-hover:scale-110 transition-transform" />
           </a>
 
           {/* Desktop links */}
           <div className="hidden lg:flex items-center gap-8">
             {[
-              ["#", t.nav.home],
+              ["#home", t.nav.home],
               ["#schedule", t.nav.schedule],
               ["#packages", t.nav.packages],
-              ["#beverages", t.nav.beverages],
               ["#about", t.nav.about],
               ["#contact", t.nav.contact],
             ].map(([href, label], idx) => (
@@ -108,29 +112,23 @@ export default function Home() {
                 onClick={(e) => {
                   if (idx === 1) handleScheduleClick(e)
                   else if (idx === 2) handlePackageClick(e)
-                  else if (idx === 3) handleBeveragesClick(e)
-                  else if (idx === 4) handleAboutClick(e)
                   else {
                     e.preventDefault()
                     document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' })
                   }
                 }}
-                className="text-xs font-medium tracking-widest uppercase text-white/70 hover:text-white transition-colors relative group"
+                className="text-sm font-bold uppercase tracking-wide text-gray-300 hover:text-red-500 transition-colors relative group"
               >
                 {label}
-                <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-red-900 group-hover:w-full transition-all duration-300" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300" />
               </button>
             ))}
           </div>
 
-          {/* Right side - Language + Auth buttons */}
-          <div className="hidden lg:flex items-center gap-5">
-            <button onClick={toggleLang} className="flex items-center gap-2 cursor-pointer select-none group">
-              <span className={`text-xs font-bold tracking-widest transition-colors ${lang === "es" ? "text-white" : "text-white/30"}`}>ES</span>
-              <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-white/10 border-white/20" : "bg-red-900/40 border-red-900"}`}>
-                <div className={`absolute top-1 w-4 h-4 rounded-full bg-red-800 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
-              </div>
-              <span className={`text-xs font-bold tracking-widest transition-colors ${lang === "en" ? "text-white" : "text-white/30"}`}>EN</span>
+          {/* Right side - Auth buttons */}
+          <div className="hidden lg:flex items-center gap-4">
+            <button onClick={toggleLang} className="flex items-center gap-2 px-3 py-1 rounded-lg border border-red-900/30 hover:border-red-600 transition-colors text-xs font-bold uppercase">
+              {lang === "en" ? "ES" : "EN"}
             </button>
 
             {!isLoading && (
@@ -139,26 +137,26 @@ export default function Home() {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={handleProfileClick}
-                      className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all duration-200 hover:-translate-y-0.5"
+                      className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase text-sm px-6 py-2 rounded-lg transition-all hover:shadow-lg hover:shadow-red-600/50"
                     >
-                      PROFILE
+                      Dashboard
                     </button>
                     <button
                       onClick={handleLogout}
-                      className="text-xs font-bold tracking-widest uppercase text-white/50 hover:text-white transition-colors"
+                      className="text-gray-400 hover:text-red-500 font-bold uppercase text-xs transition-colors"
                     >
-                      LOGOUT
+                      Logout
                     </button>
                   </div>
                 ) : (
                   <>
                     <a href="/login"
-                      className="text-xs font-bold tracking-widest uppercase text-white/50 hover:text-white transition-colors">
-                      LOGIN
+                      className="text-gray-400 hover:text-white font-bold uppercase text-sm transition-colors">
+                      Login
                     </a>
                     <a href="/signup"
-                      className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 transition-all duration-200 hover:-translate-y-0.5">
-                      {t.nav.register}
+                      className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase px-6 py-2 rounded-lg transition-all hover:shadow-lg hover:shadow-red-600/50">
+                      Start Free
                     </a>
                   </>
                 )}
@@ -170,56 +168,45 @@ export default function Home() {
           <button className="lg:hidden flex flex-col gap-1.5 p-2" onClick={() => setMenuOpen(o => !o)}>
             <span className={`w-6 h-0.5 bg-white transition-all ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
             <span className={`w-6 h-0.5 bg-white transition-all ${menuOpen ? "opacity-0" : ""}`} />
-            <span className={`w-4 h-0.5 bg-white transition-all ${menuOpen ? "-rotate-45 -translate-y-2 w-6" : ""}`} />
+            <span className={`w-6 h-0.5 bg-white transition-all ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
           </button>
         </div>
 
         {/* Mobile menu */}
-        <div className={`lg:hidden bg-black border-t border-white/10 overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-screen py-6" : "max-h-0"}`}>
-          <div className="flex flex-col px-6 gap-5">
-            <button onClick={(e) => { handleScheduleClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+        <div className={`lg:hidden bg-black/95 border-t border-red-900/20 overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-screen py-6" : "max-h-0"}`}>
+          <div className="flex flex-col px-6 gap-4">
+            <button onClick={(e) => { handleScheduleClick(e); setMenuOpen(false) }} className="text-sm font-bold uppercase text-gray-300 hover:text-red-500 text-left">
               {t.nav.schedule}
             </button>
-            <button onClick={(e) => { handlePackageClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+            <button onClick={(e) => { handlePackageClick(e); setMenuOpen(false) }} className="text-sm font-bold uppercase text-gray-300 hover:text-red-500 text-left">
               {t.nav.packages}
             </button>
-            <button onClick={(e) => { handleBeveragesClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
-              {t.nav.beverages}
-            </button>
-            <button onClick={(e) => { handleAboutClick(e); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+            <button onClick={(e) => { handleAboutClick(e); setMenuOpen(false) }} className="text-sm font-bold uppercase text-gray-300 hover:text-red-500 text-left">
               {t.nav.about}
             </button>
-            <button onClick={() => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setMenuOpen(false) }} className="text-sm font-medium tracking-widest uppercase text-white/70 hover:text-white text-left">
+            <button onClick={() => { document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); setMenuOpen(false) }} className="text-sm font-bold uppercase text-gray-300 hover:text-red-500 text-left">
               {t.nav.contact}
             </button>
             
-            <div className="border-t border-white/10 pt-5">
-              <button onClick={toggleLang} className="flex items-center gap-2 self-start mb-4">
-                <span className={`text-xs font-bold tracking-widest ${lang === "es" ? "text-white" : "text-white/30"}`}>ES</span>
-                <div className={`relative w-12 h-6 rounded-full border transition-all duration-300 ${lang === "en" ? "bg-white/10 border-white/20" : "bg-red-900/40 border-red-900"}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-red-800 transition-all duration-300 ${lang === "en" ? "left-1" : "left-6"}`} />
-                </div>
-                <span className={`text-xs font-bold tracking-widest ${lang === "en" ? "text-white" : "text-white/30"}`}>EN</span>
-              </button>
-
+            <div className="border-t border-red-900/20 pt-4 space-y-3">
               {!isLoading && (
                 <>
                   {user ? (
                     <>
-                      <button onClick={() => { handleProfileClick(); setMenuOpen(false) }} className="w-full bg-red-900 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 mb-2">
-                        PROFILE
+                      <button onClick={() => { handleProfileClick(); setMenuOpen(false) }} className="w-full bg-red-600 text-white font-bold uppercase text-sm py-2 rounded-lg">
+                        Dashboard
                       </button>
-                      <button onClick={() => { handleLogout(); setMenuOpen(false) }} className="w-full text-xs font-bold tracking-widest uppercase text-white/50 hover:text-white py-2">
-                        LOGOUT
+                      <button onClick={() => { handleLogout(); setMenuOpen(false) }} className="w-full text-gray-400 hover:text-red-500 font-bold uppercase text-sm py-2">
+                        Logout
                       </button>
                     </>
                   ) : (
                     <>
-                      <a href="/login" className="block bg-black border border-white/20 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center mb-2">
-                        LOGIN
+                      <a href="/login" className="block bg-red-900/20 border border-red-900 text-white font-bold uppercase text-sm py-2 text-center rounded-lg">
+                        Login
                       </a>
-                      <a href="/signup" className="block bg-red-900 text-white text-xs font-bold tracking-widest uppercase px-5 py-3 text-center">
-                        {t.nav.register}
+                      <a href="/signup" className="block bg-red-600 text-white font-bold uppercase text-sm py-2 text-center rounded-lg">
+                        Start Free
                       </a>
                     </>
                   )}
@@ -231,216 +218,211 @@ export default function Home() {
       </nav>
 
       {/* ── HERO ── */}
-      <section className="min-h-screen flex flex-col justify-center relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #000 0%, #1a0000 40%, #000 100%)" }} id="home">
+      <section className="min-h-screen flex flex-col justify-center pt-20 relative overflow-hidden" id="home"
+        style={{ background: "linear-gradient(135deg, #0a0a0a 0%, #2d0a0a 50%, #0a0a0a 100%)" }}>
         <div className="absolute inset-0"
-          style={{ backgroundImage: "linear-gradient(rgba(128,0,0,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(128,0,0,0.07) 1px,transparent 1px)", backgroundSize: "60px 60px" }} />
-        <div className="absolute inset-0"
-          style={{ background: "radial-gradient(ellipse at 70% 50%, rgba(128,0,0,0.2) 0%, transparent 70%)" }} />
+          style={{ backgroundImage: "radial-gradient(circle at 20% 50%, rgba(220,38,38,0.1) 0%, transparent 50%)" }} />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
           <div className="max-w-3xl">
-            <p className="text-xs font-semibold tracking-[0.3em] mb-6 uppercase text-red-800">{t.hero.location}</p>
-            <h1 className="font-black uppercase leading-none mb-8"
-              style={{ fontSize: "clamp(3.5rem,9vw,8rem)", letterSpacing: "-0.02em" }}>
-              {t.hero.trust}<br />
-              <span style={{ color: "rgba(255,255,255,0.08)", WebkitTextStroke: "1px rgba(255,255,255,0.35)" }}>
-                {t.hero.the}
-              </span><br />
-              <span className="text-red-800">{t.hero.process}</span>
+            <p className="text-red-600 font-bold uppercase tracking-widest text-sm mb-6">✦ Lagree Megaformer Training</p>
+            <h1 className="font-black uppercase leading-tight mb-6"
+              style={{ fontSize: "clamp(2.5rem, 8vw, 5rem)" }}>
+              Shake, Sweat,<br />
+              <span className="text-red-600">Sculpt Your Body</span>
             </h1>
-            <p className="text-lg font-light max-w-md mb-10 leading-relaxed text-white/50">{t.hero.sub}</p>
+            <p className="text-lg text-gray-300 max-w-xl mb-8 leading-relaxed">
+              Low-impact, high-intensity megaformer training that delivers transformative results in just 50 minutes. Join hundreds of members who've already discovered their strength.
+            </p>
             <div className="flex flex-wrap gap-4">
               <a href="/signup"
-                className="bg-red-900 hover:bg-red-800 text-white text-sm font-bold tracking-widest uppercase px-8 py-4 transition-all hover:-translate-y-0.5">
-                {t.hero.cta1}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase px-8 py-4 rounded-lg transition-all hover:shadow-lg hover:shadow-red-600/50 flex items-center gap-2">
+                Get Started <ArrowRight size={18} />
               </a>
               <button onClick={handleAboutClick}
-                className="border border-white text-white text-sm font-bold tracking-widest uppercase px-8 py-4 hover:bg-white hover:text-black transition-all">
-                {t.hero.cta2}
+                className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-bold uppercase px-8 py-4 rounded-lg transition-all">
+                Learn More
               </button>
             </div>
           </div>
         </div>
 
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-          <span className="text-xs tracking-widest uppercase text-white/25">{t.hero.scroll}</span>
-          <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
-            <path d="M8 0v20M1 13l7 7 7-7" stroke="rgba(128,0,0,0.6)" strokeWidth="1.5" />
+          <span className="text-xs tracking-widest uppercase text-red-900">Scroll</span>
+          <svg width="20" height="30" viewBox="0 0 20 30" fill="none">
+            <path d="M10 5v15M5 15l5 5 5-5" stroke="rgba(220,38,38,0.8)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
       </section>
 
-      {/* ── MARQUEE ── */}
-      <div className="py-4 overflow-hidden border-y border-red-950" style={{ background: "#800000" }}>
-        <div className="flex whitespace-nowrap" style={{ animation: "marquee 25s linear infinite" }}>
-          {[...Array(2)].map((_, i) => (
-            <span key={i} className="flex items-center gap-0 shrink-0">
-              {t.marquee.split(" · ").map((item, j) => (
-                <span key={j} className="flex items-center">
-                  <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-white/85">{item}</span>
-                  <span className="text-xs text-white/35 mx-2">✦</span>
-                </span>
-              ))}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* ── CLASSES ── */}
-      <section className="py-24 bg-black" id="schedule">
+      {/* ── QUICK STATS ── */}
+      <section className="py-16 bg-gray-900/50 border-y border-red-900/20">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
-            <div>
-              <div className="w-14 h-0.5 bg-red-900 mb-6" />
-              <h2 className="font-black uppercase leading-none text-4xl lg:text-6xl" style={{ letterSpacing: "-0.02em" }}>
-                {t.classes.title1}<br /><span className="text-red-800">{t.classes.title2}</span>
-              </h2>
-            </div>
-            <button onClick={handleScheduleClick} className="border border-white text-white text-xs font-bold tracking-widest uppercase px-6 py-3 hover:bg-white hover:text-black transition-all self-start">
-              {t.classes.book}
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-white/5"
-            style={{ background: "rgba(255,255,255,0.05)", gap: "1px" }}>
-            {t.classes.items.map((cls, i) => (
-              <div key={i}
-                className={`bg-black p-8 group cursor-pointer hover:-translate-y-1 transition-all duration-300 ${i === 1 ? "border-x border-white/5" : ""} ${i >= 3 ? "border-t border-white/5" : ""}`}>
-                {cls.badge && (
-                  <div className="flex items-center gap-3 mb-4">
-                    <span className="text-4xl font-black text-red-800">{cls.num}</span>
-                    <span className="text-xs tracking-widest uppercase px-2 py-1 border border-red-900/50 text-red-800">{cls.badge}</span>
-                  </div>
-                )}
-                {!cls.badge && <div className="text-4xl font-black text-red-800 mb-4">{cls.num}</div>}
-                <h3 className="text-xl font-bold uppercase tracking-wide mb-3">{cls.name}</h3>
-                <p className="text-sm leading-relaxed mb-6 text-white/40">{cls.desc}</p>
-                <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-white/25">
-                  <span>{cls.duration}</span><span>•</span><span>{cls.level}</span>
-                </div>
-                <div className="h-0.5 bg-red-900 mt-6 w-0 group-hover:w-full transition-all duration-500" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { icon: Users, label: "Active Members", value: "500+" },
+              { icon: Zap, label: "Classes Weekly", value: "45+" },
+              { icon: Calendar, label: "Est. Since", value: "2023" },
+              { icon: Package, label: "Flexible Plans", value: "4 Types" },
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <stat.icon size={32} className="text-red-600 mx-auto mb-3" />
+                <p className="text-sm text-gray-400 uppercase tracking-wide mb-1">{stat.label}</p>
+                <p className="text-3xl font-black text-white">{stat.value}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── PACKAGES ── */}
-      <section className="py-24 bg-zinc-950" id="packages">
+      {/* ── SCHEDULE SECTION ── */}
+      <section className="py-24 bg-black" id="schedule">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="w-14 h-0.5 bg-red-900 mx-auto mb-6" />
-            <h2 className="font-black uppercase leading-none text-4xl lg:text-6xl" style={{ letterSpacing: "-0.02em" }}>
-              {t.packages.title1} <span className="text-red-800">{t.packages.title2}</span>
-            </h2>
-            <p className="mt-4 max-w-sm mx-auto text-sm text-white/35">{t.packages.sub}</p>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
+            <div>
+              <p className="text-red-600 font-bold uppercase tracking-widest text-sm mb-3">📅 Book Your Spot</p>
+              <h2 className="font-black uppercase leading-tight text-4xl lg:text-5xl">
+                Find Your Perfect<br /><span className="text-red-600">Class Time</span>
+              </h2>
+            </div>
+            <button onClick={handleScheduleClick} className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase px-8 py-4 rounded-lg transition-all hover:shadow-lg hover:shadow-red-600/50 flex items-center gap-2 self-start lg:self-end">
+              <Calendar size={20} />
+              {user ? "View Schedule" : "Sign Up to Book"}
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {t.packages.plans.map((plan, i) => (
+            {[
+              { time: "6:00 AM", class: "Full Body Blast", coach: "Javi", spots: "3" },
+              { time: "9:00 AM", class: "Power Hour", coach: "Available", spots: "6" },
+              { time: "12:00 PM", class: "Midday Sculpt", coach: "TBD", spots: "5" },
+              { time: "6:00 PM", class: "Evening Burn", coach: "Javi", spots: "2" },
+            ].map((slot, i) => (
+              <div key={i} className="bg-gray-900/50 border border-red-900/30 rounded-lg p-6 hover:border-red-600 transition-all hover:shadow-lg hover:shadow-red-900/20 cursor-pointer"
+                onClick={handleScheduleClick}>
+                <p className="text-red-600 font-bold text-lg mb-2">{slot.time}</p>
+                <h3 className="font-bold text-white text-lg mb-2">{slot.class}</h3>
+                <div className="space-y-1 text-sm text-gray-400">
+                  <p>Coach: <span className="text-white">{slot.coach}</span></p>
+                  <p>{slot.spots} spots available</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <button onClick={handleScheduleClick} className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase px-12 py-4 rounded-lg transition-all inline-flex items-center gap-2">
+              View Full Schedule <ArrowRight size={20} />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── PACKAGES SECTION ── */}
+      <section className="py-24 bg-gray-950" id="packages">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <p className="text-red-600 font-bold uppercase tracking-widest text-sm mb-3">💪 Pricing Plans</p>
+            <h2 className="font-black uppercase leading-tight text-4xl lg:text-5xl mb-4">
+              Choose Your <span className="text-red-600">Membership</span>
+            </h2>
+            <p className="text-gray-400 max-w-md mx-auto">All plans include unlimited class access and flexible pause options.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            {[
+              { name: "Starter", price: "$99", period: "/month", classes: "4 Classes/month", popular: false },
+              { name: "Active", price: "$199", period: "/month", classes: "8 Classes/month", popular: false },
+              { name: "Unlimited", price: "$299", period: "/month", classes: "Unlimited Classes", popular: true },
+              { name: "Annual", price: "$2,999", period: "/year", classes: "Unlimited + Perks", popular: false },
+            ].map((plan, i) => (
               <div key={i}
-                className={`p-7 flex flex-col hover:-translate-y-1.5 transition-all duration-300 relative border ${plan.popular ? "border-red-900" : "border-white/10"}`}>
+                className={`relative p-8 rounded-lg transition-all ${plan.popular ? "bg-red-600 border-2 border-red-600 shadow-lg shadow-red-600/50 scale-105" : "bg-gray-900/50 border border-red-900/30 hover:border-red-600"}`}>
                 {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-red-900 text-white text-xs px-4 py-1 tracking-widest uppercase whitespace-nowrap">
-                    {t.packages.popular}
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-red-800 text-white text-xs font-bold uppercase px-4 py-1 rounded">
+                    Most Popular
                   </div>
                 )}
-                <p className={`text-xs tracking-widest uppercase mb-4 ${plan.popular ? "text-red-800" : "text-white/35"}`}>{plan.label}</p>
-                <div className="font-black leading-none mb-1" style={{ fontSize: "clamp(2rem,4vw,3rem)" }}>{plan.price}</div>
-                <p className="text-xs mb-1 text-white/30">{plan.sub}</p>
-                <div className="w-14 h-0.5 bg-red-900 my-5" />
-                <ul className="space-y-2.5 mb-8 flex-1">
-                  <li className="text-sm flex items-center gap-3 text-white/55"><span className="text-red-800">✓</span>{plan.classes}</li>
-                  <li className="text-sm flex items-center gap-3 text-white/55"><span className="text-red-800">✓</span>All class types</li>
-                  <li className="text-sm flex items-center gap-3 text-white/55"><span className="text-red-800">✓</span>{plan.expire}</li>
-                  <li className={`text-sm flex items-center gap-3 ${plan.beverage ? "text-white/80" : "text-white/20"}`}>
-                    <span>{plan.beverage ? "✓" : "–"}</span>
-                    {plan.beverage ? t.packages.bev : t.packages.noBev}
-                  </li>
-                </ul>
+                <h3 className={`text-xl font-bold uppercase mb-2 ${plan.popular ? "text-white" : "text-white"}`}>
+                  {plan.name}
+                </h3>
+                <div className="mb-6">
+                  <span className={`text-4xl font-black ${plan.popular ? "text-white" : "text-red-600"}`}>
+                    {plan.price}
+                  </span>
+                  <span className={`text-sm ml-2 ${plan.popular ? "text-red-100" : "text-gray-400"}`}>
+                    {plan.period}
+                  </span>
+                </div>
+                <p className={`text-sm font-bold uppercase mb-6 ${plan.popular ? "text-red-100" : "text-gray-400"}`}>
+                  {plan.classes}
+                </p>
                 <button onClick={handlePackageClick}
-                  className={`block text-center text-xs font-bold tracking-widest uppercase px-4 py-3 transition-all ${plan.popular ? "bg-red-900 hover:bg-red-800 text-white" : "border border-white text-white hover:bg-white hover:text-black"}`}>
-                  {t.packages.cta}
+                  className={`w-full font-bold uppercase py-3 rounded-lg transition-all ${plan.popular ? "bg-white text-red-600 hover:bg-gray-100" : "border border-red-600 text-red-600 hover:bg-red-600 hover:text-white"}`}>
+                  Learn More
                 </button>
               </div>
             ))}
           </div>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-6">
-            {t.packages.perClass.map((item, i) => (
-              <span key={i} className={`text-xs uppercase tracking-widest ${i === 2 ? "text-red-800 font-bold" : "text-white/35"}`}>{item}</span>
-            ))}
+          <div className="bg-gray-900/50 border border-red-900/30 rounded-lg p-8 text-center">
+            <p className="text-gray-300 mb-4">Not sure which plan is right for you?</p>
+            <button onClick={handlePackageClick} className="text-red-600 font-bold hover:text-red-500 underline uppercase text-sm">
+              Chat with our team →
+            </button>
           </div>
         </div>
       </section>
 
-      {/* ── BEVERAGES ── */}
-      <section className="py-24 bg-black" id="beverages">
+      {/* ── ABOUT / WHY LAGREE ── */}
+      <section className="py-24 bg-black" id="about">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-20">
             <div>
-              <div className="w-14 h-0.5 bg-red-900 mb-6" />
-              <h2 className="font-black uppercase leading-none text-4xl lg:text-6xl mb-6" style={{ letterSpacing: "-0.02em" }}>
-                {t.beverages.title1} <span className="text-red-800">{t.beverages.title2}</span>
+              <p className="text-red-600 font-bold uppercase tracking-widest text-sm mb-4">💡 Why Choose Us</p>
+              <h2 className="font-black uppercase leading-tight text-4xl lg:text-5xl mb-6">
+                The Lagree <span className="text-red-600">Method Works</span>
               </h2>
-              <p className="text-base leading-relaxed mb-4 text-white/50">{t.beverages.p1}</p>
-              <p className="text-sm leading-relaxed mb-8 text-white/30">{t.beverages.p2}</p>
-              <button onClick={handleBeveragesClick} className="bg-red-900 hover:bg-red-800 text-white text-xs font-bold tracking-widest uppercase px-8 py-4 inline-block transition-all">
-                {t.beverages.cta}
+              <div className="space-y-4 text-gray-300 text-lg leading-relaxed mb-8">
+                <p>✦ <strong>Low-impact, high-intensity</strong> — Strengthen your entire body without joint stress</p>
+                <p>✦ <strong>50 minutes, total body</strong> — Every class targets all major muscle groups</p>
+                <p>✦ <strong>Visible results fast</strong> — Members report changes within 2-3 weeks</p>
+                <p>✦ <strong>Supportive community</strong> — Train alongside people who share your goals</p>
+              </div>
+              <button onClick={handleScheduleClick} className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase px-8 py-4 rounded-lg transition-all">
+                Start Your Transformation
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {t.beverages.items.map((item, i) => (
-                <div key={i} className="p-6 border border-white/8 bg-white/[0.03] hover:-translate-y-1 transition-all duration-300">
-                  <div className="text-2xl mb-3">{item.icon}</div>
-                  <h4 className="font-bold uppercase text-sm tracking-wide mb-2">{item.name}</h4>
-                  <p className="text-xs leading-relaxed text-white/35">{item.desc}</p>
-                </div>
-              ))}
+            <div className="relative h-96 rounded-lg overflow-hidden border-2 border-red-900/30">
+              <Image 
+                src="/images/coach-javi.jpeg" 
+                alt="Javi - Head Coach" 
+                fill 
+                className="object-cover"
+              />
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* ── ABOUT / COACHES ── */}
-      <section className="py-24 bg-zinc-950" id="about">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="w-14 h-0.5 bg-red-900 mx-auto mb-6" />
-            <h2 className="font-black uppercase leading-none text-4xl lg:text-6xl" style={{ letterSpacing: "-0.02em" }}>
-              {t.about.title1} <span className="text-red-800">{t.about.title2}</span>
-            </h2>
-            <p className="mt-4 max-w-md mx-auto text-sm text-white/35">{t.about.sub}</p>
-          </div>
-
-          <div className="max-w-2xl mx-auto mb-12">
-            <div className="border border-red-900/40 p-10 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-40 h-40 opacity-5"
-                style={{ background: "radial-gradient(circle, #800000, transparent)" }} />
-              <div className="flex flex-col sm:flex-row items-start gap-8">
-                <div className="w-32 h-32 flex-shrink-0 relative overflow-hidden border-2 border-red-900">
-                  <Image src="/images/coach-javi.jpeg" alt="Coach Javi" fill className="object-cover object-top" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2 flex-wrap">
-                    <h3 className="text-2xl font-black uppercase tracking-wide">{t.about.coachName}</h3>
-                    <span className="text-xs tracking-widest uppercase px-2 py-1 border border-red-900/50 text-red-800">
-                      {t.about.available}
-                    </span>
+          {/* Our Coach */}
+          <div className="bg-gray-900/50 border border-red-900/30 rounded-lg p-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+              <div className="md:col-span-1">
+                <h3 className="text-2xl font-black uppercase mb-2">Meet Your Coach</h3>
+                <p className="text-red-600 font-bold uppercase text-sm">Head Instructor</p>
+              </div>
+              <div className="md:col-span-2">
+                <h4 className="text-xl font-bold uppercase mb-4">Javi Delgado</h4>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  With 5+ years of Lagree experience and 3+ years teaching, Javi brings energy, technique, and personalized attention to every class. Whether you're just starting or pushing for PRs, Javi's got you covered.
+                </p>
+                <div className="flex gap-8">
+                  <div>
+                    <p className="text-red-600 font-bold text-xl">500+</p>
+                    <p className="text-gray-400 text-sm">Classes Led</p>
                   </div>
-                  <p className="text-xs tracking-widest uppercase mb-4 text-white/30">{t.about.coachRole}</p>
-                  <p className="text-sm leading-relaxed text-white/50">{t.about.coachBio}</p>
-                  <div className="flex gap-6 mt-6">
-                    <div className="text-center">
-                      <div className="font-black text-xl text-red-800">{t.about.allTypes}</div>
-                      <div className="text-xs uppercase tracking-widest mt-1 text-white/25">{t.about.allTypesSub}</div>
-                    </div>
-                    <div className="w-px bg-white/8" />
-                    <div className="text-center">
-                      <div className="font-black text-xl text-red-800">{t.about.commit}</div>
-                      <div className="text-xs uppercase tracking-widest mt-1 text-white/25">{t.about.commitSub}</div>
-                    </div>
+                  <div>
+                    <p className="text-red-600 font-bold text-xl">95%</p>
+                    <p className="text-gray-400 text-sm">Member Satisfaction</p>
                   </div>
                 </div>
               </div>
@@ -450,136 +432,134 @@ export default function Home() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="relative py-32 overflow-hidden" id="register"
-        style={{ background: "linear-gradient(135deg, #1a0000 0%, #000 50%, #1a0000 100%)" }}>
-        <div className="absolute inset-0 opacity-30"
-          style={{ backgroundImage: "linear-gradient(rgba(128,0,0,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(128,0,0,0.07) 1px,transparent 1px)", backgroundSize: "60px 60px" }} />
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <p className="text-xs tracking-[0.3em] uppercase mb-4 font-semibold text-red-800">{t.cta.ready}</p>
-          <h2 className="font-black uppercase leading-none mb-8" style={{ fontSize: "clamp(3rem,8vw,8rem)", letterSpacing: "-0.02em" }}>
-            {t.cta.join}<br /><span className="text-red-800">{t.cta.studio}</span>
+      <section className="py-32 bg-gradient-to-b from-black to-red-950">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <p className="text-red-600 font-bold uppercase tracking-widest text-sm mb-4">🚀 Ready?</p>
+          <h2 className="font-black uppercase leading-tight text-4xl lg:text-5xl mb-6">
+            Join the JJ Studio <span className="text-red-600">Community</span>
           </h2>
-          <p className="text-lg mb-4 max-w-md mx-auto text-white/40">{t.cta.sub}</p>
-          <p className="text-xs uppercase tracking-widest mb-10 text-white/25">{t.cta.location}</p>
-          <a href="/signup" className="bg-red-900 hover:bg-red-800 text-white text-sm font-bold tracking-widest uppercase px-12 py-5 inline-block transition-all hover:-translate-y-0.5">
-            {t.cta.btn}
-          </a>
+          <p className="text-gray-300 text-lg mb-8 max-w-xl mx-auto">
+            Your first class is free. No credit card required. Come experience the Lagree Method and see why hundreds of people are obsessed.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/signup" className="bg-red-600 hover:bg-red-700 text-white font-bold uppercase px-12 py-4 rounded-lg transition-all hover:shadow-lg hover:shadow-red-600/50">
+              Claim Free Class
+            </a>
+            <button onClick={handleScheduleClick} className="border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-bold uppercase px-12 py-4 rounded-lg transition-all">
+              View Schedule
+            </button>
+          </div>
         </div>
       </section>
 
       {/* ── CONTACT ── */}
-      <section className="py-24 bg-black" id="contact">
+      <section className="py-24 bg-black border-t border-red-900/20" id="contact">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <div>
-              <div className="w-14 h-0.5 bg-red-900 mb-6" />
-              <h2 className="font-black uppercase leading-none text-4xl lg:text-5xl mb-8" style={{ letterSpacing: "-0.02em" }}>
-                {t.contact.title1} <span className="text-red-800">{t.contact.title2}</span>
+              <p className="text-red-600 font-bold uppercase tracking-widest text-sm mb-4">📍 Get In Touch</p>
+              <h2 className="font-black uppercase leading-tight text-4xl lg:text-5xl mb-12">
+                Visit JJ <span className="text-red-600">Studio</span>
               </h2>
-              <div className="space-y-6">
+              
+              <div className="space-y-8">
                 <div>
-                  <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.location}</p>
-                  <p className="text-sm text-white/65">{t.contact.locationVal}</p>
+                  <p className="text-gray-400 text-xs uppercase font-bold tracking-widest mb-2">Location</p>
+                  <p className="text-white text-lg">Xentric Lomas Norte, El Campanario, Lcl 211<br />Monterrey, México</p>
                 </div>
                 <div>
-                  <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.hours}</p>
-                  <p className="text-sm text-white/65">{t.contact.hoursVal1}</p>
-                  <p className="text-sm text-white/65">{t.contact.hoursVal2}</p>
+                  <p className="text-gray-400 text-xs uppercase font-bold tracking-widest mb-2">Hours</p>
+                  <p className="text-white">Monday - Friday: 6:00 AM - 7:00 PM<br />Saturday: 8:00 AM - 5:00 PM<br />Sunday: Closed</p>
                 </div>
                 <div>
-                    <p className="text-xs tracking-widest uppercase mb-1 text-white/25">{t.contact.email}</p>
-                    <a href="mailto:administracion@jjstudio.mx" className="text-sm text-white/65 hover:text-white transition-colors">
-                       administracion@jjstudio.mx
-                    </a>
+                  <p className="text-gray-400 text-xs uppercase font-bold tracking-widest mb-2">Contact</p>
+                  <a href="tel:+5213318373447" className="text-red-600 hover:text-red-500 text-lg font-bold mb-2 block">
+                    +52 1 33 1837 3447
+                  </a>
+                  <a href="mailto:administracion@jjstudio.mx" className="text-red-600 hover:text-red-500">
+                    administracion@jjstudio.mx
+                  </a>
                 </div>
                 <div>
-                  <p className="text-xs tracking-widest uppercase mb-2 text-white/25">{t.contact.follow}</p>
+                  <p className="text-gray-400 text-xs uppercase font-bold tracking-widest mb-3">Follow Us</p>
                   <div className="flex gap-4">
-                   {[
-                     { name: "Instagram", url: "https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" },
-                    { name: "TikTok", url: "https://tiktok.com/@yourhandle" },
-                    { name: "WhatsApp", url: "https://wa.me/5213318373447" },
-                      ].map(link => (
-                        <a key={link.name} href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs tracking-widest uppercase text-white/35 hover:text-white transition-colors">{link.name}</a>
-                    ))}
+                    <a href="https://www.instagram.com/jj_lagree_experience" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-red-600 font-bold uppercase text-sm">Instagram</a>
+                    <a href="https://wa.me/5213318373447" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-red-600 font-bold uppercase text-sm">WhatsApp</a>
                   </div>
                 </div>
               </div>
             </div>
 
-            <form
-              className="space-y-4"
-              onSubmit={async (e) => {
-                e.preventDefault()
-                setFormState("loading")
-                try {
-                  const res = await fetch("/api/contact", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData),
-                  })
-                  const data = await res.json()
-                  if (data.success) {
-                    setFormState("success")
-                    setFormData({ firstName: "", lastName: "", email: "", message: "" })
-                  } else {
-                    setFormState("error")
-                  }
-                } catch (err) {
-                  console.error('Contact submit error:', err)
+            <form className="space-y-4" onSubmit={async (e) => {
+              e.preventDefault()
+              setFormState("loading")
+              try {
+                const res = await fetch("/api/contact", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(formData),
+                })
+                const data = await res.json()
+                if (data.success) {
+                  setFormState("success")
+                  setFormData({ firstName: "", lastName: "", email: "", message: "" })
+                } else {
                   setFormState("error")
                 }
-              }}
-            >
+              } catch (err) {
+                console.error('Contact submit error:', err)
+                setFormState("error")
+              }
+            }}>
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="text"
-                  placeholder={t.contact.firstName}
+                  placeholder="First Name"
                   value={formData.firstName}
                   onChange={e => setFormData(p => ({ ...p, firstName: e.target.value }))}
                   required
-                  className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors"
+                  className="px-4 py-3 text-sm text-white bg-gray-900/50 border border-red-900/30 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
                 />
                 <input
                   type="text"
-                  placeholder={t.contact.lastName}
+                  placeholder="Last Name"
                   value={formData.lastName}
                   onChange={e => setFormData(p => ({ ...p, lastName: e.target.value }))}
-                  className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors"
+                  className="px-4 py-3 text-sm text-white bg-gray-900/50 border border-red-900/30 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
                 />
               </div>
               <input
                 type="email"
-                placeholder={t.contact.emailPlaceholder}
+                placeholder="Email"
                 value={formData.email}
                 onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                 required
-                className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors"
+                className="px-4 py-3 text-sm text-white w-full bg-gray-900/50 border border-red-900/30 rounded-lg focus:outline-none focus:border-red-600 transition-colors"
               />
               <textarea
-                placeholder={t.contact.message}
+                placeholder="Message"
                 rows={4}
                 value={formData.message}
                 onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
                 required
-                className="px-4 py-3 text-sm text-white w-full bg-white/5 border border-white/10 focus:outline-none focus:border-red-900 transition-colors resize-none"
+                className="px-4 py-3 text-sm text-white w-full bg-gray-900/50 border border-red-900/30 rounded-lg focus:outline-none focus:border-red-600 transition-colors resize-none"
               />
               <button
                 type="submit"
                 disabled={formState === "loading"}
-                className="bg-red-900 hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold tracking-widest uppercase px-8 py-4 w-full transition-all"
+                className="bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold uppercase px-8 py-3 w-full rounded-lg transition-all"
               >
-                {formState === "loading" ? "Sending..." : t.contact.send}
+                {formState === "loading" ? "Sending..." : "Send Message"}
               </button>
 
               {formState === "success" && (
-                <div className="border border-red-900/50 bg-red-900/10 px-4 py-3 text-sm text-red-400 tracking-wide text-center">
-                  ✓ Message sent — we'll get back to you soon.
+                <div className="bg-green-900/20 border border-green-600 text-green-400 px-4 py-3 rounded-lg text-sm text-center font-bold uppercase">
+                  ✓ Message sent! We'll get back soon.
                 </div>
               )}
               {formState === "error" && (
-                <div className="border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/40 tracking-wide text-center">
-                  Something went wrong. Try emailing us at administracion@jjstudio.mx
+                <div className="bg-red-900/20 border border-red-600 text-red-400 px-4 py-3 rounded-lg text-sm text-center font-bold uppercase">
+                  Error sending message. Try emailing us directly.
                 </div>
               )}
             </form>
@@ -588,15 +568,11 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="bg-black border-t border-white/5 py-12">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
-          <span className="text-xl font-black tracking-widest uppercase">JJ<span className="text-red-800">Studio</span></span>
-          <div className="flex flex-col sm:flex-row items-center gap-4 text-center">
-            <p className="text-xs uppercase tracking-widest text-white/20">{t.footer.tagline}</p>
-            <span className="text-white/10 hidden sm:inline">|</span>
-            <p className="text-xs text-white/20">{t.footer.location}</p>
-          </div>
-          <p className="text-xs text-white/15">{t.footer.rights}</p>
+      <footer className="bg-black border-t border-red-900/20 py-8">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <p className="text-gray-400 text-sm">
+            © 2024 JJ Studio. All rights reserved. | <a href="#" className="text-red-600 hover:text-red-500">Privacy Policy</a>
+          </p>
         </div>
       </footer>
 
@@ -608,4 +584,4 @@ export default function Home() {
       `}</style>
     </main>
   )
-} 
+}
