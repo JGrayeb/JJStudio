@@ -14,6 +14,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
   const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", message: "" })
   const [formState, setFormState] = useState("idle")
+  const [instaPosts, setInstaPosts] = useState([])
   const router = useRouter()
   const supabase = createClient()
   const t = content[lang]
@@ -45,6 +46,29 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
+  // Fetch Instagram posts via backend
+  useEffect(() => {
+    const fetchInstaPosts = async () => {
+      try {
+        const res = await fetch("/api/instagram-posts")
+        const data = await res.json()
+        if (data.posts) {
+          setInstaPosts(data.posts.slice(0, 4)) // Get last 4 posts
+        }
+      } catch (err) {
+        console.error('Instagram fetch error:', err)
+        // Fallback: use placeholder data
+        setInstaPosts([
+          { id: 1, image: "/images/insta-1.jpg", caption: "Strong is beautiful 💪", likes: 234 },
+          { id: 2, image: "/images/insta-2.jpg", caption: "MegaBurn 45 never fails 🔥", likes: 456 },
+          { id: 3, image: "/images/insta-3.jpg", caption: "Trust the Process ✦", likes: 389 },
+          { id: 4, image: "/images/insta-4.jpg", caption: "Transform with us 🎯", likes: 512 },
+        ])
+      }
+    }
+    fetchInstaPosts()
+  }, [])
+
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut()
@@ -53,6 +77,15 @@ export default function Home() {
     }
     setUser(null)
     router.push('/')
+  }
+
+  const handleBooking = (e) => {
+    e?.preventDefault()
+    if (user) {
+      router.push('/dashboard/client')
+    } else {
+      router.push('/login')
+    }
   }
 
   return (
@@ -156,14 +189,14 @@ export default function Home() {
         <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50, background: scrolled ? "rgba(10, 10, 10, 0.98)" : "rgba(10, 10, 10, 0.90)", borderBottom: scrolled ? "1px solid rgba(196, 30, 30, 0.2)" : "none", transition: "all 0.3s" }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "1rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             {/* Logo */}
-            <span style={{ fontSize: "0.875rem", fontWeight: "900", letterSpacing: "0.1em", textTransform: "uppercase", color: "white" }}>
+            <a href="/" style={{ fontSize: "0.875rem", fontWeight: "900", letterSpacing: "0.1em", textTransform: "uppercase", color: "white", textDecoration: "none" }}>
               JJ<span style={{ color: "#c41e1e" }}>STUDIO</span>
-            </span>
+            </a>
 
             {/* Desktop Nav */}
             <div style={{ display: "none" }} className="lg:flex lg:items-center lg:gap-8">
               {["SCHEDULE", "PACKAGES", "ABOUT", "CONTACT"].map((label) => (
-                <a key={label} href={`#${label.toLowerCase()}`} className="nav-link">
+                <a key={label} href={`#${label.toLowerCase()}`} className="nav-link" style={{ textDecoration: "none" }}>
                   {label}
                 </a>
               ))}
@@ -195,8 +228,8 @@ export default function Home() {
                     </>
                   ) : (
                     <>
-                      <a href="/login" className="nav-link" style={{ fontSize: "0.625rem" }}>LOGIN</a>
-                      <a href="/signup" className="btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.625rem" }}>SIGN UP</a>
+                      <a href="/login" className="nav-link" style={{ fontSize: "0.625rem", textDecoration: "none" }}>LOGIN</a>
+                      <a href="/signup" className="btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.625rem", textDecoration: "none" }}>SIGN UP</a>
                     </>
                   )}
                 </div>
@@ -205,7 +238,7 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* ── HERO SECTION - PPLA STYLE WITH IMAGE ON RIGHT ── */}
+        {/* ── HERO SECTION - PPLA STYLE ── */}
         <section style={{ minHeight: "100vh", display: "flex", alignItems: "center", position: "relative", overflow: "hidden", paddingTop: "80px" }}>
           {/* Background Image - Right Side */}
           <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "55%", background: "linear-gradient(135deg, rgba(10, 10, 10, 0.7) 0%, rgba(106, 6, 6, 0.3) 100%)" }}>
@@ -250,7 +283,7 @@ export default function Home() {
               </p>
 
               {/* CTA Button */}
-              <button onClick={() => router.push('/signup')} className="btn-primary">
+              <button onClick={handleBooking} className="btn-primary">
                 BOOK YOUR FIRST CLASS
               </button>
 
@@ -270,7 +303,7 @@ export default function Home() {
                 HOW WE DO IT
               </p>
               <h2 style={{ fontSize: "clamp(2rem, 6vw, 3.5rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
-                <span style={{ color: "#c41e1e" }}>MEGABURNBURN 45</span> is our signature class
+                <span style={{ color: "#c41e1e" }}>MEGABURN 45</span> is our signature class
               </h2>
             </div>
 
@@ -310,7 +343,7 @@ export default function Home() {
             </div>
 
             <div style={{ textAlign: "center" }}>
-              <button onClick={() => document.getElementById('schedule').scrollIntoView({ behavior: 'smooth' })} className="btn-primary">
+              <button onClick={handleBooking} className="btn-primary">
                 VIEW OUR SCHEDULES
               </button>
             </div>
@@ -378,23 +411,119 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── PACKAGES ── */}
-        <section style={{ padding: "6rem 1.5rem", background: "#1a1a1a" }} id="packages">
+        {/* ── INSTAGRAM FEED ── */}
+        <section style={{ padding: "6rem 1.5rem", background: "#1a1a1a" }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: "4rem" }}>
               <div style={{ width: "4rem", height: "0.25rem", background: "linear-gradient(to right, #c41e1e, #690606)", margin: "0 auto 1.5rem", borderRadius: "9999px" }} />
               <h2 style={{ fontSize: "clamp(2rem, 6vw, 3.5rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
-                Membership <span style={{ color: "#c41e1e" }}>PLANS</span>
+                Follow Our <span style={{ color: "#c41e1e" }}>JOURNEY</span>
               </h2>
+              <p style={{ fontSize: "0.95rem", color: "#9ca3af", marginTop: "1rem" }}>
+                @jj_lagree_experience
+              </p>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1.5rem" }}>
+              {instaPosts.map((post, i) => (
+                <a
+                  key={i}
+                  href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ position: "relative", overflow: "hidden", aspectRatio: "1", cursor: "pointer", group: "true" }}
+                  onMouseEnter={(e) => { e.currentTarget.querySelector('img').style.transform = "scale(1.05)"; e.currentTarget.querySelector('.overlay').style.opacity = "1"; }}
+                  onMouseLeave={(e) => { e.currentTarget.querySelector('img').style.transform = "scale(1)"; e.currentTarget.querySelector('.overlay').style.opacity = "0"; }}
+                >
+                  <Image
+                    src={post.image}
+                    alt={post.caption}
+                    fill
+                    className="object-cover"
+                    style={{ transition: "transform 0.3s ease" }}
+                  />
+                  <div
+                    className="overlay"
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: "linear-gradient(135deg, rgba(196, 30, 30, 0.8) 0%, rgba(106, 6, 6, 0.9) 100%)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      opacity: 0,
+                      transition: "opacity 0.3s ease",
+                      zIndex: 10
+                    }}
+                  >
+                    <div style={{ textAlign: "center", color: "white" }}>
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="white" style={{ margin: "0 auto 0.5rem" }}>
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                      </svg>
+                      <p style={{ fontSize: "0.75rem", fontWeight: "700" }}>{post.likes} Likes</p>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+
+            <div style={{ textAlign: "center", marginTop: "3rem" }}>
+              <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="btn-secondary">
+                FOLLOW US ON INSTAGRAM
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* ── PACKAGES ── */}
+        <section style={{ padding: "6rem 1.5rem", background: "#0a0a0a" }} id="packages">
+          <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: "4rem" }}>
+              <div style={{ width: "4rem", height: "0.25rem", background: "linear-gradient(to right, #c41e1e, #690606)", margin: "0 auto 1.5rem", borderRadius: "9999px" }} />
+              <h2 style={{ fontSize: "clamp(2rem, 6vw, 3.5rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
+                Pricing <span style={{ color: "#c41e1e" }}>PLANS</span>
+              </h2>
+              <p style={{ fontSize: "0.95rem", color: "#9ca3af", marginTop: "1rem", maxWidth: "600px", margin: "1rem auto 0" }}>
+                All packages include access to our full class schedule. Beverage points expire 30 days after purchase.
+              </p>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem", maxWidth: "1000px", margin: "0 auto" }}>
               {[
-                { name: "STARTER", price: "$499", period: "per month", classes: "4 classes/month", popular: false },
-                { name: "UNLIMITED", price: "$899", period: "per month", classes: "Unlimited classes", popular: true },
-                { name: "PACK 10", price: "$1,200", period: "10 classes", classes: "Valid 3 months", popular: false },
+                {
+                  name: "1 CLASS",
+                  price: "$370",
+                  points: "1 point",
+                  expiration: "5 days",
+                  beverage: "0 beverage points",
+                  popular: false
+                },
+                {
+                  name: "10 CLASSES",
+                  price: "$3,300",
+                  points: "10 points",
+                  expiration: "14 days",
+                  beverage: "0 beverage points",
+                  popular: true
+                },
+                {
+                  name: "24 CLASSES",
+                  price: "$7,200",
+                  points: "24 points",
+                  expiration: "30 days",
+                  beverage: "0 beverage points",
+                  popular: false
+                },
+                {
+                  name: "UNLIMITED",
+                  price: "$899",
+                  points: "Unlimited",
+                  expiration: "30 days",
+                  beverage: "2 beverage points",
+                  popular: false
+                },
               ].map((plan, i) => (
-                <div key={i} style={{ padding: "2rem", background: plan.popular ? "rgba(196, 30, 30, 0.1)" : "#2a2a2a", border: `2px solid ${plan.popular ? "#c41e1e" : "#3a3a3a"}`, borderRadius: "0", position: "relative", transition: "all 0.3s" }} onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 20px 25px -5px rgba(196, 30, 30, 0.2)"; }} onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}>
+                <div key={i} style={{ padding: "2rem", background: plan.popular ? "rgba(196, 30, 30, 0.1)" : "#1a1a1a", border: `2px solid ${plan.popular ? "#c41e1e" : "#3a3a3a"}`, borderRadius: "0", position: "relative", transition: "all 0.3s" }} onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 20px 25px -5px rgba(196, 30, 30, 0.2)"; }} onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "none"; }}>
                   {plan.popular && (
                     <div style={{ position: "absolute", top: "-1rem", left: "50%", transform: "translateX(-50%)", background: "#c41e1e", color: "white", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.1em", padding: "0.5rem 1rem", textTransform: "uppercase" }}>
                       MOST POPULAR
@@ -406,15 +535,20 @@ export default function Home() {
                   <div style={{ fontSize: "2.5rem", fontWeight: "900", marginBottom: "0.5rem", color: "white" }}>
                     {plan.price}
                   </div>
-                  <p style={{ fontSize: "0.875rem", color: "#9ca3af", marginBottom: "1.5rem" }}>
-                    {plan.period}
-                  </p>
                   <div style={{ width: "2rem", height: "0.25rem", background: "#c41e1e", marginBottom: "1.5rem", borderRadius: "9999px" }} />
-                  <p style={{ fontSize: "0.95rem", marginBottom: "2rem", color: "#d1d5db" }}>
-                    {plan.classes}
-                  </p>
-                  <button onClick={() => router.push('/signup')} className="btn-primary" style={{ width: "100%", background: plan.popular ? "#c41e1e" : "transparent", border: plan.popular ? "none" : "2px solid #c41e1e", color: plan.popular ? "white" : "#c41e1e" }}>
-                    GET STARTED
+                  <ul style={{ listStyle: "none", marginBottom: "2rem" }}>
+                    <li style={{ fontSize: "0.95rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.5rem", color: "#d1d5db" }}>
+                      <span style={{ color: "#c41e1e", fontWeight: "bold" }}>✓</span> {plan.points}
+                    </li>
+                    <li style={{ fontSize: "0.95rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.5rem", color: "#d1d5db" }}>
+                      <span style={{ color: "#c41e1e", fontWeight: "bold" }}>✓</span> Expires in {plan.expiration}
+                    </li>
+                    <li style={{ fontSize: "0.95rem", display: "flex", alignItems: "center", gap: "0.5rem", color: "#d1d5db" }}>
+                      <span style={{ color: "#c41e1e", fontWeight: "bold" }}>✓</span> {plan.beverage}
+                    </li>
+                  </ul>
+                  <button onClick={handleBooking} className="btn-primary" style={{ width: "100%", background: plan.popular ? "#c41e1e" : "transparent", border: plan.popular ? "none" : "2px solid #c41e1e", color: plan.popular ? "white" : "#c41e1e" }}>
+                    BUY NOW
                   </button>
                 </div>
               ))}
@@ -423,7 +557,7 @@ export default function Home() {
         </section>
 
         {/* ── CONTACT ── */}
-        <section style={{ padding: "6rem 1.5rem", background: "#0a0a0a" }} id="contact">
+        <section style={{ padding: "6rem 1.5rem", background: "#1a1a1a" }} id="contact">
           <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: "4rem" }}>
               <div style={{ width: "4rem", height: "0.25rem", background: "linear-gradient(to right, #c41e1e, #690606)", margin: "0 auto 1.5rem", borderRadius: "9999px" }} />
@@ -451,6 +585,14 @@ export default function Home() {
                   </p>
                   <a href="tel:+5213318373447" style={{ fontSize: "0.95rem", color: "#d1d5db", textDecoration: "none", fontWeight: "600" }}>
                     +52 1 33 1837 3447
+                  </a>
+                </div>
+                <div style={{ marginBottom: "2rem" }}>
+                  <p style={{ fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#c41e1e", marginBottom: "0.75rem" }}>
+                    EMAIL
+                  </p>
+                  <a href="mailto:administracion@jjstudio.mx" style={{ fontSize: "0.95rem", color: "#d1d5db", textDecoration: "none", fontWeight: "600" }}>
+                    administracion@jjstudio.mx
                   </a>
                 </div>
                 <div>
@@ -506,12 +648,31 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── FINAL CTA ── */}
+        <section style={{ padding: "6rem 1.5rem", background: "linear-gradient(135deg, #2a0a0a 0%, #0a0a0a 50%, #2a0a0a 100%)", position: "relative" }}>
+          <div style={{ position: "absolute", inset: "0", opacity: "0.2", background: "radial-gradient(ellipse at 50% 50%, rgba(196, 30, 30, 0.2), transparent)" }} />
+          <div style={{ position: "relative", zIndex: 10, maxWidth: "800px", margin: "0 auto", textAlign: "center" }}>
+            <h2 style={{ fontSize: "clamp(2rem, 6vw, 3.5rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em", marginBottom: "1.5rem" }}>
+              Ready to <span style={{ color: "#c41e1e" }}>TRANSFORM?</span>
+            </h2>
+            <p style={{ fontSize: "1.125rem", lineHeight: "1.8", color: "#d1d5db", marginBottom: "2rem" }}>
+              Your first class is free. No commitment, just trust the process and see what happens.
+            </p>
+            <button onClick={handleBooking} className="btn-primary">
+              BOOK YOUR FREE CLASS
+            </button>
+            <p style={{ fontSize: "0.75rem", fontWeight: "600", letterSpacing: "0.3em", marginTop: "2rem", textTransform: "uppercase", color: "#c41e1e" }}>
+              ✦ TRUST THE PROCESS ✦
+            </p>
+          </div>
+        </section>
+
         {/* ── FOOTER ── */}
         <footer style={{ background: "#0a0a0a", borderTop: "1px solid rgba(196, 30, 30, 0.2)", padding: "3rem 1.5rem" }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: "2rem", textAlign: "center" }}>
-            <span style={{ fontSize: "1rem", fontWeight: "900", letterSpacing: "0.15em", textTransform: "uppercase", color: "white" }}>
+            <a href="/" style={{ fontSize: "1rem", fontWeight: "900", letterSpacing: "0.15em", textTransform: "uppercase", color: "white", textDecoration: "none" }}>
               JJ<span style={{ color: "#c41e1e" }}>STUDIO</span>
-            </span>
+            </a>
             <p style={{ fontSize: "0.75rem", fontWeight: "600", letterSpacing: "0.15em", textTransform: "uppercase", color: "#6b7280" }}>
               Premium Lagree Megaformer Studio in Querétaro | Trust the Process
             </p>
