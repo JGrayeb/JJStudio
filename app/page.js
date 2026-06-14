@@ -22,11 +22,9 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "JJ Studio Lagree",
-    "description": "Premium Lagree fitness studio in Querétaro. High-intensity, low-impact Megaformer classes. Trust the Process.",
-    "image": "https://jjstudio.mx/logo.png",
+    "description": "Premium Lagree Megaformer fitness studio in Querétaro. Trust the Process.",
     "url": "https://jjstudio.mx",
     "telephone": "+5213318373447",
-    "email": "administracion@jjstudio.mx",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Xentric Lomas Norte, El Campanario, Lcl 211",
@@ -34,11 +32,6 @@ export default function Home() {
       "addressRegion": "Querétaro",
       "postalCode": "76000",
       "addressCountry": "MX"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": "20.5888",
-      "longitude": "-100.3898"
     }
   }
 
@@ -63,48 +56,6 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  const toggleLang = () => setLang(l => l === "en" ? "es" : "en")
-
-  const handleHomeClick = (e) => {
-    e?.preventDefault()
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    setMenuOpen(false)
-  }
-
-  const handleScheduleClick = (e) => {
-    e?.preventDefault()
-    setMenuOpen(false)
-    if (user) {
-      router.push('/dashboard/client#book-class', { scroll: false })
-    } else {
-      router.push('/login')
-    }
-  }
-
-  const handlePackageClick = (e) => {
-    e?.preventDefault()
-    setMenuOpen(false)
-    if (user) {
-      router.push('/dashboard/client#packages', { scroll: false })
-    } else {
-      router.push('/login')
-    }
-  }
-
-  const handleAboutClick = (e) => {
-    e?.preventDefault()
-    setMenuOpen(false)
-    const el = document.getElementById('about')
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  const handleContactClick = (e) => {
-    e?.preventDefault()
-    setMenuOpen(false)
-    const el = document.getElementById('contact')
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
-  }
-
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut()
@@ -119,10 +70,7 @@ export default function Home() {
     <>
       <Head>
         <title>JJ Studio Lagree Querétaro | Megaformer Classes | Trust the Process</title>
-        <meta name="description" content="JJ Studio - Premium Lagree Megaformer fitness studio in Querétaro. High-intensity, low-impact 45-min classes. All fitness levels. Trust the Process. Book your free trial." />
-        <meta name="keywords" content="Lagree Querétaro, Megaformer, fitness studio, high-intensity workout, low-impact training" />
-        <meta property="og:title" content="JJ Studio Lagree | Trust the Process" />
-        <meta property="og:description" content="Premium Lagree Megaformer classes in Querétaro. Trust the Process." />
+        <meta name="description" content="JJ Studio - Premium Lagree Megaformer fitness studio in Querétaro. High-intensity, low-impact 45-min classes. All fitness levels. Trust the Process." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="canonical" href="https://jjstudio.mx" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
@@ -138,21 +86,47 @@ export default function Home() {
           --bg-card: #2a2a2a;
         }
 
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          background: #0a0a0a;
+          color: #fff;
+          font-family: 'Inter', sans-serif;
+          line-height: 1.6;
+        }
+
         .btn-primary {
           background: var(--primary-red);
           color: white;
           transition: all 0.3s ease;
+          border: none;
+          cursor: pointer;
+          text-transform: uppercase;
+          font-weight: bold;
+          letter-spacing: 0.1em;
         }
+
         .btn-primary:hover {
           background: var(--dark-red);
           box-shadow: 0 10px 25px rgba(196, 30, 30, 0.3);
+          transform: translateY(-2px);
         }
 
         .btn-secondary {
           border: 2px solid var(--primary-red);
+          background: transparent;
           color: var(--primary-red);
           transition: all 0.3s ease;
+          cursor: pointer;
+          text-transform: uppercase;
+          font-weight: bold;
+          letter-spacing: 0.1em;
         }
+
         .btn-secondary:hover {
           background: var(--primary-red);
           color: white;
@@ -161,14 +135,28 @@ export default function Home() {
         .nav-link {
           transition: all 0.3s ease;
           color: #d1d5db;
+          cursor: pointer;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          font-weight: 500;
+          letter-spacing: 0.15em;
         }
+
         .nav-link:hover {
           color: var(--primary-red);
         }
 
         .social-icon {
           transition: all 0.3s ease;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 0.5rem;
+          cursor: pointer;
         }
+
         .social-icon:hover {
           background-color: rgba(196, 30, 30, 0.2);
           color: var(--primary-red);
@@ -176,10 +164,13 @@ export default function Home() {
 
         .card-hover {
           transition: all 0.3s ease;
+          border: 1px solid #3a3a3a;
         }
+
         .card-hover:hover {
-          border-color: var(--primary-red);
+          border-color: var(--dark-red);
           box-shadow: 0 20px 25px -5px rgba(196, 30, 30, 0.2);
+          transform: translateY(-4px);
         }
 
         .form-input {
@@ -188,6 +179,7 @@ export default function Home() {
           color: white;
           transition: border-color 0.3s ease;
         }
+
         .form-input:focus {
           border-color: var(--dark-red);
           outline: none;
@@ -205,201 +197,277 @@ export default function Home() {
         html {
           scroll-behavior: smooth;
         }
+
+        /* PPLA STYLE SECTIONS */
+        .ppla-section {
+          padding: 6rem 1.5rem;
+        }
+
+        .ppla-header {
+          text-align: center;
+          margin-bottom: 4rem;
+        }
+
+        .ppla-header h2 {
+          font-size: clamp(2rem, 6vw, 4rem);
+          font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: -0.02em;
+          line-height: 1.2;
+        }
+
+        .ppla-divider {
+          width: 4rem;
+          height: 0.25rem;
+          background: linear-gradient(to right, #c41e1e, #690606);
+          margin: 1.5rem auto 2rem;
+          border-radius: 9999px;
+        }
+
+        .ppla-text {
+          max-width: 56rem;
+          margin: 0 auto;
+          font-size: 1.125rem;
+          line-height: 1.8;
+        }
+
+        .ppla-three-col {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 2rem;
+        }
+
+        .ppla-card {
+          padding: 2rem;
+          background: #2a2a2a;
+          border: 1px solid #3a3a3a;
+          border-radius: 0.75rem;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+
+        .ppla-card:hover {
+          border-color: var(--dark-red);
+          box-shadow: 0 20px 25px -5px rgba(196, 30, 30, 0.2);
+          transform: translateY(-8px);
+        }
+
+        .ppla-card h3 {
+          font-size: 1.25rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 1rem;
+          color: var(--primary-red);
+        }
+
+        .ppla-card p {
+          font-size: 0.95rem;
+          line-height: 1.7;
+          color: #9ca3af;
+        }
       `}</style>
 
-      <main className="text-gray-900 overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif", background: "#0a0a0a" }}>
+      <main style={{ background: "#0a0a0a" }}>
 
         {/* ── NAVBAR ── */}
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300`} style={{ background: scrolled ? "rgba(10, 10, 10, 0.98)" : "rgba(10, 10, 10, 0.90)" }}>
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300`} style={{ background: scrolled ? "rgba(10, 10, 10, 0.98)" : "rgba(10, 10, 10, 0.90)", borderBottom: scrolled ? "1px solid rgba(196, 30, 30, 0.2)" : "none" }}>
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <span className="text-xl font-black tracking-widest uppercase text-white">
-                JJ<span style={{ color: "#c41e1e" }}>Studio</span>
-              </span>
-              <div className="h-6 w-px" style={{ background: "rgba(196, 30, 30, 0.4)" }} />
-              <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="social-icon p-2 rounded-lg text-gray-400">
+            {/* Logo */}
+            <span className="text-xl font-black tracking-widest uppercase text-white">
+              JJ<span style={{ color: "#c41e1e" }}>Studio</span>
+            </span>
+
+            {/* Desktop Nav */}
+            <div className="hidden lg:flex items-center gap-8">
+              {[
+                { label: "SCHEDULE", href: "#schedule" },
+                { label: "PACKAGES", href: "#packages" },
+                { label: "ABOUT", href: "#about" },
+                { label: "CONTACT", href: "#contact" },
+              ].map(({ label, href }) => (
+                <a key={label} href={href} className="nav-link">
+                  {label}
+                </a>
+              ))}
+            </div>
+
+            {/* Auth + Socials */}
+            <div className="hidden lg:flex items-center gap-4">
+              <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="social-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                   <circle cx="17.5" cy="6.5" r="1.5" />
                 </svg>
               </a>
-              <a href="https://wa.me/5213318373447?text=Hola%20JJ%20Studio" target="_blank" rel="noopener noreferrer" className="social-icon p-2 rounded-lg text-gray-400">
+              <a href="https://wa.me/5213318373447" target="_blank" rel="noopener noreferrer" className="social-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
               </a>
-            </div>
-
-            <div className="hidden lg:flex items-center gap-8">
-              {[
-                { label: "HOME", handler: handleHomeClick },
-                { label: "SCHEDULE", handler: handleScheduleClick },
-                { label: "PACKAGES", handler: handlePackageClick },
-                { label: "ABOUT", handler: handleAboutClick },
-                { label: "CONTACT", handler: handleContactClick },
-              ].map(({ label, handler }) => (
-                <button key={label} onClick={handler} className="nav-link text-xs font-medium tracking-widest uppercase">
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            <div className="hidden lg:flex items-center gap-4">
               {!isLoading && (
                 <>
                   {user ? (
-                    <div className="flex items-center gap-3">
-                      <button onClick={() => router.push('/dashboard/client')} className="btn-primary text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg">
+                    <>
+                      <button onClick={() => router.push('/dashboard/client')} className="btn-primary px-5 py-2.5 rounded-lg text-xs">
                         PROFILE
                       </button>
-                      <button onClick={handleLogout} className="nav-link text-xs font-bold tracking-widest uppercase text-gray-400">
-                        LOGOUT
-                      </button>
-                    </div>
+                      <button onClick={handleLogout} className="nav-link">LOGOUT</button>
+                    </>
                   ) : (
                     <>
-                      <a href="/login" className="nav-link text-xs font-bold tracking-widest uppercase text-gray-400">LOGIN</a>
-                      <a href="/signup" className="btn-primary text-white text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-lg">SIGN UP</a>
+                      <a href="/login" className="nav-link">LOGIN</a>
+                      <a href="/signup" className="btn-primary px-5 py-2.5 rounded-lg text-xs">SIGN UP</a>
                     </>
                   )}
                 </>
               )}
             </div>
 
-            <button className="lg:hidden flex flex-col gap-1.5 p-2" onClick={() => setMenuOpen(o => !o)}>
+            {/* Mobile Hamburger */}
+            <button className="lg:hidden flex flex-col gap-1.5 p-2" onClick={() => setMenuOpen(!menuOpen)}>
               <span className={`w-6 h-0.5 bg-white transition-all ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
               <span className={`w-6 h-0.5 bg-white transition-all ${menuOpen ? "opacity-0" : ""}`} />
               <span className={`w-4 h-0.5 bg-white transition-all ${menuOpen ? "-rotate-45 -translate-y-2 w-6" : ""}`} />
             </button>
           </div>
 
+          {/* Mobile Menu */}
           {menuOpen && (
-            <div className="lg:hidden border-t" style={{ background: "#1a1a1a", borderColor: "rgba(196, 30, 30, 0.2)" }}>
-              <div className="flex flex-col px-6 gap-5 py-6">
-                <button onClick={(e) => { handleHomeClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">HOME</button>
-                <button onClick={(e) => { handleScheduleClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">SCHEDULE</button>
-                <button onClick={(e) => { handlePackageClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">PACKAGES</button>
-                <button onClick={(e) => { handleAboutClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">ABOUT</button>
-                <button onClick={(e) => { handleContactClick(e); setMenuOpen(false) }} className="nav-link text-sm font-medium tracking-widest uppercase">CONTACT</button>
+            <div style={{ background: "#1a1a1a", borderTop: "1px solid rgba(196, 30, 30, 0.2)" }}>
+              <div className="flex flex-col px-6 gap-4 py-6">
+                <a href="#schedule" className="nav-link" onClick={() => setMenuOpen(false)}>SCHEDULE</a>
+                <a href="#packages" className="nav-link" onClick={() => setMenuOpen(false)}>PACKAGES</a>
+                <a href="#about" className="nav-link" onClick={() => setMenuOpen(false)}>ABOUT</a>
+                <a href="#contact" className="nav-link" onClick={() => setMenuOpen(false)}>CONTACT</a>
               </div>
             </div>
           )}
         </nav>
 
-        {/* ── PPLA-STYLE HERO ── */}
-        <section className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20" id="home" style={{ background: "linear-gradient(135deg, #0a0a0a 0%, #2a0a0a 40%, #0a0a0a 100%)" }}>
+        {/* ── REVIEW BANNER ── */}
+        <div style={{ background: "rgba(196, 30, 30, 0.1)", borderBottom: "1px solid rgba(196, 30, 30, 0.3)", padding: "1rem" }}>
+          <div className="max-w-7xl mx-auto px-6">
+            <p style={{ textAlign: "center", fontSize: "0.875rem", color: "#c41e1e", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+              ✦ Leave your 5-Star review and WIN A FREE MONTH OF JJ STUDIO! ✦
+            </p>
+          </div>
+        </div>
+
+        {/* ── HERO SECTION (PPLA STYLE) ── */}
+        <section className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20" style={{ background: "linear-gradient(135deg, #0a0a0a 0%, #2a0a0a 40%, #0a0a0a 100%)" }}>
           <div className="absolute inset-0 opacity-30" style={{ background: "radial-gradient(ellipse at 70% 50%, rgba(196, 30, 30, 0.15) 0%, transparent 70%)" }} />
 
-          <div className="relative z-10 max-w-7xl mx-auto px-6">
-            <div className="max-w-3xl">
-              {/* Main headline like PPLA */}
-              <h1 className="font-black uppercase leading-tight mb-4" style={{ fontSize: "clamp(2.5rem,8vw,5.5rem)", letterSpacing: "-0.02em", color: "#FFFFFF" }}>
-                <span style={{ color: "#c41e1e" }}>Megaformer</span><br />
-                <span className="text-gray-300">45 Minutes</span><br />
-                <span style={{ color: "#c41e1e" }}>Full-Body</span>
+          <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
+            <div className="max-w-4xl">
+              {/* PPLA-style label */}
+              <p style={{ fontSize: "0.875rem", fontWeight: "600", letterSpacing: "0.3em", marginBottom: "1.5rem", textTransform: "uppercase", color: "#c41e1e" }}>
+                Megaformer Workout
+              </p>
+
+              {/* Method name */}
+              <p style={{ fontSize: "1.5rem", fontWeight: "700", letterSpacing: "0.1em", marginBottom: "2rem", textTransform: "uppercase", color: "#9ca3af" }}>
+                Lagree Fitness
+              </p>
+
+              {/* Main headline */}
+              <h1 style={{ fontSize: "clamp(2.5rem, 8vw, 5.5rem)", fontWeight: "900", letterSpacing: "-0.02em", lineHeight: "1.2", marginBottom: "2rem", textTransform: "uppercase" }}>
+                Welcome to <br />
+                <span style={{ color: "#c41e1e" }}>JJ Studio</span>
               </h1>
 
-              {/* Subheading with vibe description (PPLA style) */}
-              <p className="text-xl font-light mb-6 text-gray-300 leading-relaxed">
-                High-intensity, low-impact sessions with <span style={{ color: "#c41e1e" }}>lights low</span>, <span style={{ color: "#c41e1e" }}>music high</span>, and relentless results.
+              {/* Tagline */}
+              <p style={{ fontSize: "1.25rem", fontWeight: "300", marginBottom: "3rem", lineHeight: "1.8", maxWidth: "600px", color: "#d1d5db" }}>
+                A Lagree-inspired fitness studio that combines <span style={{ color: "#c41e1e" }}>strength, endurance, cardio, balance,</span> and flexibility in each and every move.
               </p>
 
-              {/* Method promise */}
-              <p className="text-lg text-gray-400 mb-10 font-light max-w-2xl">
-                Constant resistance on the Megaformer targets deep muscle layers. Build strength, core stability, and endurance — all fitness levels welcome.
-              </p>
+              {/* CTA */}
+              <button onClick={() => router.push('/signup')} className="btn-primary px-8 py-4 rounded-lg text-sm">
+                START FREE TRIAL
+              </button>
 
-              {/* CTA buttons */}
-              <div className="flex flex-wrap gap-4">
-                <a href="/signup" className="btn-primary text-white text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg shadow-lg">
-                  START FREE TRIAL
-                </a>
-                <button onClick={handleScheduleClick} className="btn-secondary text-sm font-bold tracking-widest uppercase px-8 py-4 rounded-lg">
-                  BOOK A CLASS
-                </button>
-              </div>
-
-              {/* Trust the Process motto - centered */}
-              <p className="text-xs font-semibold tracking-[0.3em] mt-12 uppercase" style={{ color: "#c41e1e" }}>
+              {/* Trust the Process */}
+              <p style={{ fontSize: "0.75rem", fontWeight: "600", letterSpacing: "0.3em", marginTop: "3rem", textTransform: "uppercase", color: "#c41e1e" }}>
                 ✦ TRUST THE PROCESS ✦
               </p>
             </div>
           </div>
-
-          {/* Scroll indicator */}
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-            <span className="text-xs tracking-widest uppercase text-gray-500">Scroll to explore</span>
-            <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
-              <path d="M8 0v20M1 13l7 7 7-7" stroke="rgba(196, 30, 30, 0.6)" strokeWidth="1.5" />
-            </svg>
-          </div>
         </section>
 
-        {/* ── METHOD EXPLAINER (PPLA STYLE) ── */}
-        <section className="py-20 px-6" style={{ background: "#1a1a1a" }}>
+        {/* ── HOW WE DO IT SECTION ── */}
+        <section className="ppla-section" style={{ background: "#1a1a1a" }} id="schedule">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { icon: "⚡", title: "Constant Resistance", desc: "The Megaformer's unique pulley system keeps muscles under tension the entire class — no momentum, pure strength." },
-                { icon: "🎯", title: "Low-Impact", desc: "Smooth, controlled movements protect joints while delivering high-intensity results. Safe for all bodies." },
-                { icon: "🔥", title: "Real Transformation", desc: "45 minutes targets deep muscle layers. Tone, strengthen, and build core stability fast." },
-              ].map((item, i) => (
-                <div key={i} className="text-center">
-                  <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>{item.icon}</div>
-                  <h3 className="text-lg font-bold uppercase tracking-wide mb-3 text-white" style={{ color: "#c41e1e" }}>{item.title}</h3>
-                  <p className="text-sm text-gray-400 leading-relaxed">{item.desc}</p>
-                </div>
-              ))}
+            <p style={{ fontSize: "0.875rem", fontWeight: "700", letterSpacing: "0.3em", textTransform: "uppercase", color: "#c41e1e", marginBottom: "2rem", textAlign: "center" }}>
+              How We Do It
+            </p>
+
+            <h2 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em", textAlign: "center", marginBottom: "2rem" }}>
+              <span style={{ color: "#c41e1e" }}>MegaBurn 45</span> is our signature class
+            </h2>
+
+            <div className="ppla-text" style={{ marginBottom: "3rem", color: "#d1d5db" }}>
+              <p>
+                Our signature class on the Megaformer that provides you with a <span style={{ color: "#c41e1e" }}>total-body high intensity, low impact workout,</span> combining cardio and strength training to help improve endurance, flexibility and overall strength. <span style={{ color: "#c41e1e" }}>The lights are low, the music is high.</span> This 45 minute class is for all fitness levels, and our signature moves can be amplified or modified to accommodate your individual goals.
+              </p>
+            </div>
+
+            {/* Call to action */}
+            <div style={{ textAlign: "center" }}>
+              <a href="#packages" className="btn-secondary px-8 py-4 rounded-lg text-sm inline-block">
+                SEE OUR PACKAGES
+              </a>
             </div>
           </div>
         </section>
 
-        {/* ── MARQUEE ── */}
-        <div className="py-6 overflow-hidden" style={{ background: "linear-gradient(90deg, #2a0a0a 0%, #0a0a0a 50%, #2a0a0a 100%)", borderTop: "1px solid rgba(196, 30, 30, 0.3)", borderBottom: "1px solid rgba(196, 30, 30, 0.3)" }}>
-          <div className="marquee flex whitespace-nowrap">
-            {[...Array(2)].map((_, i) => (
-              <span key={i} className="flex items-center gap-0 shrink-0">
-                <span className="flex items-center">
-                  <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Trust the Process</span>
-                  <span className="text-xs mx-2" style={{ color: "#c41e1e" }}>✦</span>
-                  <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">Strength • Endurance • Core</span>
-                  <span className="text-xs mx-2" style={{ color: "#c41e1e" }}>✦</span>
-                  <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">45 Minutes</span>
-                  <span className="text-xs mx-2" style={{ color: "#c41e1e" }}>✦</span>
-                  <span className="text-xs font-bold tracking-[0.3em] uppercase mx-12 text-gray-300">All Fitness Levels</span>
-                  <span className="text-xs mx-2" style={{ color: "#c41e1e" }}>✦</span>
-                </span>
-              </span>
-            ))}
-          </div>
-        </div>
+        {/* ── THE PERFECT MACHINE SECTION ── */}
+        <section className="ppla-section" style={{ background: "#0a0a0a" }}>
+          <div className="max-w-7xl mx-auto">
+            <h2 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em", textAlign: "center", marginBottom: "2rem" }}>
+              The <span style={{ color: "#c41e1e" }}>Perfect Machine</span>
+            </h2>
 
-        {/* ── CLASSES SECTION ── */}
-        <section className="py-24" id="schedule" style={{ background: "#1a1a1a" }}>
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
-              <div>
-                <div className="w-16 h-1 mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
-                <h2 className="font-black uppercase leading-tight text-4xl lg:text-5xl text-white">
-                  Our <span style={{ color: "#c41e1e" }}>Classes</span>
-                </h2>
-              </div>
-              <button onClick={handleScheduleClick} className="btn-secondary text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-lg">
-                VIEW SCHEDULE
-              </button>
+            <div className="ppla-text" style={{ marginBottom: "3rem", color: "#d1d5db" }}>
+              <p>
+                The workout is done on the one of a kind <span style={{ color: "#c41e1e" }}>Megaformer™</span> which provides <span style={{ color: "#c41e1e" }}>constant resistance</span> and allow for continuous tension targeting your slow twitch muscle fibers while providing infinitely more exercise options than a traditional reformer. The Megaformer™ allows you to transition quickly and smoothly from each move while continuing to increase the heart rate and get the blood pumping.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* CTA */}
+            <div style={{ textAlign: "center" }}>
+              <a href="#schedule" className="btn-primary px-8 py-4 rounded-lg text-sm inline-block">
+                VIEW OUR SCHEDULES
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* ── CLASSES GRID ── */}
+        <section className="ppla-section" style={{ background: "#1a1a1a" }}>
+          <div className="max-w-7xl mx-auto">
+            <div className="ppla-header">
+              <div className="ppla-divider" />
+              <h2 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
+                Our <span style={{ color: "#c41e1e" }}>Classes</span>
+              </h2>
+            </div>
+
+            <div className="ppla-three-col">
               {[
                 { name: "MegaBurn 45", level: "All Levels", duration: "45 min", desc: "Full-body strength + endurance on the Megaformer. Lights low, music high, results guaranteed." },
                 { name: "Core Focus", level: "Intermediate", duration: "45 min", desc: "Deep core work targeting abs, obliques, and lower back. Build stability and definition." },
                 { name: "Power Sculpt", level: "Advanced", duration: "45 min", desc: "High-intensity muscle-building on the Megaformer. Upper body, lower body, repeat." },
+                { name: "Cardio Burst", level: "Intermediate", duration: "45 min", desc: "Heart-pumping cardio mixed with strength. Constant tension = maximum calorie burn." },
+                { name: "Total Transformation", level: "Beginner", duration: "45 min", desc: "Perfect intro to the Megaformer. Learn form, build confidence, see results." },
+                { name: "Private Training", level: "All Levels", duration: "1 hour", desc: "One-on-one personalized coaching. Custom programming for your goals and body." },
               ].map((cls, i) => (
-                <div key={i} className="card-hover p-8 rounded-xl transition-all border" style={{ background: "#2a2a2a", borderColor: "#3a3a3a" }}>
-                  <h3 className="text-xl font-bold uppercase tracking-wide mb-2 text-white">{cls.name}</h3>
-                  <p className="text-xs uppercase tracking-widest mb-4" style={{ color: "#c41e1e" }}>{cls.level} • {cls.duration}</p>
-                  <p className="text-sm leading-relaxed text-gray-400">{cls.desc}</p>
+                <div key={i} className="ppla-card card-hover">
+                  <h3>{cls.name}</h3>
+                  <p style={{ fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "1rem", color: "#9ca3af" }}>
+                    {cls.level} • {cls.duration}
+                  </p>
+                  <p>{cls.desc}</p>
                 </div>
               ))}
             </div>
@@ -407,27 +475,31 @@ export default function Home() {
         </section>
 
         {/* ── TESTIMONIALS / SOCIAL PROOF ── */}
-        <section className="py-24" style={{ background: "#0a0a0a" }}>
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <div className="w-16 h-1 mx-auto mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
-              <h2 className="font-black uppercase text-4xl lg:text-5xl text-white">
+        <section className="ppla-section" style={{ background: "#0a0a0a" }}>
+          <div className="max-w-7xl mx-auto">
+            <div className="ppla-header">
+              <div className="ppla-divider" />
+              <h2 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
                 Join Our <span style={{ color: "#c41e1e" }}>Community</span>
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="ppla-three-col">
               {[
                 { name: "María G.", quote: "I've been training for 2 months and my posture is completely different. The instructors here really care about form and progress. Trust the Process works!" },
-                { name: "Carlos M.", quote: "45 minutes of pure intensity. The low-impact part is key for me — tough on the muscles, easy on my joints. Love it." },
-                { name: "Jessica R.", quote: "The community here is unreal. Everyone is supportive, the studio vibe is premium, and results speak for themselves. Already seeing definition." },
+                { name: "Carlos M.", quote: "45 minutes of pure intensity. The low-impact part is key for me — tough on the muscles, easy on my joints. Already seeing definition." },
+                { name: "Jessica R.", quote: "The community here is unreal. Everyone is supportive, the studio vibe is premium, and results speak for themselves. Loving it!" },
+                { name: "Diego L.", quote: "Best decision I made was trying the free trial. Now I'm obsessed. The Megaformer is unreal, and Javi's coaching is next level." },
+                { name: "Ana P.", quote: "This is not your typical gym. It's a full experience — the energy, the music, the results. I'm transformed." },
+                { name: "Roberto H.", quote: "Finally found a workout that challenges me AND respects my joints. This is the real deal. Trust the Process." },
               ].map((test, i) => (
-                <div key={i} className="card-hover p-8 rounded-xl border" style={{ background: "#2a2a2a", borderColor: "#3a3a3a" }}>
-                  <p className="text-sm text-gray-300 mb-6 italic leading-relaxed">"{test.quote}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full" style={{ background: "#c41e1e" }} />
-                    <p className="text-sm font-bold text-white">{test.name}</p>
-                  </div>
+                <div key={i} className="ppla-card card-hover">
+                  <p style={{ fontSize: "0.95rem", fontStyle: "italic", marginBottom: "1.5rem", lineHeight: "1.8", color: "#d1d5db" }}>
+                    "{test.quote}"
+                  </p>
+                  <p style={{ fontWeight: "700", color: "#c41e1e", textTransform: "uppercase", fontSize: "0.875rem", letterSpacing: "0.05em" }}>
+                    {test.name}
+                  </p>
                 </div>
               ))}
             </div>
@@ -435,33 +507,45 @@ export default function Home() {
         </section>
 
         {/* ── PACKAGES ── */}
-        <section className="py-24" id="packages" style={{ background: "#1a1a1a" }}>
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <div className="w-16 h-1 mx-auto mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
-              <h2 className="font-black uppercase text-4xl lg:text-5xl text-white">
+        <section className="ppla-section" style={{ background: "#1a1a1a" }} id="packages">
+          <div className="max-w-7xl mx-auto">
+            <div className="ppla-header">
+              <div className="ppla-divider" />
+              <h2 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
                 Membership <span style={{ color: "#c41e1e" }}>Plans</span>
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
               {[
-                { name: "STARTER", price: "$499", period: "per month", classes: "4 classes/month", popular: false },
-                { name: "UNLIMITED", price: "$899", period: "per month", classes: "Unlimited classes", popular: true },
-                { name: "PACK 10", price: "$1,200", period: "10 classes", classes: "Valid 3 months", popular: false },
+                { name: "STARTER", price: "$499", period: "per month", classes: "4 classes/month", popular: false, features: ["4 classes/month", "All class types", "30 day expiration", "Access to app"] },
+                { name: "UNLIMITED", price: "$899", period: "per month", classes: "Unlimited classes", popular: true, features: ["Unlimited classes", "All class types", "No expiration", "Priority booking", "VIP community"] },
+                { name: "PACK 10", price: "$1,200", period: "10 classes", classes: "Valid 3 months", popular: false, features: ["10 classes", "Valid 3 months", "Any class type", "Flexible schedule"] },
               ].map((plan, i) => (
-                <div key={i} className={`p-8 rounded-xl flex flex-col transition-all relative border-2`} style={{ background: plan.popular ? "rgba(196, 30, 30, 0.1)" : "#2a2a2a", borderColor: plan.popular ? "#c41e1e" : "#3a3a3a" }}>
+                <div key={i} style={{ padding: "2rem", background: plan.popular ? "rgba(196, 30, 30, 0.1)" : "#2a2a2a", border: `2px solid ${plan.popular ? "#c41e1e" : "#3a3a3a"}`, borderRadius: "0.75rem", position: "relative", transition: "all 0.3s ease" }} className="card-hover">
                   {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-white text-xs px-4 py-1 tracking-widest uppercase rounded-lg" style={{ background: "#c41e1e" }}>
-                      MOST POPULAR
+                    <div style={{ position: "absolute", top: "-1rem", left: "50%", transform: "translateX(-50%)", background: "#c41e1e", color: "white", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.1em", padding: "0.5rem 1rem", borderRadius: "0.5rem", textTransform: "uppercase", zIndex: 10 }}>
+                      Most Popular
                     </div>
                   )}
-                  <h3 className="text-lg font-bold uppercase tracking-wide mb-2 text-white">{plan.name}</h3>
-                  <div className="font-black text-3xl mb-2 text-white">{plan.price}</div>
-                  <p className="text-xs text-gray-400 mb-6">{plan.period}</p>
-                  <div className="w-8 h-1 rounded-full mb-6" style={{ background: "#c41e1e" }} />
-                  <p className="text-sm mb-8 text-gray-300">{plan.classes}</p>
-                  <button onClick={handlePackageClick} className={`text-center text-xs font-bold tracking-widest uppercase px-4 py-3 rounded-lg transition-all text-white`} style={{ background: plan.popular ? "#c41e1e" : "transparent", border: plan.popular ? "none" : "2px solid #c41e1e", color: plan.popular ? "white" : "#c41e1e" }}>
+                  <h3 style={{ fontSize: "1.25rem", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "1rem", color: "white" }}>
+                    {plan.name}
+                  </h3>
+                  <div style={{ fontSize: "2.5rem", fontWeight: "900", marginBottom: "0.5rem", color: "white" }}>
+                    {plan.price}
+                  </div>
+                  <p style={{ fontSize: "0.875rem", color: "#9ca3af", marginBottom: "1.5rem" }}>
+                    {plan.period}
+                  </p>
+                  <div style={{ width: "2rem", height: "0.25rem", background: "#c41e1e", borderRadius: "9999px", marginBottom: "1.5rem" }} />
+                  <ul style={{ listStyle: "none", marginBottom: "2rem" }}>
+                    {plan.features.map((feature, j) => (
+                      <li key={j} style={{ fontSize: "0.95rem", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.5rem", color: "#d1d5db" }}>
+                        <span style={{ color: "#c41e1e", fontWeight: "bold" }}>✓</span> {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <button onClick={() => router.push('/signup')} className="btn-primary" style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: "0.5rem", fontSize: "0.875rem", background: plan.popular ? "#c41e1e" : "transparent", border: plan.popular ? "none" : "2px solid #c41e1e", color: plan.popular ? "white" : "#c41e1e" }}>
                     GET STARTED
                   </button>
                 </div>
@@ -470,87 +554,134 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── ABOUT / COACH ── */}
-        <section className="py-24" id="about" style={{ background: "#0a0a0a" }}>
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <div className="w-16 h-1 mx-auto mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
-              <h2 className="font-black uppercase text-4xl lg:text-5xl text-white">
-                Meet Your <span style={{ color: "#c41e1e" }}>Coach</span>
+        {/* ── ABOUT / LOCATIONS ── */}
+        <section className="ppla-section" style={{ background: "#0a0a0a" }} id="about">
+          <div className="max-w-7xl mx-auto">
+            <div className="ppla-header">
+              <div className="ppla-divider" />
+              <h2 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
+                Our <span style={{ color: "#c41e1e" }}>Location</span>
               </h2>
             </div>
 
-            <div className="max-w-3xl mx-auto">
-              <div className="p-10 rounded-xl card-hover border" style={{ borderColor: "rgba(196, 30, 30, 0.3)", background: "#2a2a2a" }}>
-                <div className="flex flex-col sm:flex-row items-start gap-8">
-                  <div className="w-40 h-40 flex-shrink-0 relative overflow-hidden rounded-lg" style={{ border: "2px solid #c41e1e" }}>
-                    <Image src="/images/coach-javi.jpeg" alt="Coach Javi - JJ Studio" fill className="object-cover object-top" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-black uppercase tracking-wide text-white mb-2">Javi Coach</h3>
-                    <p className="text-xs tracking-widest uppercase mb-4" style={{ color: "#c41e1e" }}>Certified Lagree Instructor</p>
-                    <p className="text-sm leading-relaxed text-gray-300 mb-6">
-                      Passionate about helping every client unlock their potential on the Megaformer. Certified in Lagree methodology with 5+ years of fitness coaching experience. Specializes in form, progression, and making every class challenging yet accessible.
-                    </p>
-                    <p className="text-xs text-gray-400">"My goal is to make you fall in love with the process, not just the results. Trust it, and transformation follows."</p>
-                  </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem", maxWidth: "56rem", margin: "0 auto" }}>
+              <div style={{ padding: "2rem", background: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: "0.75rem", textAlign: "center" }}>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "1rem", color: "#c41e1e" }}>
+                  Xentric Lomas
+                </h3>
+                <p style={{ fontSize: "0.95rem", lineHeight: "1.8", color: "#9ca3af", marginBottom: "1.5rem" }}>
+                  Xentric Lomas Norte<br />
+                  El Campanario, Lcl 211<br />
+                  Querétaro, Querétaro 76000<br />
+                  Mexico
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                  <a href="tel:+5213318373447" style={{ color: "#c41e1e", textDecoration: "none", fontWeight: "600", fontSize: "0.875rem" }}>
+                    +52 1 33 1837 3447
+                  </a>
+                  <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" style={{ color: "#c41e1e", textDecoration: "none", fontWeight: "600", fontSize: "0.875rem" }}>
+                    @jj_lagree_experience
+                  </a>
+                </div>
+              </div>
+
+              <div style={{ padding: "2rem", background: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: "0.75rem", textAlign: "center" }}>
+                <h3 style={{ fontSize: "1.25rem", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "1rem", color: "#c41e1e" }}>
+                  Hours
+                </h3>
+                <div style={{ fontSize: "0.95rem", lineHeight: "1.8", color: "#9ca3af" }}>
+                  <p style={{ marginBottom: "0.75rem" }}><strong>Monday - Friday</strong><br />6:00 AM - 8:00 PM</p>
+                  <p style={{ marginBottom: "0.75rem" }}><strong>Saturday</strong><br />7:00 AM - 6:00 PM</p>
+                  <p><strong>Sunday</strong><br />Closed</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── CONTACT ── */}
-        <section className="py-24" id="contact" style={{ background: "#1a1a1a" }}>
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        {/* ── COACH SECTION ── */}
+        <section className="ppla-section" style={{ background: "#1a1a1a" }}>
+          <div className="max-w-7xl mx-auto">
+            <div className="ppla-header">
+              <div className="ppla-divider" />
+              <h2 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
+                Meet Your <span style={{ color: "#c41e1e" }}>Coach</span>
+              </h2>
+            </div>
+
+            <div style={{ maxWidth: "48rem", margin: "0 auto", padding: "2.5rem", background: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: "0.75rem" }} className="card-hover">
+              <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: "2rem", alignItems: "start" }}>
+                <div style={{ width: "200px", height: "200px", position: "relative", borderRadius: "0.5rem", border: "2px solid #c41e1e", overflow: "hidden" }}>
+                  <Image src="/images/coach-javi.jpeg" alt="Coach Javi" fill className="object-cover object-top" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: "1.5rem", fontWeight: "900", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.5rem", color: "white" }}>
+                    Javi Coach
+                  </h3>
+                  <p style={{ fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#c41e1e", marginBottom: "1rem" }}>
+                    Certified Lagree Instructor
+                  </p>
+                  <p style={{ fontSize: "0.95rem", lineHeight: "1.7", color: "#d1d5db", marginBottom: "1.5rem" }}>
+                    Passionate about helping every client unlock their potential on the Megaformer. Certified in Lagree methodology with 5+ years of fitness coaching experience. Specializes in form, progression, and making every class challenging yet accessible for all fitness levels.
+                  </p>
+                  <p style={{ fontSize: "0.875rem", fontStyle: "italic", color: "#9ca3af" }}>
+                    "My goal is to make you fall in love with the process, not just the results. Trust it, and transformation follows."
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── CONTACT SECTION ── */}
+        <section className="ppla-section" style={{ background: "#0a0a0a" }} id="contact">
+          <div className="max-w-7xl mx-auto">
+            <div className="ppla-header">
+              <div className="ppla-divider" />
+              <h2 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em" }}>
+                Get in <span style={{ color: "#c41e1e" }}>Touch</span>
+              </h2>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "start", maxWidth: "56rem", margin: "0 auto" }}>
+              {/* Contact Info */}
               <div>
-                <div className="w-16 h-1 mb-6 rounded-full" style={{ background: "linear-gradient(to right, #c41e1e, #690606)" }} />
-                <h2 className="font-black uppercase text-4xl lg:text-5xl mb-8 text-white">
-                  Get in <span style={{ color: "#c41e1e" }}>Touch</span>
-                </h2>
-
-                <div className="space-y-8">
-                  <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 font-semibold" style={{ color: "#c41e1e" }}>LOCATION</p>
-                    <p className="text-sm text-gray-300 leading-relaxed">
-                      Xentric Lomas Norte<br />
-                      El Campanario, Lcl 211<br />
-                      Querétaro, Querétaro 76000<br />
-                      Mexico
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 font-semibold" style={{ color: "#c41e1e" }}>PHONE</p>
-                    <a href="tel:+5213318373447" className="text-sm text-gray-300 font-semibold nav-link">
-                      +52 1 33 1837 3447
+                <div style={{ marginBottom: "2rem" }}>
+                  <p style={{ fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#c41e1e", marginBottom: "0.75rem" }}>
+                    LOCATION
+                  </p>
+                  <p style={{ fontSize: "0.95rem", lineHeight: "1.8", color: "#d1d5db" }}>
+                    Xentric Lomas Norte<br />
+                    El Campanario, Lcl 211<br />
+                    Querétaro, Querétaro 76000<br />
+                    Mexico
+                  </p>
+                </div>
+                <div style={{ marginBottom: "2rem" }}>
+                  <p style={{ fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#c41e1e", marginBottom: "0.75rem" }}>
+                    PHONE
+                  </p>
+                  <a href="tel:+5213318373447" style={{ fontSize: "0.95rem", color: "#d1d5db", textDecoration: "none", fontWeight: "600" }}>
+                    +52 1 33 1837 3447
+                  </a>
+                </div>
+                <div>
+                  <p style={{ fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.1em", textTransform: "uppercase", color: "#c41e1e", marginBottom: "0.75rem" }}>
+                    FOLLOW US
+                  </p>
+                  <div style={{ display: "flex", gap: "1rem" }}>
+                    <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" style={{ color: "#d1d5db", textDecoration: "none", fontSize: "0.875rem", fontWeight: "600" }}>
+                      Instagram
                     </a>
-                  </div>
-
-                  <div>
-                    <p className="text-xs tracking-widest uppercase mb-2 font-semibold" style={{ color: "#c41e1e" }}>HOURS</p>
-                    <p className="text-sm text-gray-300">Monday - Friday: 6:00 AM - 8:00 PM</p>
-                    <p className="text-sm text-gray-300">Saturday: 7:00 AM - 6:00 PM</p>
-                    <p className="text-sm text-gray-300">Sunday: Closed</p>
-                  </div>
-
-                  <div>
-                    <p className="text-xs tracking-widest uppercase mb-3 font-semibold" style={{ color: "#c41e1e" }}>FOLLOW US</p>
-                    <div className="flex gap-4">
-                      <a href="https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==" target="_blank" rel="noopener noreferrer" className="nav-link text-xs tracking-widest uppercase text-gray-400">
-                        Instagram
-                      </a>
-                      <a href="https://wa.me/5213318373447?text=Hola%20JJ%20Studio" target="_blank" rel="noopener noreferrer" className="nav-link text-xs tracking-widest uppercase text-gray-400">
-                        WhatsApp
-                      </a>
-                    </div>
+                    <a href="https://wa.me/5213318373447" target="_blank" rel="noopener noreferrer" style={{ color: "#d1d5db", textDecoration: "none", fontSize: "0.875rem", fontWeight: "600" }}>
+                      WhatsApp
+                    </a>
                   </div>
                 </div>
               </div>
 
               {/* Contact Form */}
-              <form className="space-y-4" onSubmit={async (e) => {
+              <form style={{ display: "flex", flexDirection: "column", gap: "1rem" }} onSubmit={async (e) => {
                 e.preventDefault()
                 setFormState("loading")
                 try {
@@ -572,21 +703,23 @@ export default function Home() {
                   setFormState("error")
                 }
               }}>
-                <div className="grid grid-cols-2 gap-4">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <input
                     type="text"
                     placeholder="First Name"
                     value={formData.firstName}
                     onChange={e => setFormData(p => ({ ...p, firstName: e.target.value }))}
                     required
-                    className="form-input px-4 py-3 text-sm text-white w-full rounded-lg"
+                    className="form-input"
+                    style={{ padding: "0.75rem 1rem", fontSize: "0.875rem", borderRadius: "0.5rem" }}
                   />
                   <input
                     type="text"
                     placeholder="Last Name"
                     value={formData.lastName}
                     onChange={e => setFormData(p => ({ ...p, lastName: e.target.value }))}
-                    className="form-input px-4 py-3 text-sm text-white w-full rounded-lg"
+                    className="form-input"
+                    style={{ padding: "0.75rem 1rem", fontSize: "0.875rem", borderRadius: "0.5rem" }}
                   />
                 </div>
                 <input
@@ -595,7 +728,8 @@ export default function Home() {
                   value={formData.email}
                   onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                   required
-                  className="form-input px-4 py-3 text-sm text-white w-full rounded-lg"
+                  className="form-input"
+                  style={{ padding: "0.75rem 1rem", fontSize: "0.875rem", borderRadius: "0.5rem" }}
                 />
                 <textarea
                   placeholder="Your Message"
@@ -603,24 +737,26 @@ export default function Home() {
                   value={formData.message}
                   onChange={e => setFormData(p => ({ ...p, message: e.target.value }))}
                   required
-                  className="form-input px-4 py-3 text-sm text-white w-full rounded-lg resize-none"
+                  className="form-input"
+                  style={{ padding: "0.75rem 1rem", fontSize: "0.875rem", borderRadius: "0.5rem", resize: "none" }}
                 />
                 <button
                   type="submit"
                   disabled={formState === "loading"}
-                  className="btn-primary text-white text-xs font-bold tracking-widest uppercase px-8 py-4 w-full rounded-lg disabled:opacity-50"
+                  className="btn-primary"
+                  style={{ padding: "0.75rem 1rem", borderRadius: "0.5rem", fontSize: "0.875rem" }}
                 >
                   {formState === "loading" ? "SENDING..." : "SEND MESSAGE"}
                 </button>
 
                 {formState === "success" && (
-                  <div className="px-4 py-3 text-sm tracking-wide text-center rounded-lg" style={{ border: "1px solid rgba(196, 30, 30, 0.5)", background: "rgba(196, 30, 30, 0.1)", color: "#c41e1e" }}>
+                  <div style={{ padding: "0.75rem 1rem", fontSize: "0.875rem", textAlign: "center", borderRadius: "0.5rem", border: "1px solid rgba(196, 30, 30, 0.5)", background: "rgba(196, 30, 30, 0.1)", color: "#c41e1e" }}>
                     ✓ Message sent! We'll get back to you soon.
                   </div>
                 )}
                 {formState === "error" && (
-                  <div className="px-4 py-3 text-sm tracking-wide text-center rounded-lg" style={{ border: "1px solid #3a3a3a", background: "#2a2a2a", color: "#9ca3af" }}>
-                    Something went wrong. Email us directly.
+                  <div style={{ padding: "0.75rem 1rem", fontSize: "0.875rem", textAlign: "center", borderRadius: "0.5rem", border: "1px solid #3a3a3a", background: "#2a2a2a", color: "#9ca3af" }}>
+                    Something went wrong. Please try again.
                   </div>
                 )}
               </form>
@@ -628,37 +764,39 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CTA FINAL ── */}
-        <section className="relative py-32 overflow-hidden" style={{ background: "linear-gradient(135deg, #2a0a0a 0%, #0a0a0a 50%, #2a0a0a 100%)" }}>
-          <div className="absolute inset-0 opacity-20" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(196, 30, 30, 0.2), transparent)" }} />
-          <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-            <h2 className="font-black uppercase leading-tight mb-6 text-white" style={{ fontSize: "clamp(2rem,6vw,4rem)", letterSpacing: "-0.02em" }}>
+        {/* ── FINAL CTA ── */}
+        <section className="ppla-section" style={{ background: "linear-gradient(135deg, #2a0a0a 0%, #0a0a0a 50%, #2a0a0a 100%)", position: "relative" }}>
+          <div style={{ position: "absolute", inset: "0", opacity: "0.2", background: "radial-gradient(ellipse at 50% 50%, rgba(196, 30, 30, 0.2), transparent)" }} />
+          <div style={{ position: "relative", zIndex: "10", maxWidth: "56rem", margin: "0 auto", textAlign: "center" }}>
+            <h2 style={{ fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: "900", textTransform: "uppercase", letterSpacing: "-0.02em", marginBottom: "1.5rem" }}>
               Ready to <span style={{ color: "#c41e1e" }}>Transform?</span>
             </h2>
-            <p className="text-lg mb-4 text-gray-300 max-w-2xl mx-auto">
+            <p style={{ fontSize: "1.125rem", lineHeight: "1.8", color: "#d1d5db", marginBottom: "2rem" }}>
               Your first class is free. No commitment, just trust the process and see what happens.
             </p>
-            <a href="/signup" className="btn-primary text-white text-sm font-bold tracking-widest uppercase px-12 py-5 rounded-lg inline-block shadow-lg">
+            <button onClick={() => router.push('/signup')} className="btn-primary px-12 py-5 rounded-lg text-sm">
               BOOK YOUR FREE CLASS
-            </a>
-            <p className="text-xs uppercase tracking-widest mt-8 text-gray-500">
+            </button>
+            <p style={{ fontSize: "0.75rem", fontWeight: "600", letterSpacing: "0.3em", marginTop: "2rem", textTransform: "uppercase", color: "#c41e1e" }}>
               ✦ TRUST THE PROCESS ✦
             </p>
           </div>
         </section>
 
         {/* ── FOOTER ── */}
-        <footer className="py-12" style={{ background: "#0a0a0a", borderTop: "1px solid rgba(196, 30, 30, 0.2)" }}>
-          <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
-            <span className="text-xl font-black tracking-widest uppercase text-white">
+        <footer style={{ background: "#0a0a0a", borderTop: "1px solid rgba(196, 30, 30, 0.2)", padding: "3rem 1.5rem" }}>
+          <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-4">
+            <span style={{ fontSize: "1.25rem", fontWeight: "900", letterSpacing: "0.15em", textTransform: "uppercase", color: "white" }}>
               JJ<span style={{ color: "#c41e1e" }}>Studio</span>
             </span>
-            <div className="flex flex-col sm:flex-row items-center gap-4 text-center">
-              <p className="text-xs uppercase tracking-widest text-gray-500">Premium Lagree Megaformer Studio in Querétaro</p>
-              <span className="text-gray-700 hidden sm:inline">|</span>
-              <p className="text-xs text-gray-500">Trust the Process</p>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", textAlign: "center" }}>
+              <p style={{ fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", textTransform: "uppercase", color: "#6b7280" }}>
+                Premium Lagree Megaformer Studio in Querétaro
+              </p>
+              <span style={{ color: "#3f444c" }}>|</span>
+              <p style={{ fontSize: "0.75rem", color: "#6b7280" }}>Trust the Process</p>
             </div>
-            <p className="text-xs text-gray-600">© 2024 JJ Studio. All rights reserved.</p>
+            <p style={{ fontSize: "0.75rem", color: "#3f444c" }}>© 2024 JJ Studio. All rights reserved.</p>
           </div>
         </footer>
       </main>
