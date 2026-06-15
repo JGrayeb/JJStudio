@@ -1,3 +1,5 @@
+// app/page.js
+
 "use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
@@ -10,6 +12,7 @@ export default function Home() {
   const [lang, setLang] = useState("en")
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [knowUsMenuOpen, setKnowUsMenuOpen] = useState(false)
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", message: "" })
@@ -91,11 +94,43 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>JJ Studio Lagree Querétaro | Megaformer Classes | Trust the Process</title>
-        <meta name="description" content="JJ Studio - Premium Lagree Megaformer fitness studio in Querétaro. Trust the Process." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
-      </Head>
+  <title>{t.title}</title>
+  <meta name="description" content={t.description} />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://jjstudio.mx" />
+  {/* Open Graph */}
+  <meta property="og:title" content={t.title} />
+  <meta property="og:description" content={t.description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://jjstudio.mx" />
+  <meta property="og:site_name" content="JJ Studio" />
+  <meta property="og:locale" content={lang === 'es' ? 'es_MX' : 'en_US'} />
+  {/* Twitter */}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={t.title} />
+  <meta name="twitter:description" content={t.description} />
+  {/* JSON-LD LocalBusiness */}
+  <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FitnessCenter",
+    "name": "JJ Studio Lagree",
+    "description": t.description,
+    "url": "https://jjstudio.mx",
+    "telephone": "+52 1 33 1837 3447",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Xentric Lomas Norte, El Campanario, Lcl 211",
+      "addressLocality": "Querétaro",
+      "addressRegion": "Querétaro",
+      "postalCode": "76000",
+      "addressCountry": "MX"
+    },
+    "sameAs": [
+      "https://www.instagram.com/jj_lagree_experience",
+      "https://wa.me/5213318373447"
+    ]
+  }) }} />
+</Head>
 
       <style>{`
         * {
@@ -163,6 +198,47 @@ export default function Home() {
           color: #c41e1e;
         }
 
+        .submenu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background: rgba(10, 10, 10, 0.98);
+          border: 1px solid rgba(196, 30, 30, 0.2);
+          border-top: none;
+          min-width: 200px;
+          padding: 0.5rem 0;
+          z-index: 100;
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.3s ease;
+        }
+
+        .submenu.open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .submenu-item {
+          display: block;
+          padding: 0.75rem 1rem;
+          color: #d1d5db;
+          text-decoration: none;
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          transition: all 0.3s ease;
+          white-space: nowrap;
+        }
+
+        .submenu-item:hover {
+          background: rgba(196, 30, 30, 0.1);
+          color: #c41e1e;
+          padding-left: 1.5rem;
+        }
+
         .social-icon {
           transition: all 0.3s ease;
           width: 32px;
@@ -194,12 +270,28 @@ export default function Home() {
             </a>
 
             {/* Desktop Nav */}
-            <div style={{ display: "none" }} className="lg:flex lg:items-center lg:gap-8">
-              {["SCHEDULE", "PACKAGES", "ABOUT", "CONTACT"].map((label) => (
-                <a key={label} href={`#${label.toLowerCase()}`} className="nav-link" style={{ textDecoration: "none" }}>
-                  {label}
-                </a>
-              ))}
+            <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }} className="lg:flex lg:items-center lg:gap-8">
+              <a href="/" className="nav-link" style={{ textDecoration: "none" }}>HOME</a>
+              
+              {/* Know Us Dropdown */}
+              <div style={{ position: "relative" }} 
+                onMouseEnter={() => setKnowUsMenuOpen(true)}
+                onMouseLeave={() => setKnowUsMenuOpen(false)}>
+                <button 
+                  className="nav-link" 
+                  style={{ textDecoration: "none", background: "none", border: "none", padding: 0 }}
+                  onClick={() => setKnowUsMenuOpen(!knowUsMenuOpen)}
+                >
+                  KNOW US ▼
+                </button>
+                <div className={`submenu ${knowUsMenuOpen ? 'open' : ''}`}>
+                  <a href="/about-us" className="submenu-item">About Us</a>
+                  <a href="/about-lagree" className="submenu-item">About Lagree</a>
+                </div>
+              </div>
+
+              <a href="#packages" className="nav-link" style={{ textDecoration: "none" }}>PACKAGES</a>
+              <a href="#contact" className="nav-link" style={{ textDecoration: "none" }}>CONTACT</a>
             </div>
 
             {/* Right Side - Socials + Auth */}
@@ -221,10 +313,13 @@ export default function Home() {
 
               {!isLoading && (
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <button onClick={handleBooking} className="btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.625rem" }}>
+                    BOOKINGS
+                  </button>
                   {user ? (
                     <>
-                      <button onClick={() => router.push('/dashboard/client')} className="btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.625rem" }}>PROFILE</button>
-                      <button onClick={handleLogout} className="nav-link" style={{ fontSize: "0.625rem" }}>LOGOUT</button>
+                      <button onClick={() => router.push('/dashboard/client')} className="nav-link" style={{ fontSize: "0.625rem", background: "none", border: "none", padding: 0 }}>PROFILE</button>
+                      <button onClick={handleLogout} className="nav-link" style={{ fontSize: "0.625rem", background: "none", border: "none", padding: 0 }}>LOGOUT</button>
                     </>
                   ) : (
                     <>
@@ -243,13 +338,14 @@ export default function Home() {
           {/* Background Image - Right Side */}
           <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "55%", background: "linear-gradient(135deg, rgba(10, 10, 10, 0.7) 0%, rgba(106, 6, 6, 0.3) 100%)" }}>
             <Image
-              src="/images/hero-megaformer.jpg"
+             src="/images/hero-megaformer.jpg"
               alt="JJ Studio Megaformer Class"
               fill
               priority
+              sizes="(max-width: 768px) 100vw, 55vw"
               className="object-cover object-center"
               style={{ objectPosition: "center" }}
-            />
+             />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, #0a0a0a 0%, transparent 30%, rgba(10, 10, 10, 0.5) 100%)" }} />
           </div>
 
@@ -268,13 +364,13 @@ export default function Home() {
 
               {/* Main Headline */}
               <h1 style={{ fontSize: "clamp(2rem, 8vw, 5.5rem)", fontWeight: "900", letterSpacing: "-0.02em", lineHeight: "1.2", marginBottom: "2rem", textTransform: "uppercase" }}>
-                <span style={{ color: "white" }}>STRENGTH,</span>
+                <span style={{ color: "white" }}>TRUST,</span>
                 <br />
-                <span style={{ color: "#c41e1e" }}>EVOLVED.</span>
+                <span style={{ color: "#c41e1e" }}>THE</span>
                 <br />
-                <span style={{ color: "white" }}>LAGREE</span>
+                <span style={{ color: "white" }}>PROCESS</span>
                 <br />
-                <span style={{ color: "#c41e1e" }}>QUERÉTARO</span>
+                <span style={{ color: "#c41e1e" }}>LAGREE</span>
               </h1>
 
               {/* Description */}
@@ -436,11 +532,11 @@ export default function Home() {
                   onMouseLeave={(e) => { e.currentTarget.querySelector('img').style.transform = "scale(1)"; e.currentTarget.querySelector('.overlay').style.opacity = "0"; }}
                 >
                   <Image
-                    src={post.image}
-                    alt={post.caption}
-                    fill
-                    className="object-cover"
-                    style={{ transition: "transform 0.3s ease" }}
+                  src={post.image}
+                  alt={post.caption}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                  className="object-cover"
                   />
                   <div
                     className="overlay"
@@ -516,7 +612,7 @@ export default function Home() {
                 },
                 {
                   name: "UNLIMITED",
-                  price: "$899",
+                  price: "$8,000",
                   points: "Unlimited",
                   expiration: "30 days",
                   beverage: "2 beverage points",
