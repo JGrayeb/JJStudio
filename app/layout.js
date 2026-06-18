@@ -1,7 +1,11 @@
+// app/layout.js
 
 import "./globals.css"
 
 export const metadata = {
+  verification: {
+    google: "vt3rCHU-eHRf3gB8K1ReR1udBbBYtCp7H1HHGHQ67fI",
+  },
   title: "JJStudio — Trust The Process",
   description: "Boutique fitness studio at Xentric Lomas Norte. Group classes: Full Body, Core, Lower Body, Arms & Hell. Your first class is free.",
   keywords: "JJStudio, fitness, boutique gym, clases grupales, Xentric Lomas Norte, entrenamiento",
