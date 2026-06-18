@@ -93,8 +93,8 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <meta name="google-site-verification" content="vt3rCHU-eHRf3gB8K1ReR1udBbBYtCp7H1HHGHQ67fI" />
+<Head>
+  <meta name="google-site-verification" content="vt3rCHU-eHRf3gB8K1ReR1udBbBYtCp7H1HHGHQ67fI" />
   <title>{t.title}</title>
   <meta name="description" content={t.description} />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
