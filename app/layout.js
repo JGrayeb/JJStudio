@@ -1,6 +1,7 @@
 // app/layout.js
 
 import "./globals.css"
+import Script from "next/script"
 
 export const metadata = {
   verification: {
@@ -39,6 +40,29 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          id="organization-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "JJStudio",
+              "url": "https://www.jjstudio.mx",
+              "logo": "https://www.jjstudio.mx/images/logo.png",
+              "description": "Boutique fitness studio at Xentric Lomas Norte",
+              "sameAs": [
+                "https://www.instagram.com/jjstudio"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "Customer Service"
+              }
+            })
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   )
