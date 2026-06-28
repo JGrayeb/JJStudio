@@ -9,4 +9,4 @@ export const supabaseClient = createClient(url, anon, {
     // optional: set storage or other client options
     // redirectTo not required if using OAuth with next redirect
   },
-});
+}); 
