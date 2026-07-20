@@ -153,7 +153,7 @@ export default function Home() {
                 </svg>
               </button>
               <div
-                className={`absolute top-full left-0 min-w-[200px] bg-[#0a0a0a] border border-[#c41e1e]/20 border-t-0 py-2 transition-all duration-200 ${
+                className={`absolute top-full left-0 min-w-[200px] bg-[#0a0a0a] border border-[#c41e1e]/20 border-t-0 rounded-b-2xl overflow-hidden py-2 transition-all duration-200 ${
                   knowUsOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"
                 }`}
               >
@@ -194,7 +194,7 @@ export default function Home() {
             </div>
 
             <div className="hidden md:flex items-center gap-4">
-              <button onClick={handleBooking} className="px-4 py-2 text-[11px] font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] hover:bg-[#690606] hover:border-[#690606] transition-colors">
+              <button onClick={handleBooking} className="px-4 py-2 text-[11px] font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] rounded-full hover:bg-[#690606] hover:border-[#690606] transition-colors">
                 Reservar en Nessty
               </button>
             </div>
@@ -215,14 +215,14 @@ export default function Home() {
             <a href="#paquetes" className="text-xs font-semibold uppercase tracking-[0.15em] text-[#c9c9ce]">Paquetes</a>
             <a href="#equipo" className="text-xs font-semibold uppercase tracking-[0.15em] text-[#c9c9ce]">Equipo</a>
             <a href="#contacto" className="text-xs font-semibold uppercase tracking-[0.15em] text-[#c9c9ce]">Contacto</a>
-            <button onClick={handleBooking} className="mt-2 px-4 py-3 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white">Reservar en Nessty</button>
+            <button onClick={handleBooking} className="mt-2 px-4 py-3 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white rounded-full">Reservar en Nessty</button>
           </div>
         )}
       </nav>
 
       {/* ── HERO ── */}
       <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
-        <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[55%]">
+        <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[55%] lg:rounded-bl-[140px] lg:overflow-hidden">
           <Image
             src="/images/hero-megaformer.jpg"
             alt="Clase de Megaformer en JJ Studio"
@@ -247,9 +247,9 @@ export default function Home() {
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#c41e1e] mb-4">Megaformer · Querétaro</p>
 
             <h1 className="font-[family-name:var(--font-display)] text-6xl sm:text-7xl lg:text-8xl leading-[0.95] tracking-wide uppercase mb-8">
-              <span className="text-white">Confía en</span>
+              <span className="text-white">Trust,</span>
               <br />
-              <span className="text-[#c41e1e]">el proceso</span>
+              <span className="text-[#c41e1e]">the process</span>
             </h1>
 
             <p className="text-base leading-relaxed text-[#c9c9ce] max-w-md mb-10">
@@ -257,7 +257,7 @@ export default function Home() {
               <span className="text-[#c41e1e]">fuerza, resistencia, cardio y balance</span> en clases de 45 minutos, de bajo impacto y alta intensidad.
             </p>
 
-            <button onClick={handleBooking} className="px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] hover:bg-[#690606] hover:border-[#690606] transition-colors">
+            <button onClick={handleBooking} className="px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] rounded-full hover:bg-[#690606] hover:border-[#690606] transition-colors">
               Reserva tu primera clase
             </button>
 
@@ -286,7 +286,7 @@ export default function Home() {
           </p>
 
           <div className="text-center">
-            <a href="#paquetes" className="inline-block px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] border-2 border-[#c41e1e] text-[#c41e1e] hover:bg-[#c41e1e] hover:text-white transition-colors">
+            <a href="#paquetes" className="inline-block px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] border-2 border-[#c41e1e] text-[#c41e1e] rounded-full hover:bg-[#c41e1e] hover:text-white transition-colors">
               Ver paquetes
             </a>
           </div>
@@ -305,7 +305,7 @@ export default function Home() {
           <p className="text-lg leading-relaxed text-[#c9c9ce] mb-10 text-left">
             El Megaformer™ te permite pasar de un movimiento a otro de forma rápida y fluida, manteniendo el ritmo cardiaco elevado durante toda la clase.
           </p>
-          <button onClick={handleBooking} className="px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] hover:bg-[#690606] hover:border-[#690606] transition-colors">
+          <button onClick={handleBooking} className="px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] rounded-full hover:bg-[#690606] hover:border-[#690606] transition-colors">
             Ver horarios
           </button>
         </div>
@@ -327,7 +327,7 @@ export default function Home() {
               { name: "Core Focus", level: "Intermedio", duration: "45 min", desc: "Trabajo profundo de abdomen, oblicuos y espalda baja. Construye estabilidad y definición." },
               { name: "Power Sculpt", level: "Avanzado", duration: "45 min", desc: "Construcción muscular de alta intensidad en el Megaformer. Tren superior, tren inferior, repite." },
             ].map((cls) => (
-              <div key={cls.name} className="p-8 bg-[#1c1c1c] border border-[#2a2a2a] hover:border-[#c41e1e]/60 transition-colors">
+              <div key={cls.name} className="p-8 bg-[#1c1c1c] border border-[#2a2a2a] rounded-3xl hover:border-[#c41e1e]/60 transition-colors">
                 <h3 className="text-xl font-bold uppercase tracking-wide mb-3 text-white">{cls.name}</h3>
                 <p className="text-sm uppercase tracking-wide text-[#9ca3af] mb-4">{cls.level} · {cls.duration}</p>
                 <p className="text-[15px] leading-relaxed text-[#9ca3af]">{cls.desc}</p>
@@ -336,7 +336,7 @@ export default function Home() {
           </div>
 
           {/* Calendario y reservas — vía Nessty */}
-          <div className="mt-16 p-8 sm:p-12 bg-[#1c1c1c] border border-[#2a2a2a] grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 items-center">
+          <div className="mt-16 p-8 sm:p-12 bg-[#1c1c1c] border border-[#2a2a2a] rounded-[2.5rem] grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 items-center">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#c41e1e] mb-3">Horario y reservaciones</p>
               <h3 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl uppercase tracking-wide text-white mb-4">
@@ -349,12 +349,12 @@ export default function Home() {
                 href={NESSTY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] hover:bg-[#690606] hover:border-[#690606] transition-colors"
+                className="inline-block px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] rounded-full hover:bg-[#690606] hover:border-[#690606] transition-colors"
               >
                 Ver horario y reservar
               </a>
             </div>
-            <div className="w-40 h-40 sm:w-48 sm:h-48 bg-white p-3 mx-auto">
+            <div className="w-40 h-40 sm:w-48 sm:h-48 bg-white p-3 mx-auto rounded-3xl">
               <Image src={NESSTY_QR} alt="Código QR para reservar en Nessty" width={400} height={400} className="w-full h-full object-contain" unoptimized />
             </div>
           </div>
@@ -377,15 +377,14 @@ export default function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
             {COACHES.map((coach) => (
               <div key={coach.name} className="group text-center">
-                <div className="relative aspect-[3/4] overflow-hidden bg-[#1c1c1c] mb-3">
+                <div className="relative aspect-square overflow-hidden bg-[#1c1c1c] mb-3 rounded-full ring-2 ring-[#2a2a2a] group-hover:ring-[#c41e1e] transition-all duration-300">
                   <Image
-                    src={`/images/${coach.file}.jpg`}
+                    src={`/images/${coach.file}.JPG`}
                     alt={coach.name}
                     fill
                     sizes="(max-width: 640px) 50vw, 16vw"
                     className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
                   />
-                  <div className="absolute inset-x-0 bottom-0 h-1 bg-[#c41e1e] scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300" />
                 </div>
                 <p className="text-xs font-bold uppercase tracking-[0.1em] text-white">{coach.name}</p>
               </div>
@@ -410,7 +409,7 @@ export default function Home() {
               { name: "Carlos M.", quote: "45 minutos de intensidad pura. Bajo impacto pero exigente. Ya se nota la definición." },
               { name: "Jessica R.", quote: "La comunidad aquí es increíble. Experiencia premium y resultados reales." },
             ].map((t) => (
-              <div key={t.name} className="p-8 bg-[#1c1c1c] border border-[#2a2a2a]">
+              <div key={t.name} className="p-8 bg-[#1c1c1c] border border-[#2a2a2a] rounded-3xl">
                 <p className="text-[15px] italic leading-relaxed text-[#c9c9ce] mb-6">&ldquo;{t.quote}&rdquo;</p>
                 <p className="font-bold uppercase text-sm tracking-wide text-[#c41e1e]">{t.name}</p>
               </div>
@@ -435,7 +434,7 @@ export default function Home() {
               href={CONTACT.instagram}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] border-2 border-[#c41e1e] text-[#c41e1e] hover:bg-[#c41e1e] hover:text-white transition-colors"
+              className="inline-flex items-center gap-3 px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] border-2 border-[#c41e1e] text-[#c41e1e] rounded-full hover:bg-[#c41e1e] hover:text-white transition-colors"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -466,7 +465,7 @@ export default function Home() {
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#c41e1e] mb-6">Muestra</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
               {PACKAGES.muestra.map((plan) => (
-                <div key={plan.name} className="p-6 bg-[#1c1c1c] border border-[#2a2a2a] flex items-center justify-between">
+                <div key={plan.name} className="p-6 bg-[#1c1c1c] border border-[#2a2a2a] rounded-3xl flex items-center justify-between">
                   <div>
                     <h3 className="font-bold uppercase tracking-wide text-white mb-1">{plan.name}</h3>
                     <p className="text-xs text-[#9ca3af]">{plan.note}</p>
@@ -489,10 +488,10 @@ export default function Home() {
               {PACKAGES.normal.map((plan) => (
                 <div
                   key={plan.name}
-                  className={`p-8 relative ${plan.popular ? "bg-[#c41e1e]/10 border-2 border-[#c41e1e]" : "bg-[#1c1c1c] border border-[#2a2a2a]"}`}
+                  className={`p-8 relative rounded-3xl ${plan.popular ? "bg-[#c41e1e]/10 border-2 border-[#c41e1e]" : "bg-[#1c1c1c] border border-[#2a2a2a]"}`}
                 >
                   {plan.popular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#c41e1e] text-white text-[10px] font-bold uppercase tracking-[0.1em] px-3 py-1">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#c41e1e] text-white text-[10px] font-bold uppercase tracking-[0.1em] px-3 py-1 rounded-full">
                       Más popular
                     </span>
                   )}
@@ -505,7 +504,7 @@ export default function Home() {
                   </ul>
                   <button
                     onClick={handleBooking}
-                    className={`w-full py-3 text-xs font-bold uppercase tracking-[0.1em] transition-colors ${
+                    className={`w-full py-3 text-xs font-bold uppercase tracking-[0.1em] rounded-full transition-colors ${
                       plan.popular ? "bg-[#c41e1e] text-white hover:bg-[#690606]" : "border-2 border-[#c41e1e] text-[#c41e1e] hover:bg-[#c41e1e] hover:text-white"
                     }`}
                   >
@@ -524,14 +523,14 @@ export default function Home() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {PACKAGES.founding.map((plan) => (
-                <div key={plan.name} className="p-8 bg-[#1c1c1c] border border-[#2a2a2a]">
+                <div key={plan.name} className="p-8 bg-[#1c1c1c] border border-[#2a2a2a] rounded-3xl">
                   <h3 className="font-bold uppercase tracking-wide text-white mb-2">{plan.name}</h3>
                   <div className="flex items-baseline gap-2 mb-4">
                     <p className="font-[family-name:var(--font-display)] text-4xl text-white">{plan.price}</p>
                     <p className="text-sm text-[#6b7280] line-through">{plan.original}</p>
                   </div>
                   <div className="w-8 h-0.5 bg-[#c41e1e] mb-6" />
-                  <button onClick={handleBooking} className="w-full py-3 text-xs font-bold uppercase tracking-[0.1em] border-2 border-[#c41e1e] text-[#c41e1e] hover:bg-[#c41e1e] hover:text-white transition-colors">
+                  <button onClick={handleBooking} className="w-full py-3 text-xs font-bold uppercase tracking-[0.1em] border-2 border-[#c41e1e] text-[#c41e1e] rounded-full hover:bg-[#c41e1e] hover:text-white transition-colors">
                     Comprar
                   </button>
                 </div>
@@ -544,7 +543,7 @@ export default function Home() {
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#c41e1e] mb-6">Bebidas</p>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
               {DRINKS.map((d) => (
-                <div key={d.name} className="p-4 bg-[#1c1c1c] border border-[#2a2a2a] text-center">
+                <div key={d.name} className="p-4 bg-[#1c1c1c] border border-[#2a2a2a] rounded-2xl text-center">
                   <p className="text-xs text-[#c9c9ce] mb-1">{d.name}</p>
                   <p className="font-[family-name:var(--font-display)] text-xl text-white">{d.price}</p>
                 </div>
@@ -607,14 +606,14 @@ export default function Home() {
                   value={formData.firstName}
                   onChange={(e) => setFormData((p) => ({ ...p, firstName: e.target.value }))}
                   required
-                  className="px-4 py-3 text-sm bg-[#1c1c1c] border border-[#2a2a2a] text-white placeholder:text-[#6b7280] focus:border-[#c41e1e] focus:outline-none transition-colors"
+                  className="px-4 py-3 text-sm bg-[#1c1c1c] border border-[#2a2a2a] text-white placeholder:text-[#6b7280] focus:border-[#c41e1e] focus:outline-none transition-colors rounded-xl"
                 />
                 <input
                   type="text"
                   placeholder="Apellido"
                   value={formData.lastName}
                   onChange={(e) => setFormData((p) => ({ ...p, lastName: e.target.value }))}
-                  className="px-4 py-3 text-sm bg-[#1c1c1c] border border-[#2a2a2a] text-white placeholder:text-[#6b7280] focus:border-[#c41e1e] focus:outline-none transition-colors"
+                  className="px-4 py-3 text-sm bg-[#1c1c1c] border border-[#2a2a2a] text-white placeholder:text-[#6b7280] focus:border-[#c41e1e] focus:outline-none transition-colors rounded-xl"
                 />
               </div>
               <input
@@ -623,7 +622,7 @@ export default function Home() {
                 value={formData.email}
                 onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
                 required
-                className="px-4 py-3 text-sm bg-[#1c1c1c] border border-[#2a2a2a] text-white placeholder:text-[#6b7280] focus:border-[#c41e1e] focus:outline-none transition-colors"
+                className="px-4 py-3 text-sm bg-[#1c1c1c] border border-[#2a2a2a] text-white placeholder:text-[#6b7280] focus:border-[#c41e1e] focus:outline-none transition-colors rounded-xl"
               />
               <textarea
                 placeholder="Mensaje"
@@ -631,12 +630,12 @@ export default function Home() {
                 value={formData.message}
                 onChange={(e) => setFormData((p) => ({ ...p, message: e.target.value }))}
                 required
-                className="px-4 py-3 text-sm bg-[#1c1c1c] border border-[#2a2a2a] text-white placeholder:text-[#6b7280] focus:border-[#c41e1e] focus:outline-none transition-colors resize-none"
+                className="px-4 py-3 text-sm bg-[#1c1c1c] border border-[#2a2a2a] text-white placeholder:text-[#6b7280] focus:border-[#c41e1e] focus:outline-none transition-colors resize-none rounded-xl"
               />
               <button
                 type="submit"
                 disabled={formState === "loading"}
-                className="px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] hover:bg-[#690606] hover:border-[#690606] transition-colors disabled:opacity-60"
+                className="px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] rounded-full hover:bg-[#690606] hover:border-[#690606] transition-colors disabled:opacity-60"
               >
                 {formState === "loading" ? "Enviando..." : "Enviar"}
               </button>
@@ -662,9 +661,9 @@ export default function Home() {
             ¿Lista para <span className="text-[#c41e1e]">transformarte?</span>
           </h2>
           <p className="text-lg leading-relaxed text-[#c9c9ce] mb-10">
-            Tu primera clase es gratis. Sin compromiso: confía en el proceso y descubre lo que puede pasar.
+            Tu primera clase es gratis. Sin compromiso: Trust the Process y descubre lo que puede pasar.
           </p>
-          <button onClick={handleBooking} className="px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] hover:bg-[#690606] hover:border-[#690606] transition-colors">
+          <button onClick={handleBooking} className="px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] rounded-full hover:bg-[#690606] hover:border-[#690606] transition-colors">
             Reserva tu clase gratis
           </button>
           <p className="mt-8 text-xs font-semibold uppercase tracking-[0.3em] text-[#c41e1e]">
