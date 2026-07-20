@@ -3,12 +3,14 @@
 "use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { Bebas_Neue, Inter } from "next/font/google"
-import { createClient } from "@/utils/supabase/client"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
+
+// Reservas y compra de paquetes viven en Nessty — ya no usamos cuentas propias.
+const NESSTY_URL = "https://nessty.mx/@jjstudio"
+const NESSTY_QR = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=10&data=${encodeURIComponent(NESSTY_URL)}`
 
 // ── Datos reales del negocio ──────────────────────────────────────────────
 const CONTACT = {
@@ -64,27 +66,8 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false)
   const [knowUsOpen, setKnowUsOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [user, setUser] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", message: "" })
   const [formState, setFormState] = useState("idle")
-  const router = useRouter()
-  const supabase = createClient()
-
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const { data } = await supabase.auth.getUser()
-        setUser(data?.user || null)
-      } catch (err) {
-        console.error("Auth error:", err)
-        setUser(null)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    checkUser()
-  }, [supabase])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -92,19 +75,9 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut()
-    } catch (err) {
-      console.error("Sign out error:", err)
-    }
-    setUser(null)
-    router.push("/")
-  }
-
   const handleBooking = (e) => {
     e?.preventDefault()
-    router.push(user ? "/dashboard/client" : "/login")
+    window.open(NESSTY_URL, "_blank", "noopener,noreferrer")
   }
 
   const handleContactSubmit = async (e) => {
@@ -220,32 +193,11 @@ export default function Home() {
               </a>
             </div>
 
-            {!isLoading && (
-              <div className="hidden md:flex items-center gap-4">
-                <button onClick={handleBooking} className="px-4 py-2 text-[11px] font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] hover:bg-[#690606] hover:border-[#690606] transition-colors">
-                  Reservar
-                </button>
-                {user ? (
-                  <>
-                    <button onClick={() => router.push("/dashboard/client")} className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#c9c9ce] hover:text-[#c41e1e] transition-colors">
-                      Mi Perfil
-                    </button>
-                    <button onClick={handleLogout} className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#c9c9ce] hover:text-[#c41e1e] transition-colors">
-                      Cerrar Sesión
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <a href="/login" className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#c9c9ce] hover:text-[#c41e1e] transition-colors">
-                      Iniciar Sesión
-                    </a>
-                    <a href="/signup" className="px-4 py-2 text-[11px] font-bold uppercase tracking-[0.1em] border-2 border-[#c41e1e] text-[#c41e1e] hover:bg-[#c41e1e] hover:text-white transition-colors">
-                      Registrarme
-                    </a>
-                  </>
-                )}
-              </div>
-            )}
+            <div className="hidden md:flex items-center gap-4">
+              <button onClick={handleBooking} className="px-4 py-2 text-[11px] font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] hover:bg-[#690606] hover:border-[#690606] transition-colors">
+                Reservar en Nessty
+              </button>
+            </div>
 
             <button className="lg:hidden text-white" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Menú">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -263,8 +215,7 @@ export default function Home() {
             <a href="#paquetes" className="text-xs font-semibold uppercase tracking-[0.15em] text-[#c9c9ce]">Paquetes</a>
             <a href="#equipo" className="text-xs font-semibold uppercase tracking-[0.15em] text-[#c9c9ce]">Equipo</a>
             <a href="#contacto" className="text-xs font-semibold uppercase tracking-[0.15em] text-[#c9c9ce]">Contacto</a>
-            <button onClick={handleBooking} className="mt-2 px-4 py-3 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white">Reservar</button>
-            {!user && <a href="/login" className="text-xs font-semibold uppercase tracking-[0.15em] text-[#c9c9ce]">Iniciar Sesión</a>}
+            <button onClick={handleBooking} className="mt-2 px-4 py-3 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white">Reservar en Nessty</button>
           </div>
         )}
       </nav>
@@ -382,6 +333,30 @@ export default function Home() {
                 <p className="text-[15px] leading-relaxed text-[#9ca3af]">{cls.desc}</p>
               </div>
             ))}
+          </div>
+
+          {/* Calendario y reservas — vía Nessty */}
+          <div className="mt-16 p-8 sm:p-12 bg-[#1c1c1c] border border-[#2a2a2a] grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#c41e1e] mb-3">Horario y reservaciones</p>
+              <h3 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl uppercase tracking-wide text-white mb-4">
+                Reserva en <span className="text-[#c41e1e]">Nessty</span>
+              </h3>
+              <p className="text-[15px] leading-relaxed text-[#c9c9ce] mb-6 max-w-md">
+                Consulta el horario completo, elige tu clase y paga tu paquete directo en nuestra página de Nessty. Escanea el código o toca el botón para entrar.
+              </p>
+              <a
+                href={NESSTY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-8 py-4 text-xs font-bold uppercase tracking-[0.1em] bg-[#c41e1e] text-white border-2 border-[#c41e1e] hover:bg-[#690606] hover:border-[#690606] transition-colors"
+              >
+                Ver horario y reservar
+              </a>
+            </div>
+            <div className="w-40 h-40 sm:w-48 sm:h-48 bg-white p-3 mx-auto">
+              <Image src={NESSTY_QR} alt="Código QR para reservar en Nessty" width={400} height={400} className="w-full h-full object-contain" unoptimized />
+            </div>
           </div>
         </div>
       </section>
