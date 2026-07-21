@@ -16,9 +16,19 @@ const STUDIO_STATS = [["45", "minutos"], ["Bajo", "impacto"], ["Alta", "intensid
 
 const COACHES = [
   { name: "Javi", image: "/images/Coach Javi.JPG" },
-  { name: "Dani", image: "/images/Coach Dani.JPG" },
-  { name: "Erika", image: "/images/Coach Erika.JPG" },
   { name: "Miyu", image: "/images/Coach Miyu.JPG" },
+  { name: "Xime", image: "/images/Coach Xime.JPG" },
+  { name: "Dani", image: "/images/Coach Dani.JPG" },
+  { name: "Dan", image: "/images/Coach Dan.JPG" },
+  { name: "Erika", image: "/images/Coach Erika.JPG" },
+]
+
+const NAV_LINKS = [
+  ["Método", "#metodo"],
+  ["Calendario", "/horarios"],
+  ["Equipo", "#equipo"],
+  ["El estudio", "#estudio"],
+  ["Bebidas", "/beverages"],
 ]
 
 const BENEFITS = [
@@ -53,12 +63,10 @@ export default function Home() {
             JJ<span className="text-[#d9362b]">STUDIO</span>
           </a>
 
-          <div className="hidden items-center gap-8 lg:flex">
-            <a href="#metodo" className="nav-link">El método</a>
-            <a href="/horarios" className="nav-link">Horarios</a>
-            <a href="#equipo" className="nav-link">Equipo</a>
-            <a href="#estudio" className="nav-link">El estudio</a>
-            <a href="#contacto" className="nav-link">Contacto</a>
+          <div className="hidden items-center gap-6 xl:gap-8 lg:flex">
+            {NAV_LINKS.map(([label, href]) => (
+              <a key={href} href={href} className="nav-link">{label}</a>
+            ))}
           </div>
 
           <div className="hidden lg:block"><BookingButton /></div>
@@ -75,7 +83,7 @@ export default function Home() {
         {mobileMenuOpen && (
           <div className="border-y border-white/10 bg-[#11100f]/98 px-6 py-6 backdrop-blur lg:hidden">
             <div className="flex flex-col gap-5">
-              {[["El método", "#metodo"], ["Horarios", "/horarios"], ["Equipo", "#equipo"], ["El estudio", "#estudio"], ["Contacto", "#contacto"]].map(([label, href]) => (
+              {NAV_LINKS.map(([label, href]) => (
                 <a key={href} href={href} onClick={closeMenu} className="text-sm font-semibold uppercase tracking-[0.15em] text-[#f8f3eb]">
                   {label}
                 </a>
@@ -197,16 +205,24 @@ export default function Home() {
             </div>
             <a href="/sobre-nosotros" className="group inline-flex items-center gap-3 self-start rounded-full border border-[#1a1816]/50 bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-white shadow-lg shadow-[#8f1f18]/20 transition hover:-translate-y-0.5 hover:bg-white hover:text-[#1a1816] sm:self-auto">Conoce al equipo <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></a>
           </div>
-          <div className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5">
-            {COACHES.map((coach) => (
-              <article key={coach.name} className="group relative aspect-[3/4] overflow-hidden rounded-2xl bg-[#1a1816]">
-                <Image src={coach.image} alt={`Coach ${coach.name}`} fill sizes="(max-width: 640px) 50vw, 25vw" className="object-cover transition duration-500 group-hover:scale-105" />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-4 pb-4 pt-12">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#f0e9df]">Coach</p>
-                  <p className="font-[family-name:var(--font-display)] text-3xl uppercase leading-none text-white">{coach.name}</p>
+          <div className="coach-marquee mt-14 overflow-hidden">
+            <div className="coach-marquee-track">
+              {[false, true].map((isDuplicate) => (
+                <div key={isDuplicate ? "duplicate" : "original"} aria-hidden={isDuplicate} className="flex shrink-0 gap-3 pr-3 sm:gap-5 sm:pr-5">
+                  {COACHES.map((coach) => (
+                    <a key={`${isDuplicate ? "duplicate-" : ""}${coach.name}`} href="/sobre-nosotros" tabIndex={isDuplicate ? -1 : undefined} className="group relative aspect-[3/4] w-[13.5rem] shrink-0 overflow-hidden rounded-[1.35rem] border border-black/15 bg-[#1a1816] shadow-[0_16px_38px_rgba(73,13,10,0.18)] sm:w-[17rem] sm:rounded-[1.6rem] lg:w-[19rem]">
+                      <Image src={coach.image} alt={isDuplicate ? "" : `Coach ${coach.name} de JJ Studio`} fill sizes="(max-width: 640px) 216px, (max-width: 1024px) 272px, 304px" className="object-cover transition duration-700 ease-out group-hover:scale-[1.035]" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
+                      <div className="absolute inset-x-0 bottom-0 px-5 pb-5 pt-16 sm:px-6 sm:pb-6">
+                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#f0e9df]/80">Coach</p>
+                        <p className="mt-1 font-[family-name:var(--font-display)] text-4xl uppercase leading-none text-white sm:text-5xl">{coach.name}</p>
+                      </div>
+                      <span className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full border border-white/25 bg-black/20 text-white opacity-0 backdrop-blur transition duration-300 group-hover:opacity-100" aria-hidden="true"><ArrowUpRight size={16} /></span>
+                    </a>
+                  ))}
                 </div>
-              </article>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -304,7 +320,10 @@ export default function Home() {
         .stat-marquee-track { display: flex; width: max-content; animation: stat-marquee 16s linear infinite; }
         .stat-marquee:hover .stat-marquee-track { animation-play-state: paused; }
         @keyframes stat-marquee { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
-        @media (prefers-reduced-motion: reduce) { .stat-marquee-track { animation: none; } }
+        .coach-marquee-track { display: flex; width: max-content; animation: coach-marquee 46s linear infinite; will-change: transform; }
+        .coach-marquee:hover .coach-marquee-track, .coach-marquee:focus-within .coach-marquee-track { animation-play-state: paused; }
+        @keyframes coach-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track { animation: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
       `}</style>
     </main>
   )
