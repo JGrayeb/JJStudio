@@ -31,6 +31,8 @@ const NAV_LINKS = [
   ["Bebidas", "/beverages"],
 ]
 
+const HERO_TITLE_LINES = ["Trust", "the Process."]
+
 const BENEFITS = [
   ["01", "Bajo impacto", "Movimiento inteligente que cuida tus articulaciones."],
   ["02", "Alta intensidad", "Tensión continua para sentir cada repetición."],
@@ -47,6 +49,33 @@ function BookingButton({ className = "" }) {
     >
       Reservar clase <ArrowUpRight size={15} strokeWidth={2.5} />
     </a>
+  )
+}
+
+function AnimatedHeroTitle() {
+  return (
+    <h1
+      aria-label="Trust the Process."
+      className="font-[family-name:var(--font-display)] text-[clamp(5.3rem,13vw,10.5rem)] uppercase leading-[0.78] tracking-[-0.025em] text-[#f8f3eb]"
+    >
+      {HERO_TITLE_LINES.map((line, lineIndex) => (
+        <span
+          key={line}
+          aria-hidden="true"
+          className={`block${lineIndex ? " text-[#d9362b]" : ""}`}
+        >
+          {Array.from(line).map((letter, index) => (
+            <span
+              key={`${letter}-${index}`}
+              className={`hero-letter${letter === " " ? " hero-letter-space" : ""}`}
+              style={{ animationDelay: `${(lineIndex * 5 + index) * 55 + 120}ms` }}
+            >
+              {letter === " " ? "\u00a0" : letter}
+            </span>
+          ))}
+        </span>
+      ))}
+    </h1>
   )
 }
 
@@ -111,10 +140,7 @@ export default function Home() {
         <div className="relative mx-auto flex min-h-[780px] max-w-7xl items-end px-6 pb-16 pt-32 lg:px-8 lg:pb-24">
           <div className="max-w-3xl">
             <p className="mb-6 text-[11px] font-bold uppercase tracking-[0.28em] text-[#f04a3e]">Lagree fitness · Querétaro</p>
-            <h1 className="font-[family-name:var(--font-display)] text-[clamp(5.3rem,13vw,10.5rem)] uppercase leading-[0.78] tracking-[-0.025em] text-[#f8f3eb]">
-              Trust<br />
-              <span className="text-[#d9362b]">the Process.</span>
-            </h1>
+            <AnimatedHeroTitle />
             <p className="mt-8 max-w-md text-base leading-relaxed text-[#d7d0c7] sm:text-lg">
               45 minutos de fuerza, resistencia y control en el Megaformer. Un entrenamiento que se adapta a ti y se queda contigo.
             </p>
@@ -140,9 +166,9 @@ export default function Home() {
             </div>
           </div>
           <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 border-t border-white/15 px-6 py-3 sm:gap-3 lg:px-8">
-            <a href="/horarios" className="rounded-full bg-[#d9362b] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#f04a3e] sm:px-5">Calendario</a>
-            <a href="#equipo" className="rounded-full border border-white/30 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:border-white hover:bg-white hover:text-[#1a1816] sm:px-5">Equipo</a>
-            <a href="#metodo" className="rounded-full border border-white/30 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:border-white hover:bg-white hover:text-[#1a1816] sm:px-5">Conoce el método</a>
+            <a href="/horarios" className="hero-quick-link rounded-full bg-[#d9362b] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#f04a3e] sm:px-5">Calendario</a>
+            <a href="#equipo" className="hero-quick-link rounded-full border border-white/30 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:border-white hover:bg-white hover:text-[#1a1816] sm:px-5">Equipo</a>
+            <a href="#metodo" className="hero-quick-link rounded-full border border-white/30 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:border-white hover:bg-white hover:text-[#1a1816] sm:px-5">Conoce el método</a>
           </div>
         </div>
       </section>
@@ -314,8 +340,13 @@ export default function Home() {
       </footer>
 
       <style jsx global>{`
-        .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #ded6cc; transition: color 160ms ease; }
-        .nav-link:hover { color: #f04a3e; }
+        .nav-link { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #ded6cc; transform-origin: center; transition: color 180ms ease, transform 180ms ease; }
+        .nav-link:hover, .nav-link:focus-visible { color: #f04a3e; transform: scale(1.06); }
+        .hero-quick-link { transform-origin: center; transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, color 180ms ease; }
+        .hero-quick-link:hover, .hero-quick-link:focus-visible { transform: translateY(-1px) scale(1.035); }
+        .hero-letter { display: inline-block; animation: hero-letter-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .hero-letter-space { width: 0.25em; }
+        @keyframes hero-letter-in { from { opacity: 0; filter: blur(4px); transform: translate3d(0, 0.34em, 0); } to { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0); } }
         .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; }
         .stat-marquee-track { display: flex; width: max-content; animation: stat-marquee 16s linear infinite; }
         .stat-marquee:hover .stat-marquee-track { animation-play-state: paused; }
@@ -323,7 +354,7 @@ export default function Home() {
         .coach-marquee-track { display: flex; width: max-content; animation: coach-marquee 46s linear infinite; will-change: transform; }
         .coach-marquee:hover .coach-marquee-track, .coach-marquee:focus-within .coach-marquee-track { animation-play-state: paused; }
         @keyframes coach-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track { animation: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
+        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter { animation: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
       `}</style>
     </main>
   )
