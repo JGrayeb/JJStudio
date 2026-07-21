@@ -56,25 +56,34 @@ function AnimatedHeroTitle() {
   return (
     <h1
       aria-label="Trust the Process."
-      className="font-[family-name:var(--font-display)] text-[clamp(5.3rem,13vw,10.5rem)] uppercase leading-[0.78] tracking-[-0.025em] text-[#f8f3eb]"
+      className="hero-title font-[family-name:var(--font-display)] text-[clamp(5.3rem,13vw,10.5rem)] uppercase leading-[0.78] tracking-[-0.025em] text-[#f8f3eb]"
     >
-      {HERO_TITLE_LINES.map((line, lineIndex) => (
-        <span
-          key={line}
-          aria-hidden="true"
-          className={`block${lineIndex ? " text-[#d9362b]" : ""}`}
-        >
-          {Array.from(line).map((letter, index) => (
-            <span
-              key={`${letter}-${index}`}
-              className={`hero-letter${letter === " " ? " hero-letter-space" : ""}`}
-              style={{ animationDelay: `${(lineIndex * 5 + index) * 55 + 120}ms` }}
-            >
-              {letter === " " ? "\u00a0" : letter}
-            </span>
-          ))}
-        </span>
-      ))}
+      <span aria-hidden="true" className="hero-ttp">
+        {["T", "T", "P"].map((letter, index) => (
+          <span
+            key={`${letter}-${index}`}
+            className={`hero-ttp-letter${letter === "P" ? " text-[#d9362b]" : ""}`}
+            style={{ animationDelay: `${120 + index * 180}ms` }}
+          >
+            {letter}
+          </span>
+        ))}
+      </span>
+      <span aria-hidden="true" className="hero-title-lines">
+        {HERO_TITLE_LINES.map((line, lineIndex) => (
+          <span key={line} className={`block${lineIndex ? " text-[#d9362b]" : ""}`}>
+            {Array.from(line).map((letter, index) => (
+              <span
+                key={`${letter}-${index}`}
+                className={`hero-letter${letter === " " ? " hero-letter-space" : ""}`}
+                style={{ animationDelay: `${1160 + (lineIndex * 5 + index) * 55}ms` }}
+              >
+                {letter === " " ? "\u00a0" : letter}
+              </span>
+            ))}
+          </span>
+        ))}
+      </span>
     </h1>
   )
 }
@@ -344,8 +353,13 @@ export default function Home() {
         .nav-link:hover, .nav-link:focus-visible { color: #f04a3e; transform: scale(1.06); }
         .hero-quick-link { transform-origin: center; transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, color 180ms ease; }
         .hero-quick-link:hover, .hero-quick-link:focus-visible { transform: translateY(-1px) scale(1.035); }
-        .hero-letter { display: inline-block; animation: hero-letter-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .hero-title { position: relative; }
+        .hero-ttp { position: absolute; top: 0; left: 0; display: inline-flex; gap: 0.03em; pointer-events: none; animation: hero-ttp-out 360ms ease 1120ms both; }
+        .hero-ttp-letter { display: inline-block; opacity: 0; animation: hero-ttp-in 560ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .hero-letter { display: inline-block; opacity: 0; animation: hero-letter-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both; }
         .hero-letter-space { width: 0.25em; }
+        @keyframes hero-ttp-in { from { opacity: 0; filter: blur(5px); transform: translate3d(0, 0.2em, 0); } to { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0); } }
+        @keyframes hero-ttp-out { from { opacity: 1; transform: translate3d(0, 0, 0); } to { opacity: 0; transform: translate3d(0, -0.08em, 0); } }
         @keyframes hero-letter-in { from { opacity: 0; filter: blur(4px); transform: translate3d(0, 0.34em, 0); } to { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0); } }
         .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; }
         .stat-marquee-track { display: flex; width: max-content; animation: stat-marquee 16s linear infinite; }
@@ -354,7 +368,7 @@ export default function Home() {
         .coach-marquee-track { display: flex; width: max-content; animation: coach-marquee 46s linear infinite; will-change: transform; }
         .coach-marquee:hover .coach-marquee-track, .coach-marquee:focus-within .coach-marquee-track { animation-play-state: paused; }
         @keyframes coach-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter { animation: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
+        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter { animation: none; } .hero-letter { opacity: 1; } .hero-ttp { display: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
       `}</style>
     </main>
   )
