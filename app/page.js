@@ -25,11 +25,6 @@ const BENEFITS = [
   ["03", "Para tu ritmo", "Adaptamos cada movimiento a tu nivel."],
 ]
 
-const TESTIMONIALS = [
-  ["Te reta sin hacerte sentir fuera de lugar. Sales fuerte y con energía.", "Comunidad JJ"],
-  ["Una clase completa: música, coaches y un entrenamiento que sí se siente.", "Comunidad JJ"],
-]
-
 function BookingButton({ className = "" }) {
   return (
     <a
@@ -224,13 +219,48 @@ export default function Home() {
               <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="mt-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#c83228] transition hover:text-[#1a1816]">Síguenos en Instagram <ArrowUpRight size={15} /></a>
             </div>
           </div>
-          <div className="mt-16 grid gap-4 md:grid-cols-2">
-            {TESTIMONIALS.map(([quote, name]) => (
-              <blockquote key={quote} className="rounded-2xl border border-[#1a1816]/15 p-7 sm:p-9">
-                <p className="font-[family-name:var(--font-display)] text-3xl leading-[0.95] text-[#1a1816] sm:text-4xl">“{quote}”</p>
-                <footer className="mt-8 text-[10px] font-bold uppercase tracking-[0.16em] text-[#c83228]">— {name}</footer>
-              </blockquote>
-            ))}
+          <div className="mt-16 grid gap-4 md:grid-cols-12 md:grid-rows-2">
+            <figure className="group relative min-h-[32rem] overflow-hidden rounded-3xl bg-[#1a1816] md:col-span-7 md:row-span-2">
+              <Image
+                src="/images/estudio/salon-lagree.jpg"
+                alt="Salón de entrenamiento de JJ Studio con Megaformers"
+                fill
+                sizes="(max-width: 768px) 100vw, 58vw"
+                className="object-cover transition duration-700 group-hover:scale-105"
+              />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent px-6 pb-6 pt-20 text-white sm:px-8 sm:pb-8">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">El salón</p>
+                <p className="mt-2 font-[family-name:var(--font-display)] text-4xl uppercase leading-none">Donde sucede el shake.</p>
+              </figcaption>
+            </figure>
+
+            <figure className="group relative min-h-64 overflow-hidden rounded-3xl bg-[#1a1816] md:col-span-5">
+              <Image
+                src="/images/estudio/megaformer-trust.jpg"
+                alt="Megaformer y frase Trust the Process en JJ Studio"
+                fill
+                sizes="(max-width: 768px) 100vw, 42vw"
+                className="object-cover transition duration-700 group-hover:scale-105"
+              />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-6 pb-6 pt-16 text-white">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">El método</p>
+                <p className="mt-2 font-[family-name:var(--font-display)] text-3xl uppercase leading-none">Trust the Process.</p>
+              </figcaption>
+            </figure>
+
+            <figure className="group relative min-h-64 overflow-hidden rounded-3xl bg-[#1a1816] md:col-span-5">
+              <Image
+                src="/images/estudio/barra-matcha.jpg"
+                alt="Barra de café y matcha de JJ Studio"
+                fill
+                sizes="(max-width: 768px) 100vw, 42vw"
+                className="object-cover transition duration-700 group-hover:scale-105"
+              />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-6 pb-6 pt-16 text-white">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">La pausa</p>
+                <p className="mt-2 font-[family-name:var(--font-display)] text-3xl uppercase leading-none">Café, matcha y comunidad.</p>
+              </figcaption>
+            </figure>
           </div>
         </div>
       </section>
