@@ -269,6 +269,9 @@ export default function Home() {
               </figcaption>
             </figure>
           </div>
+          <a href="/beverages" className="group mt-8 inline-flex items-center gap-3 rounded-full bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#f0e9df] shadow-lg shadow-[#1a1816]/15 transition hover:-translate-y-0.5 hover:bg-[#c83228] hover:shadow-xl">
+            Conoce nuestras bebidas <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
         </div>
       </section>
 
