@@ -12,7 +12,6 @@ export default function SignupComponent() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'client' | 'trainer'>('client');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +23,7 @@ export default function SignupComponent() {
     try {
       // Combine first and last name for the hook
       const fullName = `${firstName} ${lastName}`.trim();
-      await signUp(email, password, fullName, role);
+      await signUp(email, password, fullName);
       setSuccess(true);
       setTimeout(() => router.push('/login'), 1600);
     } catch (err) {
@@ -92,20 +91,6 @@ export default function SignupComponent() {
               <Lock className="absolute left-3 top-3 text-white/30" size={18} />
               <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••"
                 className="w-full pl-12 py-3 bg-white/5 border border-white/10 text-white text-sm placeholder-white/30 focus:outline-none" />
-            </div>
-          </div>
-
-          <div>
-            <label className="text-xs text-white/60 uppercase tracking-widest mb-2 block">Join as</label>
-            <div className="flex gap-3">
-              <label className={`flex gap-2 items-center px-3 py-2 border rounded cursor-pointer ${role === 'client' ? 'border-red-900 bg-white/3' : 'border-white/10'}`}>
-                <input type="radio" name="role" value="client" checked={role === 'client'} onChange={() => setRole('client')} />
-                <span className="text-sm ml-1">Client</span>
-              </label>
-              <label className={`flex gap-2 items-center px-3 py-2 border rounded cursor-pointer ${role === 'trainer' ? 'border-red-900 bg-white/3' : 'border-white/10'}`}>
-                <input type="radio" name="role" value="trainer" checked={role === 'trainer'} onChange={() => setRole('trainer')} />
-                <span className="text-sm ml-1">Trainer</span>
-              </label>
             </div>
           </div>
 

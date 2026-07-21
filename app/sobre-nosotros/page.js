@@ -63,6 +63,12 @@ const coaches = [
 export const metadata = {
   title: "Equipo",
   description: "Conoce a los coaches de JJ Studio en Querétaro.",
+  alternates: { canonical: "/sobre-nosotros" },
+  openGraph: {
+    title: "Conoce al equipo | JJ Studio",
+    description: "Conoce a los coaches que te acompañan en cada clase de Lagree en JJ Studio.",
+    url: "/sobre-nosotros",
+  },
 }
 
 export default function SobreNosotros() {

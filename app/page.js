@@ -13,6 +13,7 @@ const INSTAGRAM_URL = "https://www.instagram.com/jj_lagree_experience?igsh=MThwa
 const WHATSAPP_URL = "https://wa.me/524423947704"
 const MAPS_URL = "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6"
 const STUDIO_STATS = [["45", "minutos"], ["Bajo", "impacto"], ["Alta", "intensidad"]]
+const FOUNDING_OFFER_END = new Date("2026-08-02T05:59:59.999Z")
 
 const COACHES = [
   { name: "Javi", image: "/images/Coach Javi.JPG" },
@@ -90,6 +91,7 @@ function AnimatedHeroTitle() {
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const hasFoundingOffer = new Date() <= FOUNDING_OFFER_END
 
   const closeMenu = () => setMobileMenuOpen(false)
 
@@ -154,6 +156,14 @@ export default function Home() {
               45 minutos de fuerza, resistencia y control en el Megaformer. Un entrenamiento que se adapta a ti y se queda contigo.
             </p>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.25em] text-[#f04a3e]">✦ Trust the Process ✦</p>
+            {hasFoundingOffer && (
+              <div className="mt-7 inline-flex max-w-md flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-[#d9362b]/50 bg-[#151312]/75 px-4 py-2.5 text-left shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-sm">
+                <span className="text-[9px] font-black uppercase tracking-[0.17em] text-[#f04a3e]">Oferta founding</span>
+                <span className="hidden h-3 w-px bg-white/20 sm:block" aria-hidden="true" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#f8f3eb]">15% hasta el 1 de agosto</span>
+                <code className="rounded bg-white/10 px-2 py-1 text-[10px] font-black tracking-[0.1em] text-white">FOUNDING1JJ</code>
+              </div>
+            )}
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
               <BookingButton />
               <a href="#metodo" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:text-[#f04a3e]">

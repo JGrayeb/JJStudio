@@ -15,6 +15,17 @@ const DRINKS = [
 
 const BASES = ["Leche entera o deslactosada", "Bebida de coco", "Bebida de soya", "Bebida de avena"]
 
+export const metadata = {
+  title: "Bebidas",
+  description: "Conoce las bebidas de JJ Studio: café, matcha y opciones para disfrutar antes o después de tu clase.",
+  alternates: { canonical: "/beverages" },
+  openGraph: {
+    title: "Bebidas | JJ Studio",
+    description: "Café, matcha y una pausa a tu ritmo antes o después de entrenar.",
+    url: "/beverages",
+  },
+}
+
 export default function BeveragesPage() {
   return (
     <main className={`${bebas.variable} ${inter.variable} min-h-screen bg-[#11100f] font-[family-name:var(--font-body)] text-[#f8f3eb]`}>

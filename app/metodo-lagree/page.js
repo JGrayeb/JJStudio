@@ -10,6 +10,11 @@ export const metadata = {
   title: "Método Lagree",
   description: "Conoce el método Lagree de JJ Studio en Querétaro: movimientos lentos, tensión constante y 45 minutos de alta intensidad sobre Megaformer.",
   alternates: { canonical: "/metodo-lagree" },
+  openGraph: {
+    title: "Método Lagree | JJ Studio",
+    description: "Movimiento lento, tensión constante y una experiencia completa sobre Megaformer.",
+    url: "/metodo-lagree",
+  },
 }
 
 const pilares = [

@@ -82,8 +82,7 @@ export function useAuth() {
   const signUp = async (
     email: string,
     password: string,
-    fullName: string = '',
-    role: 'client' | 'trainer' | 'admin' = 'client'
+    fullName: string = ''
   ) => {
     try {
       setError(null);
@@ -105,7 +104,7 @@ export function useAuth() {
           email,
           first_name: firstName || '',
           last_name: lastName,
-          role,
+          role: 'client',
         },
       ]);
 

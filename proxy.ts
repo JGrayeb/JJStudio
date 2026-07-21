@@ -22,9 +22,31 @@ const guestOnlyRoutes = new Set(["/login", "/signup"]);
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // The administration area has its own login flow and access rules.
-  if (pathname.startsWith("/admin")) {
+  if (pathname === "/admin/login") {
     return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/admin")) {
+    const { supabase, response } = createClient(request);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
+
+    const { data: profile } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profile?.role !== "admin") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    return response;
   }
 
   const isPublicRoute =

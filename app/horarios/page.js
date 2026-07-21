@@ -10,6 +10,12 @@ const MAPS_URL = "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6"
 export const metadata = {
   title: "Horarios y reservaciones",
   description: "Consulta y reserva tus sesiones de JJ Studio en Querétaro.",
+  alternates: { canonical: "/horarios" },
+  openGraph: {
+    title: "Horarios y reservaciones | JJ Studio",
+    description: "Consulta los horarios de Lagree y reserva tu lugar en JJ Studio, Querétaro.",
+    url: "/horarios",
+  },
 }
 
 export default function Horarios() {
