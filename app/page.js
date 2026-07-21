@@ -40,6 +40,96 @@ const BENEFITS = [
   ["03", "Para tu ritmo", "Adaptamos cada movimiento a tu nivel."],
 ]
 
+const FIRST_CLASS_STEPS = [
+  {
+    number: "01",
+    title: "Llega con tiempo",
+    description: "Llega 10 minutos antes. Te recibimos, te explicamos el Megaformer y preparamos tu primera clase con calma.",
+  },
+  {
+    number: "02",
+    title: "Muévete cómodo",
+    description: "Elige ropa deportiva y flexible que te permita moverte con libertad durante los 45 minutos.",
+  },
+  {
+    number: "03",
+    title: "Trae o elige tu grip",
+    description: "Los calcetines antiderrapantes son obligatorios. Si los olvidaste, tenemos Lagree y JJ Studio disponibles en recepción.",
+  },
+]
+
+const FAQ_ITEMS = [
+  {
+    question: "¿Puedo tomar una clase si soy principiante absoluto?",
+    answer: "Claro. Open Level es ideal para conocer el método Lagree desde cero y también para quienes ya tienen experiencia. Cada coach adapta las indicaciones a tu nivel.",
+  },
+  {
+    question: "¿Cuánto antes debo llegar a mi primera clase?",
+    answer: "Te recomendamos llegar 10 minutos antes. Así podemos recibirte, explicarte el Megaformer y prepararte para disfrutar la clase desde el inicio.",
+  },
+  {
+    question: "¿Qué ropa recomiendan usar?",
+    answer: "Ropa deportiva cómoda y flexible, además de calcetines antiderrapantes. Así tendrás libertad de movimiento y una base segura sobre el Megaformer.",
+  },
+  {
+    question: "¿Los calcetines antiderrapantes son obligatorios?",
+    answer: "Sí. Son indispensables para tu seguridad durante la clase. Si los olvidaste, tenemos calcetines Lagree disponibles en recepción por $100 MXN el par.",
+  },
+  {
+    question: "¿Venden calcetines JJ Studio?",
+    answer: "Sí. Nuestro diseño propio es unitalla y cuesta $100 MXN el par. Tiene grips antiderrapantes para que entrenes con seguridad y estilo.",
+  },
+  {
+    question: "¿Qué bebidas ofrecen después de clase?",
+    answer: "Tenemos bebidas a la venta en dos tamaños. Puedes consultar la carta actualizada en nuestra sección de bebidas.",
+    href: "/beverages",
+    linkLabel: "Ver bebidas",
+  },
+  {
+    question: "¿Puedo llevar mi propia botella de agua?",
+    answer: "Claro. Puedes traer tu propia botella; queremos que te mantengas hidratado a tu manera.",
+  },
+  {
+    question: "¿Qué pasa si llego tarde?",
+    answer: "Tenemos una tolerancia máxima de 10 minutos. Después de ese tiempo no podremos permitir el acceso, por respeto a la clase y para que entrenes de forma segura.",
+  },
+  {
+    question: "¿Cómo funcionan las cancelaciones o cambios de clase en Nessty?",
+    answer: "Con 12 horas de anticipación, Nessty realiza el reembolso completo. Si necesitas apoyo, escríbenos por WhatsApp y te ayudamos personalmente.",
+    href: WHATSAPP_URL,
+    linkLabel: "Escribir por WhatsApp",
+    external: true,
+  },
+  {
+    question: "¿Hay estacionamiento disponible en Xentric Lomas Norte?",
+    answer: "Sí, actualmente hay estacionamiento gratuito. Esta condición depende de las políticas vigentes de Plaza Xentric Lomas Norte.",
+  },
+  {
+    question: "¿Puedo tomar clase si tengo una lesión, embarazo o alguna condición médica?",
+    answer: "Sí, siempre que lo informes a tu coach antes de iniciar. Podrá proponerte ajustes y alternativas; consulta primero a tu profesional de salud cuando sea necesario.",
+  },
+  {
+    question: "¿Las clases son mixtas y para qué edades?",
+    answer: "Sí, las clases son mixtas y se recomiendan para mayores de 16 años. El Megaformer se adapta a cada cuerpo y nivel.",
+  },
+  {
+    question: "¿Cuántas personas hay por clase?",
+    answer: "Cada clase tiene una capacidad máxima de 7 personas. Así mantenemos una experiencia cercana, con atención a tu técnica y postura.",
+  },
+  {
+    question: "¿Qué nivel elijo al reservar mi primera sesión?",
+    answer: "Elige Open Level. Aunque ya entrenes Pilates u otra disciplina, Lagree tiene una técnica y ritmo propios; esta clase es el mejor punto de partida.",
+  },
+  {
+    question: "¿Dónde está exactamente el estudio dentro de Xentric Lomas Norte?",
+    answer: "Estamos en el segundo piso, frente a las escaleras, en el local 211. Te esperamos.",
+  },
+  {
+    question: "¿Aceptan pagos aparte de Nessty para calcetines y bebidas?",
+    answer: "Sí. Puedes adquirir bebidas y calcetines directamente en el estudio. Iremos sumando más productos JJ Studio próximamente.",
+  },
+]
+
 function BookingButton({ className = "" }) {
   return (
     <a
@@ -336,6 +426,85 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="primera-clase" className="bg-[#f0e9df] px-6 py-24 text-[#1a1816] sm:py-32 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-24">
+          <div>
+            <p className="eyebrow">Tu primera clase</p>
+            <h2 className="mt-5 max-w-xl font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] sm:text-7xl">Llega. Respira.<br /><span className="text-[#c83228]">Haz shake.</span></h2>
+            <p className="mt-7 max-w-xl text-lg leading-relaxed text-[#514b45]">Todo está pensado para que tu primera vez se sienta clara y segura. Solo trae ganas de probar algo diferente; nosotros te acompañamos con el resto.</p>
+
+            <div className="mt-12 grid border-t border-[#1a1816]/20 sm:grid-cols-3">
+              {FIRST_CLASS_STEPS.map((step) => (
+                <article key={step.number} className="border-b border-[#1a1816]/20 py-7 sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0">
+                  <p className="text-xs font-black tracking-[0.18em] text-[#c83228]">{step.number}</p>
+                  <h3 className="mt-8 text-sm font-black uppercase tracking-[0.1em]">{step.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-[#665f57]">{step.description}</p>
+                </article>
+              ))}
+            </div>
+
+            <a href="/beverages" className="group mt-9 inline-flex items-center gap-3 rounded-full bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#f0e9df] shadow-lg shadow-[#1a1816]/15 transition hover:-translate-y-0.5 hover:bg-[#c83228] hover:shadow-xl">
+              Conoce las bebidas <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
+          </div>
+
+          <div className="group relative isolate mx-auto flex min-h-[35rem] w-full max-w-md items-center justify-center overflow-hidden rounded-[2rem] border border-[#1a1816]/10 bg-[#1a1816] px-10 py-10 shadow-[0_28px_80px_rgba(27,22,18,0.22)] sm:min-h-[42rem]">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_46%,rgba(217,54,43,0.34),transparent_42%),linear-gradient(145deg,#312622_0%,#1a1816_52%,#090909_100%)]" />
+            <div className="absolute inset-x-[14%] bottom-9 h-10 rounded-[100%] bg-black/80 blur-2xl transition duration-700 group-hover:scale-110" aria-hidden="true" />
+            <div className="absolute right-6 top-6 h-16 w-16 rounded-full border border-white/10" aria-hidden="true" />
+            <div className="absolute left-6 top-6 text-[9px] font-black uppercase tracking-[0.2em] text-white/55">JJ essentials</div>
+            <Image
+              src="/images/productos/calcetines-jj-premium.png"
+              alt="Calcetín antiderrapante negro JJ Studio con grips rojos"
+              width={1024}
+              height={1536}
+              sizes="(max-width: 640px) 70vw, 370px"
+              className="relative z-10 h-auto w-[72%] max-w-[22rem] object-contain drop-shadow-[0_28px_20px_rgba(0,0,0,0.76)] transition duration-700 ease-out group-hover:-translate-y-2 group-hover:drop-shadow-[0_38px_28px_rgba(0,0,0,0.88)]"
+            />
+            <div className="absolute inset-x-7 bottom-7 z-20 flex items-end justify-between border-t border-white/15 pt-5 text-white">
+              <div>
+                <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">Grip JJ Studio</p>
+                <p className="mt-1 font-[family-name:var(--font-display)] text-3xl uppercase leading-none">Unitalla</p>
+              </div>
+              <p className="text-sm font-black tracking-[0.08em]">$100 MXN</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" className="bg-[#151312] px-6 py-24 sm:py-32 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-8 border-b border-white/15 pb-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div>
+              <p className="eyebrow text-[#f04a3e]">Preguntas frecuentes</p>
+              <h2 className="mt-5 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-7xl">Todo claro<br /><span className="text-[#d9362b]">antes del shake.</span></h2>
+            </div>
+            <p className="max-w-xl text-base leading-relaxed text-[#cfc6bc] sm:text-lg">Las respuestas que más nos preguntan antes de conocer el Megaformer. Si la tuya no está aquí, nuestro equipo te ayuda por WhatsApp.</p>
+          </div>
+
+          <div className="mt-2 grid md:grid-cols-2 md:gap-x-12">
+            {FAQ_ITEMS.map((item) => (
+              <details key={item.question} className="group border-b border-white/15">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-5 py-6 text-left text-sm font-bold leading-snug text-[#f8f3eb] marker:content-none sm:text-base">
+                  <span>{item.question}</span>
+                  <span className="faq-symbol grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/20 text-lg font-normal text-[#f04a3e] transition" aria-hidden="true">+</span>
+                </summary>
+                <div className="max-w-xl pb-7 pr-10 text-sm leading-relaxed text-[#bcb4aa]">
+                  <p>
+                    {item.answer}{" "}
+                    {item.href && (
+                      <a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} className="font-bold text-[#f04a3e] underline decoration-[#f04a3e]/40 underline-offset-4 transition hover:text-white">
+                        {item.linkLabel} <ArrowUpRight className="inline-block align-[-2px]" size={13} />
+                      </a>
+                    )}
+                  </p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="contacto" className="bg-[#151312] px-6 py-24 sm:py-32 lg:px-8">
         <div className="mx-auto max-w-5xl text-center">
           <p className="eyebrow text-[#f04a3e]">Tu siguiente clase</p>
@@ -358,9 +527,26 @@ export default function Home() {
         </div>
       </footer>
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: FAQ_ITEMS.map((item) => ({
+              "@type": "Question",
+              name: item.question,
+              acceptedAnswer: { "@type": "Answer", text: item.answer },
+            })),
+          }),
+        }}
+      />
+
       <style jsx global>{`
-        .nav-link { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #ded6cc; transform-origin: center; transition: color 180ms ease, transform 180ms ease; }
+        .nav-link { position: relative; display: inline-block; padding: 0.35rem 0 0.5rem; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #ded6cc; transform-origin: center; transition: color 180ms ease, transform 180ms ease; }
+        .nav-link::after { position: absolute; right: 0; bottom: 0; left: 0; height: 1px; content: ""; transform: scaleX(0); transform-origin: right; background: #f04a3e; transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1); }
         .nav-link:hover, .nav-link:focus-visible { color: #f04a3e; transform: scale(1.06); }
+        .nav-link:hover::after, .nav-link:focus-visible::after { transform: scaleX(1); transform-origin: left; }
         .hero-quick-link { transform-origin: center; transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, color 180ms ease; }
         .hero-quick-link:hover, .hero-quick-link:focus-visible { transform: translateY(-1px) scale(1.035); }
         .hero-title { position: relative; }
@@ -378,6 +564,7 @@ export default function Home() {
         .coach-marquee-track { display: flex; width: max-content; animation: coach-marquee 46s linear infinite; will-change: transform; }
         .coach-marquee:hover .coach-marquee-track, .coach-marquee:focus-within .coach-marquee-track { animation-play-state: paused; }
         @keyframes coach-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        details[open] .faq-symbol { transform: rotate(45deg); border-color: #f04a3e; background: #f04a3e; color: #151312; }
         @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter { animation: none; } .hero-letter { opacity: 1; } .hero-ttp { display: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
       `}</style>
     </main>
