@@ -102,8 +102,8 @@ export default function Home() {
           <div className="max-w-3xl">
             <p className="mb-6 text-[11px] font-bold uppercase tracking-[0.28em] text-[#f04a3e]">Lagree fitness · Querétaro</p>
             <h1 className="font-[family-name:var(--font-display)] text-[clamp(5.3rem,13vw,10.5rem)] uppercase leading-[0.78] tracking-[-0.025em] text-[#f8f3eb]">
-              Entrena<br />
-              <span className="text-[#d9362b]">con intención.</span>
+              Trust<br />
+              <span className="text-[#d9362b]">the Process.</span>
             </h1>
             <p className="mt-8 max-w-md text-base leading-relaxed text-[#d7d0c7] sm:text-lg">
               45 minutos de fuerza, resistencia y control en el Megaformer. Un entrenamiento que se adapta a ti y se queda contigo.
