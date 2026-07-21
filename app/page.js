@@ -148,8 +148,8 @@ export default function Home() {
               <p className="text-lg leading-relaxed text-[#514b45] sm:text-xl">
                 En JJ Studio entrenamos lento, con precisión y bajo tensión constante. Cada clase está diseñada para que te sientas presente, capaz y fuerte.
               </p>
-              <a href="/metodo-lagree" className="mt-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#c83228] transition hover:text-[#1a1816]">
-                ¿Qué es Lagree? <ArrowUpRight size={15} />
+              <a href="/metodo-lagree" className="group mt-8 inline-flex items-center gap-3 rounded-full bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#f0e9df] shadow-lg shadow-[#1a1816]/15 transition hover:-translate-y-0.5 hover:bg-[#c83228] hover:shadow-xl">
+                ¿Qué es Lagree? <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </a>
             </div>
           </div>
@@ -191,7 +191,7 @@ export default function Home() {
               <p className="eyebrow text-[#1a1816]">Tu equipo</p>
               <h2 className="mt-5 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] sm:text-7xl">Energía que<br />te acompaña.</h2>
             </div>
-            <a href="/sobre-nosotros" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] transition hover:text-white">Conoce al equipo <ArrowUpRight size={15} /></a>
+            <a href="/sobre-nosotros" className="group inline-flex items-center gap-3 self-start rounded-full border border-[#1a1816]/50 bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-white shadow-lg shadow-[#8f1f18]/20 transition hover:-translate-y-0.5 hover:bg-white hover:text-[#1a1816] sm:self-auto">Conoce al equipo <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></a>
           </div>
           <div className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5">
             {COACHES.map((coach) => (
