@@ -27,9 +27,11 @@ const COACHES = [
 const NAV_LINKS = [
   ["Método", "#metodo"],
   ["Calendario", "/horarios"],
+  ["Primera clase", "#primera-clase"],
   ["Equipo", "#equipo"],
   ["El estudio", "#estudio"],
   ["Bebidas", "/beverages"],
+  ["FAQ", "#faq"],
 ]
 
 const HERO_TITLE_LINES = ["Trust", "the Process."]
@@ -193,7 +195,7 @@ export default function Home() {
             JJ<span className="text-[#d9362b]">STUDIO</span>
           </a>
 
-          <div className="hidden items-center gap-6 xl:gap-8 lg:flex">
+          <div className="hidden items-center gap-4 xl:gap-5 lg:flex">
             {NAV_LINKS.map(([label, href]) => (
               <a key={href} href={href} className="nav-link">{label}</a>
             ))}
@@ -247,7 +249,7 @@ export default function Home() {
             </p>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.25em] text-[#f04a3e]">✦ Trust the Process ✦</p>
             {hasFoundingOffer && (
-              <div className="mt-7 inline-flex max-w-md flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-[#d9362b]/50 bg-[#151312]/75 px-4 py-2.5 text-left shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-sm">
+              <div className="offer-card mt-7 inline-flex max-w-md flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-[#d9362b]/50 bg-[#151312]/75 px-4 py-2.5 text-left shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-sm">
                 <span className="text-[9px] font-black uppercase tracking-[0.17em] text-[#f04a3e]">Oferta founding</span>
                 <span className="hidden h-3 w-px bg-white/20 sm:block" aria-hidden="true" />
                 <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#f8f3eb]">15% hasta el 1 de agosto</span>
@@ -426,24 +428,26 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="primera-clase" className="bg-[#f0e9df] px-6 py-24 text-[#1a1816] sm:py-32 lg:px-8">
+      <section id="primera-clase" className="relative isolate overflow-hidden bg-[#1a1715] px-6 py-24 text-[#f8f3eb] sm:py-32 lg:px-8">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_8%_14%,rgba(198,50,40,0.26),transparent_28%),radial-gradient(ellipse_at_82%_80%,rgba(151,32,28,0.16),transparent_30%),linear-gradient(145deg,#211b18_0%,#151312_62%,#100f0e_100%)]" aria-hidden="true" />
+        <div className="absolute inset-x-0 top-0 -z-10 h-px bg-gradient-to-r from-transparent via-[#f04a3e]/75 to-transparent" aria-hidden="true" />
         <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-24">
           <div>
-            <p className="eyebrow">Tu primera clase</p>
+            <p className="eyebrow text-[#f04a3e]">Tu primera clase</p>
             <h2 className="mt-5 max-w-xl font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] sm:text-7xl">Llega. Respira.<br /><span className="text-[#c83228]">Haz shake.</span></h2>
-            <p className="mt-7 max-w-xl text-lg leading-relaxed text-[#514b45]">Todo está pensado para que tu primera vez se sienta clara y segura. Solo trae ganas de probar algo diferente; nosotros te acompañamos con el resto.</p>
+            <p className="mt-7 max-w-xl text-lg leading-relaxed text-[#cfc6bc]">Todo está pensado para que tu primera vez se sienta clara y segura. Solo trae ganas de probar algo diferente; nosotros te acompañamos con el resto.</p>
 
-            <div className="mt-12 grid border-t border-[#1a1816]/20 sm:grid-cols-3">
+            <div className="mt-12 grid border-t border-white/15 sm:grid-cols-3">
               {FIRST_CLASS_STEPS.map((step) => (
-                <article key={step.number} className="border-b border-[#1a1816]/20 py-7 sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0">
-                  <p className="text-xs font-black tracking-[0.18em] text-[#c83228]">{step.number}</p>
-                  <h3 className="mt-8 text-sm font-black uppercase tracking-[0.1em]">{step.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-[#665f57]">{step.description}</p>
+                <article key={step.number} className="border-b border-white/15 py-7 sm:border-b-0 sm:border-r sm:px-6 sm:first:pl-0 sm:last:border-r-0 sm:last:pr-0">
+                  <p className="text-xs font-black tracking-[0.18em] text-[#f04a3e]">{step.number}</p>
+                  <h3 className="mt-8 text-sm font-black uppercase tracking-[0.1em] text-[#f8f3eb]">{step.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-[#bcb4aa]">{step.description}</p>
                 </article>
               ))}
             </div>
 
-            <a href="/beverages" className="group mt-9 inline-flex items-center gap-3 rounded-full bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#f0e9df] shadow-lg shadow-[#1a1816]/15 transition hover:-translate-y-0.5 hover:bg-[#c83228] hover:shadow-xl">
+            <a href="/beverages" className="group mt-9 inline-flex items-center gap-3 rounded-full bg-[#f8f3eb] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#1a1816] shadow-lg shadow-black/25 transition hover:-translate-y-0.5 hover:bg-[#f04a3e] hover:text-white hover:shadow-xl">
               Conoce las bebidas <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           </div>
@@ -547,6 +551,8 @@ export default function Home() {
         .nav-link::after { position: absolute; right: 0; bottom: 0; left: 0; height: 1px; content: ""; transform: scaleX(0); transform-origin: right; background: #f04a3e; transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1); }
         .nav-link:hover, .nav-link:focus-visible { color: #f04a3e; transform: scale(1.06); }
         .nav-link:hover::after, .nav-link:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+        .offer-card { transform-origin: center; transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 240ms ease, border-color 240ms ease; }
+        .offer-card:hover, .offer-card:focus-within { transform: scale(1.035); border-color: rgba(240, 74, 62, 0.9); box-shadow: 0 20px 46px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(240, 74, 62, 0.12); }
         .hero-quick-link { transform-origin: center; transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, color 180ms ease; }
         .hero-quick-link:hover, .hero-quick-link:focus-visible { transform: translateY(-1px) scale(1.035); }
         .hero-title { position: relative; }
@@ -565,7 +571,7 @@ export default function Home() {
         .coach-marquee:hover .coach-marquee-track, .coach-marquee:focus-within .coach-marquee-track { animation-play-state: paused; }
         @keyframes coach-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         details[open] .faq-symbol { transform: rotate(45deg); border-color: #f04a3e; background: #f04a3e; color: #151312; }
-        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter { animation: none; } .hero-letter { opacity: 1; } .hero-ttp { display: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
+        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter { animation: none; } .hero-letter { opacity: 1; } .hero-ttp { display: none; } .offer-card { transition: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
       `}</style>
     </main>
   )
