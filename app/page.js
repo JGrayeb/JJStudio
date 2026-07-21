@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { useState } from "react"
-import { ArrowUpRight, Menu, X } from "lucide-react"
+import { ArrowUpRight, MapPin, Menu, X } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
@@ -11,6 +11,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 const NESSTY_URL = "https://nessty.mx/@jjstudio"
 const INSTAGRAM_URL = "https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg=="
 const WHATSAPP_URL = "https://wa.me/524423947704"
+const MAPS_URL = "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6"
+const STUDIO_STATS = [["45", "minutos"], ["Bajo", "impacto"], ["Alta", "intensidad"]]
 
 const COACHES = [
   { name: "Javi", image: "/images/Coach Javi.JPG" },
@@ -119,13 +121,15 @@ export default function Home() {
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 border-t border-white/15 bg-[#1a1816]/80 backdrop-blur">
-          <div className="mx-auto grid max-w-7xl grid-cols-3 px-6 lg:px-8">
-            {[["45", "minutos"], ["Bajo", "impacto"], ["Alta", "intensidad"]].map(([value, label]) => (
-              <div key={label} className="border-r border-white/15 py-5 last:border-r-0 sm:py-6">
-                <p className="font-[family-name:var(--font-display)] text-3xl leading-none text-white sm:text-4xl">{value}</p>
-                <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.16em] text-[#bcb4aa] sm:text-[10px]">{label}</p>
-              </div>
-            ))}
+          <div className="stat-marquee overflow-hidden border-b border-white/15">
+            <div className="stat-marquee-track">
+              {[...STUDIO_STATS, ...STUDIO_STATS, ...STUDIO_STATS].map(([value, label], index) => (
+                <div key={`${label}-${index}`} className="flex min-w-[13rem] items-center gap-3 border-r border-white/15 px-7 py-5 sm:min-w-[17rem] sm:px-10 sm:py-6">
+                  <p className="font-[family-name:var(--font-display)] text-3xl leading-none text-white sm:text-4xl">{value}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#bcb4aa] sm:text-[10px]">{label}</p>
+                </div>
+              ))}
+            </div>
           </div>
           <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 border-t border-white/15 px-6 py-3 sm:gap-3 lg:px-8">
             <a href="/horarios" className="rounded-full bg-[#d9362b] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#f04a3e] sm:px-5">Calendario</a>
@@ -215,8 +219,11 @@ export default function Home() {
               <h2 className="mt-5 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] sm:text-7xl">Tu hora<br />es tuya.</h2>
             </div>
             <div className="self-end">
-              <p className="max-w-lg text-lg leading-relaxed text-[#514b45]">Un estudio para desconectarte del ruido, moverte con intención y volver a ti. Estamos en Xentric Lomas Norte, El Campanario.</p>
-              <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="mt-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#c83228] transition hover:text-[#1a1816]">Síguenos en Instagram <ArrowUpRight size={15} /></a>
+              <p className="max-w-lg text-lg leading-relaxed text-[#514b45]">Un estudio para desconectarte del ruido, moverte con intención y volver a ti. Estamos en Xentric Lomas Norte, local 211.</p>
+              <div className="mt-8 flex flex-wrap gap-x-6 gap-y-4">
+                <a href={MAPS_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#c83228] transition hover:text-[#1a1816]"><MapPin size={15} /> Cómo llegar <ArrowUpRight size={15} /></a>
+                <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#c83228] transition hover:text-[#1a1816]">Síguenos en Instagram <ArrowUpRight size={15} /></a>
+              </div>
             </div>
           </div>
           <div className="mt-16 grid gap-4 md:grid-cols-12 md:grid-rows-2">
@@ -291,6 +298,10 @@ export default function Home() {
         .nav-link { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #ded6cc; transition: color 160ms ease; }
         .nav-link:hover { color: #f04a3e; }
         .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; }
+        .stat-marquee-track { display: flex; width: max-content; animation: stat-marquee 16s linear infinite; }
+        .stat-marquee:hover .stat-marquee-track { animation-play-state: paused; }
+        @keyframes stat-marquee { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+        @media (prefers-reduced-motion: reduce) { .stat-marquee-track { animation: none; } }
       `}</style>
     </main>
   )

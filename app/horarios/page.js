@@ -1,10 +1,11 @@
-import { ArrowLeft, ArrowUpRight } from "lucide-react"
+import { ArrowLeft, ArrowUpRight, MapPin } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 
 const NESSTY_SCHEDULE_URL = "https://nessty.mx/%40jjstudio/jjstudio-xentric-lomas"
+const MAPS_URL = "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6"
 
 export const metadata = {
   title: "Horarios y reservaciones",
@@ -30,7 +31,28 @@ export default function Horarios() {
           <p className="mt-7 max-w-xl text-base leading-relaxed text-[#cfc6bc] sm:text-lg">Consulta los horarios disponibles y reserva tu lugar. El calendario se actualiza directamente desde Nessty.</p>
         </div>
 
-        <div className="mt-12 overflow-hidden rounded-[2rem] border border-white/10 bg-white">
+        <div className="mt-12 grid gap-px overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 md:grid-cols-3">
+          <div className="bg-[#211e1c] p-7 sm:p-8">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">Lunes a viernes</p>
+            <p className="mt-4 font-[family-name:var(--font-display)] text-4xl uppercase leading-none text-white">8:15 – 12:15</p>
+            <p className="mt-2 font-[family-name:var(--font-display)] text-4xl uppercase leading-none text-white">17:15 – 21:15</p>
+          </div>
+          <div className="bg-[#211e1c] p-7 sm:p-8">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">Fin de semana</p>
+            <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[#cfc6bc]">Sábado <span className="ml-2 text-white">8:15 – 12:15</span></p>
+            <p className="mt-4 text-xs font-bold uppercase tracking-[0.14em] text-[#cfc6bc]">Domingo <span className="ml-2 text-white">9:15 – 12:15</span></p>
+          </div>
+          <a href={MAPS_URL} target="_blank" rel="noreferrer" className="group flex flex-col justify-between bg-[#d9362b] p-7 transition hover:bg-[#f04a3e] sm:p-8">
+            <MapPin size={24} strokeWidth={2.4} />
+            <div className="mt-12">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#1a1816]/70">Ubicación</p>
+              <p className="mt-3 font-[family-name:var(--font-display)] text-3xl uppercase leading-[0.9]">Xentric Lomas Norte<br />Local 211</p>
+              <span className="mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em]">Abrir en Maps <ArrowUpRight size={15} /></span>
+            </div>
+          </a>
+        </div>
+
+        <div className="mt-4 overflow-hidden rounded-[2rem] border border-white/10 bg-white">
           <iframe
             title="Horarios y reservaciones de JJ Studio en Nessty"
             src={NESSTY_SCHEDULE_URL}
