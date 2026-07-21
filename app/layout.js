@@ -1,69 +1,100 @@
-// app/layout.js
-
 import "./globals.css"
 import Script from "next/script"
+import { Inter } from "next/font/google"
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+})
+
+const siteUrl = "https://jjstudio.mx"
 
 export const metadata = {
+  metadataBase: new URL(siteUrl),
   verification: {
     google: "vt3rCHU-eHRf3gB8K1ReR1udBbBYtCp7H1HHGHQ67fI",
   },
-  title: "JJStudio — Trust The Process",
-  description: "Boutique fitness studio at Xentric Lomas Norte. Group classes: Full Body, Core, Lower Body, Arms & Hell. Your first class is free.",
-  keywords: "JJStudio, fitness, boutique gym, clases grupales, Xentric Lomas Norte, entrenamiento",
+  title: {
+    default: "JJ Studio | Lagree en Querétaro",
+    template: "%s | JJ Studio",
+  },
+  description: "JJ Studio es un espacio de Lagree en Querétaro: 45 minutos de fuerza, control y alta intensidad sobre Megaformer.",
+  applicationName: "JJ Studio",
+  keywords: ["Lagree Querétaro", "Megaformer Querétaro", "JJ Studio", "fitness en Querétaro", "clases de Lagree", "Xentric Lomas Norte"],
+  category: "fitness",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
-    title: "JJStudio — Trust The Process",
-    description: "Your first class is on us. No commitment. Just show up.",
-    url: "https://jjstudio.mx",
-    siteName: "JJStudio",
-    images: [
-      {
-        url: "/images/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "JJStudio — Trust The Process",
-      },
-    ],
-    locale: "en_US",
+    title: "JJ Studio | Lagree en Querétaro",
+    description: "45 minutos de fuerza, resistencia y control sobre Megaformer.",
+    url: "/",
+    siteName: "JJ Studio",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JJ Studio — Trust the Process" }],
+    locale: "es_MX",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "JJStudio — Trust The Process",
-    description: "Boutique fitness studio. Your first class is free.",
-    images: ["/images/og-image.jpg"],
+    title: "JJ Studio | Lagree en Querétaro",
+    description: "45 minutos de fuerza, resistencia y control sobre Megaformer.",
+    images: ["/opengraph-image"],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/images/favicon.ico",
   },
 }
 
 export default function RootLayout({ children }) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SportsActivityLocation",
+    name: "JJ Studio",
+    url: siteUrl,
+    logo: `${siteUrl}/images/logo.png`,
+    image: `${siteUrl}/opengraph-image`,
+    description: "Estudio de Lagree en Querétaro con clases de fuerza, resistencia y control sobre Megaformer.",
+    sameAs: ["https://www.instagram.com/jj_lagree_experience/"],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Santiago de Querétaro",
+      addressRegion: "Querétaro",
+      addressCountry: "MX",
+    },
+    telephone: "+524423947704",
+    email: "administracion@jjstudio.mx",
+    priceRange: "$$",
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "atención a clientes",
+      telephone: "+524423947704",
+      email: "administracion@jjstudio.mx",
+      availableLanguage: ["es-MX"],
+    },
+  }
+
   return (
-    <html lang="en">
+    <html lang="es-MX" className={inter.variable}>
       <head>
         <Script
           id="organization-schema"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "JJStudio",
-              "url": "https://www.jjstudio.mx",
-              "logo": "https://www.jjstudio.mx/images/logo.png",
-              "description": "Boutique fitness studio at Xentric Lomas Norte",
-              "sameAs": [
-                "https://www.instagram.com/jjstudio"
-              ],
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "contactType": "Customer Service"
-              }
-            })
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
       <body>{children}</body>
     </html>
   )
-} 
+}

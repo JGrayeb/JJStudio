@@ -5,11 +5,36 @@ import { createClient } from '@/utils/supabase/middleware';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Public routes (no auth required)
-  const publicRoutes = ['/login', '/signup', '/'];
+  // Public pages and assets must stay available to visitors and search engines.
+  const publicRoutes = new Set([
+    '/',
+    '/login',
+    '/signup',
+    '/forgot-password',
+    '/password-reset',
+    '/horarios',
+    '/metodo-lagree',
+    '/sobre-nosotros',
+    '/classes',
+    '/beverages',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/opengraph-image',
+  ]);
+
+  const isPublicRoute =
+    publicRoutes.has(pathname) ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/auth/') ||
+    pathname.startsWith('/images/');
 
   // Skip middleware for admin routes (handle separately in /middleware.ts if needed)
   if (pathname.startsWith('/admin')) {
+    return NextResponse.next();
+  }
+
+  // Avoid a Supabase session round trip for normal public pages, crawlers, and assets.
+  if (isPublicRoute && !['/login', '/signup'].includes(pathname)) {
     return NextResponse.next();
   }
 
@@ -20,12 +45,12 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getSession();
 
   // If user is logged in AND trying to access public routes → redirect to dashboard
-  if (session && publicRoutes.includes(pathname)) {
+  if (session && ['/login', '/signup'].includes(pathname)) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // If user is NOT logged in AND trying to access protected routes → redirect to login
-  if (!session && !publicRoutes.includes(pathname)) {
+  if (!session && !isPublicRoute) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 

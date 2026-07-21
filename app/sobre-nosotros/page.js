@@ -61,7 +61,7 @@ const coaches = [
 ]
 
 export const metadata = {
-  title: "Nuestro equipo | JJ Studio",
+  title: "Equipo",
   description: "Conoce a los coaches de JJ Studio en Querétaro.",
 }
 

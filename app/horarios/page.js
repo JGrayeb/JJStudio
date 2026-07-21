@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 const NESSTY_SCHEDULE_URL = "https://nessty.mx/%40jjstudio/jjstudio-xentric-lomas"
 
 export const metadata = {
-  title: "Horarios | JJ Studio",
+  title: "Horarios y reservaciones",
   description: "Consulta y reserva tus sesiones de JJ Studio en Querétaro.",
 }
 

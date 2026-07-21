@@ -148,7 +148,7 @@ export default function Home() {
               <p className="text-lg leading-relaxed text-[#514b45] sm:text-xl">
                 En JJ Studio entrenamos lento, con precisión y bajo tensión constante. Cada clase está diseñada para que te sientas presente, capaz y fuerte.
               </p>
-              <a href="/sobre-lagree" className="mt-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#c83228] transition hover:text-[#1a1816]">
+              <a href="/metodo-lagree" className="mt-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#c83228] transition hover:text-[#1a1816]">
                 ¿Qué es Lagree? <ArrowUpRight size={15} />
               </a>
             </div>
