@@ -113,6 +113,7 @@ export default function Home() {
             <p className="mt-8 max-w-md text-base leading-relaxed text-[#d7d0c7] sm:text-lg">
               45 minutos de fuerza, resistencia y control en el Megaformer. Un entrenamiento que se adapta a ti y se queda contigo.
             </p>
+            <p className="mt-5 text-xs font-bold uppercase tracking-[0.25em] text-[#f04a3e]">✦ Trust the Process ✦</p>
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
               <BookingButton />
               <a href="#metodo" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:text-[#f04a3e]">
@@ -130,6 +131,11 @@ export default function Home() {
                 <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.16em] text-[#bcb4aa] sm:text-[10px]">{label}</p>
               </div>
             ))}
+          </div>
+          <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-2 border-t border-white/15 px-6 py-3 sm:gap-3 lg:px-8">
+            <a href="/horarios" className="rounded-full bg-[#d9362b] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#f04a3e] sm:px-5">Calendario</a>
+            <a href="#equipo" className="rounded-full border border-white/30 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:border-white hover:bg-white hover:text-[#1a1816] sm:px-5">Equipo</a>
+            <a href="#metodo" className="rounded-full border border-white/30 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:border-white hover:bg-white hover:text-[#1a1816] sm:px-5">Conoce el método</a>
           </div>
         </div>
       </section>
