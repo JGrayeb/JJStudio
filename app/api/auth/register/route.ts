@@ -3,15 +3,36 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import crypto from 'crypto';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+function getAdminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_KEY;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+  if (!url || !serviceRoleKey) {
+    throw new Error('La configuración de Supabase no está completa.');
+  }
+
+  return createClient(url, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
+
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('Falta RESEND_API_KEY.');
+  }
+
+  return new Resend(apiKey);
+}
 
 export async function POST(request: Request) {
   try {
+    const supabase = getAdminClient();
+    const resend = getResendClient();
     const { fullName, alias, email, password, phone } = await request.json();
 
     // Validate input

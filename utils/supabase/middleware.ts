@@ -4,7 +4,7 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
 export function createClient(request: NextRequest) {
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: request.headers,
     },
@@ -27,5 +27,5 @@ export function createClient(request: NextRequest) {
     }
   );
 
-  return supabase;
+  return { supabase, response };
 }
