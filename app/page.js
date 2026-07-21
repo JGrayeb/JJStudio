@@ -58,6 +58,7 @@ export default function Home() {
 
           <div className="hidden items-center gap-8 lg:flex">
             <a href="#metodo" className="nav-link">El método</a>
+            <a href="/horarios" className="nav-link">Horarios</a>
             <a href="#equipo" className="nav-link">Equipo</a>
             <a href="#estudio" className="nav-link">El estudio</a>
             <a href="#contacto" className="nav-link">Contacto</a>
@@ -77,7 +78,7 @@ export default function Home() {
         {mobileMenuOpen && (
           <div className="border-y border-white/10 bg-[#11100f]/98 px-6 py-6 backdrop-blur lg:hidden">
             <div className="flex flex-col gap-5">
-              {[["El método", "#metodo"], ["Equipo", "#equipo"], ["El estudio", "#estudio"], ["Contacto", "#contacto"]].map(([label, href]) => (
+              {[["El método", "#metodo"], ["Horarios", "/horarios"], ["Equipo", "#equipo"], ["El estudio", "#estudio"], ["Contacto", "#contacto"]].map(([label, href]) => (
                 <a key={href} href={href} onClick={closeMenu} className="text-sm font-semibold uppercase tracking-[0.15em] text-[#f8f3eb]">
                   {label}
                 </a>
