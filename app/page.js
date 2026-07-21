@@ -89,12 +89,12 @@ export default function Home() {
       <section id="inicio" className="relative isolate min-h-[780px] bg-[#1a1816]">
         <div className="absolute inset-y-0 right-0 w-full opacity-60 sm:w-[65%] sm:opacity-100">
           <Image
-            src="/images/Coach Javi.JPG"
-            alt="Coach de JJ Studio"
+            src="/images/estudio/salon-lagree.jpg"
+            alt="Salón de JJ Studio con Megaformers Lagree"
             fill
             priority
             sizes="(max-width: 640px) 100vw, 65vw"
-            className="object-cover object-[65%_center] grayscale"
+            className="object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1816] via-[#1a1816]/70 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a1816] via-transparent to-transparent" />
