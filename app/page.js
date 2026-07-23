@@ -158,13 +158,13 @@ function AnimatedHeroTitle() {
       if (!title || initials.length !== 3 || initials.some((initial) => !initial)) return
 
       const titleBounds = title.getBoundingClientRect()
-      const screenCenter = {
+      const titleStageCenter = {
         x: window.innerWidth / 2 - titleBounds.left,
-        y: window.innerHeight / 2 - titleBounds.top,
+        y: window.innerHeight * 0.32 - titleBounds.top,
       }
 
       setTtpPositions({
-        start: screenCenter,
+        start: titleStageCenter,
         targets: initials.map((initial) => {
           const bounds = initial.getBoundingClientRect()
           return {
@@ -196,7 +196,7 @@ function AnimatedHeroTitle() {
             className={`hero-ttp-letter${letter === "P" ? " text-[#d9362b]" : ""}`}
             style={{
               "--ttp-start-x": ttpPositions ? `${ttpPositions.start.x}px` : "50vw",
-              "--ttp-start-y": ttpPositions ? `${ttpPositions.start.y}px` : "50vh",
+              "--ttp-start-y": ttpPositions ? `${ttpPositions.start.y}px` : "32vh",
               "--ttp-end-x": `${ttpPositions?.targets[index]?.x ?? 0}px`,
               "--ttp-end-y": `${ttpPositions?.targets[index]?.y ?? 0}px`,
               "--ttp-offset": `${(index - 1) * 0.42}em`,
