@@ -200,7 +200,7 @@ function AnimatedHeroTitle() {
               "--ttp-end-x": `${ttpPositions?.targets[index]?.x ?? 0}px`,
               "--ttp-end-y": `${ttpPositions?.targets[index]?.y ?? 0}px`,
               "--ttp-offset": `${(index - 1) * 0.42}em`,
-              animationDelay: `${140 + index * 100}ms`,
+              animationDelay: `${180 + index * 120}ms`,
             }}
           >
             {letter}
@@ -220,7 +220,7 @@ function AnimatedHeroTitle() {
                     key={`${letter}-${index}`}
                     ref={isTtpInitial ? (element) => { initialRefs.current[currentInitialIndex] = element } : undefined}
                     className={`hero-letter${isTtpInitial ? " hero-initial-slot" : ""}${letter === " " ? " hero-letter-space" : ""}`}
-                    style={{ animationDelay: `${1420 + (lineIndex * 5 + index) * 55}ms` }}
+                    style={{ animationDelay: `${2640 + (lineIndex * 5 + index) * 55}ms` }}
                   >
                     {letter === " " ? "\u00a0" : letter}
                   </span>
@@ -610,11 +610,11 @@ export default function Home() {
         .hero-quick-link:hover, .hero-quick-link:focus-visible { transform: translateY(-1px) scale(1.035); }
         .hero-title { position: relative; }
         .hero-ttp { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-        .hero-ttp-letter { position: absolute; top: var(--ttp-start-y); left: calc(var(--ttp-start-x) + var(--ttp-offset)); display: inline-block; opacity: 0; will-change: transform, top, left, opacity; animation: hero-ttp-settle 1260ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .hero-ttp-letter { position: absolute; top: var(--ttp-start-y); left: calc(var(--ttp-start-x) + var(--ttp-offset)); display: inline-block; opacity: 0; will-change: transform, top, left, opacity; animation: hero-ttp-settle 2200ms cubic-bezier(0.16, 1, 0.3, 1) both; }
         .hero-letter { display: inline-block; opacity: 0; animation: hero-letter-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both; }
         .hero-initial-slot { opacity: 0 !important; animation: none; }
         .hero-letter-space { width: 0.25em; }
-        @keyframes hero-ttp-settle { 0% { opacity: 0; filter: blur(7px); transform: translate3d(-50%, -50%, 0) scale(1.22); } 18% { opacity: 1; filter: blur(0); } 58% { opacity: 1; } 100% { top: var(--ttp-end-y); left: var(--ttp-end-x); opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0) scale(1); } }
+        @keyframes hero-ttp-settle { 0% { opacity: 0; filter: blur(7px); transform: translate3d(-50%, -50%, 0) scale(1.22); } 16% { top: var(--ttp-start-y); left: calc(var(--ttp-start-x) + var(--ttp-offset)); opacity: 1; filter: blur(0); transform: translate3d(-50%, -50%, 0) scale(1.22); } 58% { top: var(--ttp-start-y); left: calc(var(--ttp-start-x) + var(--ttp-offset)); opacity: 1; filter: blur(0); transform: translate3d(-50%, -50%, 0) scale(1.22); } 100% { top: var(--ttp-end-y); left: var(--ttp-end-x); opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0) scale(1); } }
         @keyframes hero-letter-in { from { opacity: 0; filter: blur(4px); transform: translate3d(0, 0.34em, 0); } to { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0); } }
         .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; }
         .stat-marquee-track { display: flex; width: max-content; animation: stat-marquee 16s linear infinite; }
