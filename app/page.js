@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import { ArrowUpRight, MapPin, Menu, X } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
 
@@ -146,8 +146,46 @@ function BookingButton({ className = "" }) {
 }
 
 function AnimatedHeroTitle() {
+  const titleRef = useRef(null)
+  const initialRefs = useRef([])
+  const [ttpPositions, setTtpPositions] = useState(null)
+
+  useLayoutEffect(() => {
+    const updateTtpPositions = () => {
+      const title = titleRef.current
+      const initials = initialRefs.current
+
+      if (!title || initials.length !== 3 || initials.some((initial) => !initial)) return
+
+      const titleBounds = title.getBoundingClientRect()
+      const screenCenter = {
+        x: window.innerWidth / 2 - titleBounds.left,
+        y: window.innerHeight / 2 - titleBounds.top,
+      }
+
+      setTtpPositions({
+        start: screenCenter,
+        targets: initials.map((initial) => {
+          const bounds = initial.getBoundingClientRect()
+          return {
+            x: bounds.left - titleBounds.left,
+            y: bounds.top - titleBounds.top,
+          }
+        }),
+      })
+    }
+
+    updateTtpPositions()
+    window.addEventListener("resize", updateTtpPositions)
+
+    return () => window.removeEventListener("resize", updateTtpPositions)
+  }, [])
+
+  let initialIndex = 0
+
   return (
     <h1
+      ref={titleRef}
       aria-label="Trust the Process."
       className="hero-title font-[family-name:var(--font-display)] text-[clamp(5.3rem,13vw,10.5rem)] uppercase leading-[0.78] tracking-[-0.025em] text-[#f8f3eb]"
     >
@@ -156,7 +194,14 @@ function AnimatedHeroTitle() {
           <span
             key={`${letter}-${index}`}
             className={`hero-ttp-letter${letter === "P" ? " text-[#d9362b]" : ""}`}
-            style={{ animationDelay: `${120 + index * 180}ms` }}
+            style={{
+              "--ttp-start-x": ttpPositions ? `${ttpPositions.start.x}px` : "50vw",
+              "--ttp-start-y": ttpPositions ? `${ttpPositions.start.y}px` : "50vh",
+              "--ttp-end-x": `${ttpPositions?.targets[index]?.x ?? 0}px`,
+              "--ttp-end-y": `${ttpPositions?.targets[index]?.y ?? 0}px`,
+              "--ttp-offset": `${(index - 1) * 0.42}em`,
+              animationDelay: `${140 + index * 100}ms`,
+            }}
           >
             {letter}
           </span>
@@ -166,13 +211,21 @@ function AnimatedHeroTitle() {
         {HERO_TITLE_LINES.map((line, lineIndex) => (
           <span key={line} className={`block${lineIndex ? " text-[#d9362b]" : ""}`}>
             {Array.from(line).map((letter, index) => (
-              <span
-                key={`${letter}-${index}`}
-                className={`hero-letter${letter === " " ? " hero-letter-space" : ""}`}
-                style={{ animationDelay: `${1160 + (lineIndex * 5 + index) * 55}ms` }}
-              >
-                {letter === " " ? "\u00a0" : letter}
-              </span>
+              (() => {
+                const isTtpInitial = (lineIndex === 0 && index === 0) || (lineIndex === 1 && (index === 0 || index === 4))
+                const currentInitialIndex = isTtpInitial ? initialIndex++ : null
+
+                return (
+                  <span
+                    key={`${letter}-${index}`}
+                    ref={isTtpInitial ? (element) => { initialRefs.current[currentInitialIndex] = element } : undefined}
+                    className={`hero-letter${isTtpInitial ? " hero-initial-slot" : ""}${letter === " " ? " hero-letter-space" : ""}`}
+                    style={{ animationDelay: `${1420 + (lineIndex * 5 + index) * 55}ms` }}
+                  >
+                    {letter === " " ? "\u00a0" : letter}
+                  </span>
+                )
+              })()
             ))}
           </span>
         ))}
@@ -556,12 +609,12 @@ export default function Home() {
         .hero-quick-link { transform-origin: center; transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, color 180ms ease; }
         .hero-quick-link:hover, .hero-quick-link:focus-visible { transform: translateY(-1px) scale(1.035); }
         .hero-title { position: relative; }
-        .hero-ttp { position: absolute; top: 0; left: 0; display: inline-flex; gap: 0.03em; pointer-events: none; animation: hero-ttp-out 360ms ease 1120ms both; }
-        .hero-ttp-letter { display: inline-block; opacity: 0; animation: hero-ttp-in 560ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .hero-ttp { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+        .hero-ttp-letter { position: absolute; top: var(--ttp-start-y); left: calc(var(--ttp-start-x) + var(--ttp-offset)); display: inline-block; opacity: 0; will-change: transform, top, left, opacity; animation: hero-ttp-settle 1260ms cubic-bezier(0.16, 1, 0.3, 1) both; }
         .hero-letter { display: inline-block; opacity: 0; animation: hero-letter-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .hero-initial-slot { opacity: 0 !important; animation: none; }
         .hero-letter-space { width: 0.25em; }
-        @keyframes hero-ttp-in { from { opacity: 0; filter: blur(5px); transform: translate3d(0, 0.2em, 0); } to { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0); } }
-        @keyframes hero-ttp-out { from { opacity: 1; transform: translate3d(0, 0, 0); } to { opacity: 0; transform: translate3d(0, -0.08em, 0); } }
+        @keyframes hero-ttp-settle { 0% { opacity: 0; filter: blur(7px); transform: translate3d(-50%, -50%, 0) scale(1.22); } 18% { opacity: 1; filter: blur(0); } 58% { opacity: 1; } 100% { top: var(--ttp-end-y); left: var(--ttp-end-x); opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0) scale(1); } }
         @keyframes hero-letter-in { from { opacity: 0; filter: blur(4px); transform: translate3d(0, 0.34em, 0); } to { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0); } }
         .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; }
         .stat-marquee-track { display: flex; width: max-content; animation: stat-marquee 16s linear infinite; }
@@ -571,7 +624,7 @@ export default function Home() {
         .coach-marquee:hover .coach-marquee-track, .coach-marquee:focus-within .coach-marquee-track { animation-play-state: paused; }
         @keyframes coach-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         details[open] .faq-symbol { transform: rotate(45deg); border-color: #f04a3e; background: #f04a3e; color: #151312; }
-        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter { animation: none; } .hero-letter { opacity: 1; } .hero-ttp { display: none; } .offer-card { transition: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
+        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter { animation: none; } .hero-letter, .hero-initial-slot { opacity: 1 !important; } .hero-ttp { display: none; } .offer-card { transition: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
       `}</style>
     </main>
   )
