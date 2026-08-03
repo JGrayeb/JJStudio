@@ -13,7 +13,13 @@ const INSTAGRAM_URL = "https://www.instagram.com/jj_lagree_experience?igsh=MThwa
 const WHATSAPP_URL = "https://wa.me/524423947704"
 const MAPS_URL = "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6"
 const STUDIO_STATS = [["45", "minutos"], ["Bajo", "impacto"], ["Alta", "intensidad"]]
-const FOUNDING_OFFER_END = new Date("2026-08-02T05:59:59.999Z")
+const AUGUST_OFFER_END = new Date("2026-09-01T05:59:59.999Z")
+
+const AUGUST_PACKAGES = [
+  { name: "12 clases", nessty: "$3,024", frontDesk: "$3,000", drinks: "3 bebidas" },
+  { name: "16 clases", nessty: "$3,645", frontDesk: "$3,600", drinks: "3 bebidas" },
+  { name: "Unlimited", nessty: "$4,005", frontDesk: "$3,900", drinks: "5 bebidas" },
+]
 
 const COACHES = [
   { name: "Javi", image: "/images/Coach Javi.JPG" },
@@ -238,7 +244,7 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [previewShareQuery, setPreviewShareQuery] = useState("")
   const heroVideoRef = useRef(null)
-  const hasFoundingOffer = new Date() <= FOUNDING_OFFER_END
+  const hasAugustOffer = new Date() <= AUGUST_OFFER_END
 
   useEffect(() => {
     const previewShare = new URLSearchParams(window.location.search).get("_vercel_share")
@@ -324,13 +330,13 @@ export default function Home() {
               45 minutos de fuerza, resistencia y control en el Megaformer. Un entrenamiento que se adapta a ti y se queda contigo.
             </p>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.25em] text-[#f04a3e]">✦ Trust the Process ✦</p>
-            {hasFoundingOffer && (
-              <div className="offer-card mt-7 inline-flex max-w-md flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-[#d9362b]/50 bg-[#151312]/75 px-4 py-2.5 text-left shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-sm">
-                <span className="text-[9px] font-black uppercase tracking-[0.17em] text-[#f04a3e]">Oferta founding</span>
+            {hasAugustOffer && (
+              <a href="#oferta-agosto" className="offer-card mt-7 inline-flex max-w-md flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-[#d9362b]/50 bg-[#151312]/75 px-4 py-2.5 text-left shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-sm transition hover:border-[#f04a3e] hover:bg-[#211b18]">
+                <span className="text-[9px] font-black uppercase tracking-[0.17em] text-[#f04a3e]">Oferta de agosto</span>
                 <span className="hidden h-3 w-px bg-white/20 sm:block" aria-hidden="true" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#f8f3eb]">15% hasta el 1 de agosto</span>
-                <code className="rounded bg-white/10 px-2 py-1 text-[10px] font-black tracking-[0.1em] text-white">FOUNDING1JJ</code>
-              </div>
+                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#f8f3eb]">10% en Nessty</span>
+                <code className="rounded bg-white/10 px-2 py-1 text-[10px] font-black tracking-[0.1em] text-white">AGOSTOJJ</code>
+              </a>
             )}
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
               <BookingButton />
@@ -359,6 +365,60 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {hasAugustOffer && (
+        <section id="oferta-agosto" className="relative isolate overflow-hidden bg-[#d9362b] px-6 py-20 text-[#151312] sm:py-24 lg:px-8">
+          <div className="absolute -right-24 -top-28 h-80 w-80 rounded-full border border-[#151312]/15" aria-hidden="true" />
+          <div className="absolute -right-10 -top-16 h-52 w-52 rounded-full border border-[#151312]/15" aria-hidden="true" />
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-8 border-b border-[#151312]/25 pb-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.24em]">Oferta del mes · Agosto</p>
+                <h2 className="mt-4 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.82] sm:text-8xl">
+                  Más clases.<br /><span className="text-[#f8f3eb]">Más para ti.</span>
+                </h2>
+              </div>
+              <div className="max-w-xl lg:justify-self-end">
+                <p className="text-base font-semibold leading-relaxed sm:text-lg">
+                  Compra en Nessty con 10% de descuento usando el código <code className="rounded bg-[#151312] px-2.5 py-1 text-sm font-black tracking-[0.1em] text-white">AGOSTOJJ</code>, o aprovecha un precio especial pagando directamente en caja.
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-[#351512]">Cada paquete incluye bebidas para disfrutar matcha, chai, café, proteína y más opciones disponibles en nuestra barra.</p>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-4 lg:grid-cols-3">
+              {AUGUST_PACKAGES.map((offer, index) => (
+                <article key={offer.name} className="rounded-[1.6rem] border border-[#151312]/20 bg-[#f0e9df] p-6 shadow-[0_18px_45px_rgba(70,12,8,0.12)] sm:p-7">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c83228]">Paquete 0{index + 1}</p>
+                      <h3 className="mt-2 font-[family-name:var(--font-display)] text-5xl uppercase leading-none">{offer.name}</h3>
+                    </div>
+                    <span className="rounded-full bg-[#d9362b] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-white">+ {offer.drinks}</span>
+                  </div>
+                  <div className="mt-7 grid grid-cols-2 gap-3 border-t border-[#151312]/15 pt-5">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#776c62]">En Nessty · 10%</p>
+                      <p className="mt-1 font-[family-name:var(--font-display)] text-4xl leading-none text-[#c83228]">{offer.nessty}</p>
+                    </div>
+                    <div className="border-l border-[#151312]/15 pl-4">
+                      <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#776c62]">Pago en caja</p>
+                      <p className="mt-1 font-[family-name:var(--font-display)] text-4xl leading-none">{offer.frontDesk}</p>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs font-bold uppercase tracking-[0.14em]">Precios en MXN · Promoción de agosto 2026</p>
+              <a href={NESSTY_URL} target="_blank" rel="noreferrer" className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#151312] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:-translate-y-0.5 hover:bg-white hover:text-[#151312]">
+                Comprar en Nessty <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section id="metodo" className="bg-[#f0e9df] px-6 py-24 text-[#1a1816] sm:py-32 lg:px-8">
         <div className="mx-auto max-w-7xl">
