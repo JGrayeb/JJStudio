@@ -346,7 +346,7 @@ export default function Home() {
             aria-hidden="true"
           >
             <source media="(max-width: 639px)" src={`/videos/jj-studio-hero-mobile-v2.mp4${previewShareQuery}`} type="video/mp4" />
-            <source src={`/videos/jj-studio-hero-v2.mp4${previewShareQuery}`} type="video/mp4" />
+            <source src={`/videos/jj-studio-hero-v3.mp4${previewShareQuery}`} type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1816] via-[#1a1816]/70 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a1816] via-transparent to-transparent" />
