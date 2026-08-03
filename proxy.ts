@@ -53,7 +53,10 @@ export async function proxy(request: NextRequest) {
     publicRoutes.has(pathname) ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/auth/") ||
-    pathname.startsWith("/images/");
+    pathname.startsWith("/images/") ||
+    // Public media must bypass session checks; otherwise a <video> request
+    // gets redirected to /login instead of receiving the MP4 stream.
+    pathname.startsWith("/videos/");
 
   // Avoid a session round trip for public marketing pages and search crawlers.
   if (isPublicRoute && !guestOnlyRoutes.has(pathname)) {

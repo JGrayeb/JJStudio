@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { ArrowUpRight, MapPin, Menu, X } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
 
@@ -75,11 +75,11 @@ const FAQ_ITEMS = [
   },
   {
     question: "¿Los calcetines antiderrapantes son obligatorios?",
-    answer: "Sí. Son indispensables para tu seguridad durante la clase. Si los olvidaste, tenemos calcetines Lagree disponibles en recepción por $100 MXN el par.",
+    answer: "Sí. Son indispensables para tu seguridad durante la clase. Si los olvidaste, tenemos calcetines Lagree disponibles en recepción: $150 MXN un par o $250 MXN dos pares.",
   },
   {
     question: "¿Venden calcetines JJ Studio?",
-    answer: "Sí. Nuestro diseño propio es unitalla y cuesta $100 MXN el par. Tiene grips antiderrapantes para que entrenes con seguridad y estilo.",
+    answer: "Sí. Nuestro diseño propio es unitalla: $150 MXN un par o $250 MXN dos pares. Tiene grips antiderrapantes para que entrenes con seguridad y estilo.",
   },
   {
     question: "¿Qué bebidas ofrecen después de clase?",
@@ -236,7 +236,22 @@ function AnimatedHeroTitle() {
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [previewShareQuery, setPreviewShareQuery] = useState("")
+  const heroVideoRef = useRef(null)
   const hasFoundingOffer = new Date() <= FOUNDING_OFFER_END
+
+  useEffect(() => {
+    const previewShare = new URLSearchParams(window.location.search).get("_vercel_share")
+    setPreviewShareQuery(previewShare ? `?_vercel_share=${encodeURIComponent(previewShare)}` : "")
+  }, [])
+
+  useEffect(() => {
+    const video = heroVideoRef.current
+    if (!video) return
+
+    video.load()
+    void video.play().catch(() => undefined)
+  }, [previewShareQuery])
 
   const closeMenu = () => setMobileMenuOpen(false)
 
@@ -280,15 +295,23 @@ export default function Home() {
       </nav>
 
       <section id="inicio" className="relative isolate min-h-[780px] bg-[#1a1816]">
-        <div className="absolute inset-y-0 right-0 w-full opacity-60 sm:w-[65%] sm:opacity-100">
-          <Image
-            src="/images/estudio/salon-lagree.jpg"
-            alt="Salón de JJ Studio con Megaformers Lagree"
-            fill
-            priority
-            sizes="(max-width: 640px) 100vw, 65vw"
-            className="object-cover object-center"
-          />
+        <div className="absolute inset-y-0 right-0 w-full opacity-60 sm:w-[65%] sm:opacity-100 lg:left-[47.5%] lg:w-auto">
+          <video
+            key={previewShareQuery}
+            ref={heroVideoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="/images/estudio/salon-lagree.jpg"
+            className="h-full w-full object-cover object-center"
+            aria-hidden="true"
+            onCanPlay={(event) => { void event.currentTarget.play().catch(() => undefined) }}
+          >
+            <source media="(max-width: 639px)" src={`/videos/jj-studio-hero-mobile.mp4${previewShareQuery}`} type="video/mp4" />
+            <source src={`/videos/jj-studio-hero.mp4${previewShareQuery}`} type="video/mp4" />
+          </video>
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1816] via-[#1a1816]/70 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a1816] via-transparent to-transparent" />
         </div>
@@ -523,7 +546,10 @@ export default function Home() {
                 <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">Grip JJ Studio</p>
                 <p className="mt-1 font-[family-name:var(--font-display)] text-3xl uppercase leading-none">Unitalla</p>
               </div>
-              <p className="text-sm font-black tracking-[0.08em]">$100 MXN</p>
+              <p className="text-right text-xs font-black uppercase leading-tight tracking-[0.05em]">
+                <span className="block">$150 · 1 par</span>
+                <span className="mt-1 block text-[#f04a3e]">$250 · 2 pares</span>
+              </p>
             </div>
           </div>
         </div>
