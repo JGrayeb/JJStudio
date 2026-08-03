@@ -1,23 +1,12 @@
 import Image from "next/image"
 import { ArrowLeft, ArrowUpRight, CupSoda, Leaf, Plus, Sparkles } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
+import siteContent from "@/content/site-content.json"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 
-type PriceSet = {
-  regular: string
-  noCup: string
-  discount: string
-  discountNoCup: string
-}
-
-const CEREMONIAL_PRICE: PriceSet = {
-  regular: "$165.00",
-  noCup: "$135.00",
-  discount: "$140.25",
-  discountNoCup: "$114.75",
-}
+const CEREMONIAL_PRICE = siteContent.beverages.ceremonialPrice
 
 const SIGNATURE_MATCHAS = [
   {
@@ -46,33 +35,7 @@ const SIGNATURE_MATCHAS = [
   },
 ]
 
-const DRINK_PRICES: Array<{ name: string; detail: string; price: PriceSet }> = [
-  {
-    name: "Matcha ceremonial",
-    detail: "IKIGAI o Kokoro · 500 ml",
-    price: CEREMONIAL_PRICE,
-  },
-  {
-    name: "Espresso",
-    detail: "Café sobre hielo · 500 ml",
-    price: { regular: "$65.00", noCup: "$35.00", discount: "$55.25", discountNoCup: "$29.75" },
-  },
-  {
-    name: "Latte",
-    detail: "Espresso y la base que elijas · 500 ml",
-    price: { regular: "$85.00", noCup: "$55.00", discount: "$72.25", discountNoCup: "$46.75" },
-  },
-  {
-    name: "Chai",
-    detail: "Chai con base o agua · 500 ml",
-    price: { regular: "$85.00", noCup: "$55.00", discount: "$72.25", discountNoCup: "$46.75" },
-  },
-  {
-    name: "Americano",
-    detail: "Espresso, agua y hielo · 500 ml",
-    price: { regular: "$65.00", noCup: "$35.00", discount: "$55.25", discountNoCup: "$29.75" },
-  },
-]
+const DRINK_PRICES = siteContent.beverages.menu
 
 const BASES = ["Leche entera o deslactosada", "Bebida de coco", "Bebida de soya", "Bebida de avena"]
 
@@ -84,7 +47,7 @@ const BOOSTS = [
 
 export const metadata = {
   title: "Bebidas",
-  description: "Bebidas enlatadas de 500 ml de JJ Studio: matcha ceremonial, café, chai y opciones para personalizar.",
+  description: "Bebidas de 300 ml y 500 ml de JJ Studio: matcha ceremonial, café, chai y opciones para personalizar.",
   alternates: { canonical: "/beverages" },
   openGraph: {
     title: "Bebidas | JJ Studio",
@@ -109,16 +72,16 @@ export default function BeveragesPage() {
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_78%_35%,rgba(217,54,43,0.22),transparent_34%),linear-gradient(145deg,#171513_0%,#11100f_60%,#1e1512_100%)]" aria-hidden="true" />
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#f04a3e]">JJ Fuel Bar · 500 ml</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#f04a3e]">JJ Fuel Bar · {siteContent.beverages.sizesLabel}</p>
             <h1 className="mt-5 font-[family-name:var(--font-display)] text-[clamp(5rem,12vw,9.5rem)] uppercase leading-[0.78] text-white">
               Matcha.<br /><span className="text-[#d9362b]">Your way.</span>
             </h1>
             <p className="mt-8 max-w-lg text-base leading-relaxed text-[#cfc6bc] sm:text-lg">
-              Matcha de grado ceremonial IKIGAI o Kokoro, preparado al momento y servido en nuestro vaso enlatado de 500 ml.
+              Matcha de grado ceremonial IKIGAI o Kokoro, preparado al momento en presentaciones de {siteContent.beverages.sizesLabel}.
             </p>
             <div className="mt-8 flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-2 rounded-full border border-[#d9362b]/60 bg-[#d9362b]/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#f4b8b2]"><Sparkles size={14} /> Grado ceremonial</span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#d6cec4]"><CupSoda size={14} /> Enlatado · 500 ml</span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#d6cec4]"><CupSoda size={14} /> {siteContent.beverages.sizesLabel}</span>
             </div>
           </div>
 
@@ -127,7 +90,7 @@ export default function BeveragesPage() {
               <figure key={drink.name} className={`group relative min-h-[18rem] overflow-hidden rounded-[1.7rem] border border-white/10 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.09),transparent_56%)] sm:min-h-[25rem] ${index % 2 ? "sm:translate-y-7" : ""}`}>
                 <Image
                   src={drink.image}
-                  alt={`${drink.name} de JJ Studio en vaso transparente de 500 ml`}
+                  alt={`${drink.name} de JJ Studio en vaso transparente`}
                   fill
                   priority={index < 2}
                   sizes="(max-width: 1024px) 50vw, 27vw"

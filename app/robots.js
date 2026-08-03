@@ -1,11 +1,13 @@
-const siteUrl = "https://jjstudio.mx"
+import siteContent from "@/content/site-content.json"
+
+const siteUrl = siteContent.siteUrl
 
 export default function robots() {
   return {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin/", "/dashboard/", "/api/", "/login", "/signup", "/forgot-password", "/password-reset"],
+      disallow: ["/api/"],
     },
     sitemap: `${siteUrl}/sitemap.xml`,
   }

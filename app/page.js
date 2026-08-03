@@ -4,22 +4,18 @@ import Image from "next/image"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { ArrowUpRight, MapPin, Menu, X } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
+import siteContent from "@/content/site-content.json"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 
-const NESSTY_URL = "https://nessty.mx/@jjstudio"
-const INSTAGRAM_URL = "https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg=="
-const WHATSAPP_URL = "https://wa.me/524423947704"
-const MAPS_URL = "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6"
+const NESSTY_URL = siteContent.links.nessty
+const INSTAGRAM_URL = siteContent.links.instagram
+const WHATSAPP_URL = siteContent.links.whatsapp
+const MAPS_URL = siteContent.links.maps
 const STUDIO_STATS = [["45", "minutos"], ["Bajo", "impacto"], ["Alta", "intensidad"]]
-const AUGUST_OFFER_END = new Date("2026-09-01T05:59:59.999Z")
-
-const AUGUST_PACKAGES = [
-  { name: "12 clases", nessty: "$3,024", frontDesk: "$3,000", drinks: "3 bebidas" },
-  { name: "16 clases", nessty: "$3,645", frontDesk: "$3,600", drinks: "3 bebidas" },
-  { name: "Unlimited", nessty: "$4,005", frontDesk: "$3,900", drinks: "5 bebidas" },
-]
+const AUGUST_OFFER_END = new Date(siteContent.promotion.endsAt)
+const AUGUST_PACKAGES = siteContent.promotion.packages
 
 const COACHES = [
   { name: "Javi", image: "/images/Coach Javi.JPG" },
@@ -116,7 +112,7 @@ const FAQ_ITEMS = [
   },
   {
     question: "¿Qué bebidas ofrecen después de clase?",
-    answer: "Tenemos bebidas a la venta en dos tamaños. Puedes consultar la carta actualizada en nuestra sección de bebidas.",
+    answer: `Tenemos bebidas de ${siteContent.beverages.sizesLabel}. Puedes consultar la carta actualizada en nuestra sección de bebidas.`,
     href: "/beverages",
     linkLabel: "Ver bebidas",
   },
@@ -282,6 +278,14 @@ export default function Home() {
     const video = heroVideoRef.current
     if (!video) return
 
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const savesData = navigator.connection?.saveData === true
+
+    if (prefersReducedMotion || savesData) {
+      video.pause()
+      return
+    }
+
     video.load()
     void video.play().catch(() => undefined)
   }, [previewShareQuery])
@@ -332,15 +336,13 @@ export default function Home() {
           <video
             key={previewShareQuery}
             ref={heroVideoRef}
-            autoPlay
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             poster="/images/estudio/salon-lagree.jpg"
             className="h-full w-full object-cover object-center"
             aria-hidden="true"
-            onCanPlay={(event) => { void event.currentTarget.play().catch(() => undefined) }}
           >
             <source media="(max-width: 639px)" src={`/videos/jj-studio-hero-mobile.mp4${previewShareQuery}`} type="video/mp4" />
             <source src={`/videos/jj-studio-hero.mp4${previewShareQuery}`} type="video/mp4" />
@@ -359,10 +361,10 @@ export default function Home() {
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.25em] text-[#f04a3e]">✦ Trust the Process ✦</p>
             {hasAugustOffer && (
               <a href="#oferta-agosto" className="offer-card mt-7 inline-flex max-w-md flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-[#d9362b]/50 bg-[#151312]/75 px-4 py-2.5 text-left shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-sm transition hover:border-[#f04a3e] hover:bg-[#211b18]">
-                <span className="text-[9px] font-black uppercase tracking-[0.17em] text-[#f04a3e]">Oferta de agosto</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.17em] text-[#f04a3e]">{siteContent.promotion.name}</span>
                 <span className="hidden h-3 w-px bg-white/20 sm:block" aria-hidden="true" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#f8f3eb]">10% en Nessty</span>
-                <code className="rounded bg-white/10 px-2 py-1 text-[10px] font-black tracking-[0.1em] text-white">AGOSTOJJ</code>
+                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#f8f3eb]">{siteContent.promotion.discountLabel}</span>
+                <code className="rounded bg-white/10 px-2 py-1 text-[10px] font-black tracking-[0.1em] text-white">{siteContent.promotion.code}</code>
               </a>
             )}
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -407,7 +409,7 @@ export default function Home() {
               </div>
               <div className="max-w-xl lg:justify-self-end">
                 <p className="text-base font-semibold leading-relaxed sm:text-lg">
-                  Compra en Nessty con 10% de descuento usando el código <code className="rounded bg-[#151312] px-2.5 py-1 text-sm font-black tracking-[0.1em] text-white">AGOSTOJJ</code>, o aprovecha un precio especial pagando directamente en caja.
+                  Compra en Nessty con 10% de descuento usando el código <code className="rounded bg-[#151312] px-2.5 py-1 text-sm font-black tracking-[0.1em] text-white">{siteContent.promotion.code}</code>, o aprovecha un precio especial pagando directamente en caja.
                 </p>
                 <p className="mt-4 text-sm leading-relaxed text-[#351512]">Cada paquete incluye bebidas para disfrutar matcha, chai, café, proteína y más opciones disponibles en nuestra barra.</p>
               </div>

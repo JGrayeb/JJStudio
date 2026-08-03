@@ -1,6 +1,7 @@
 import "./globals.css"
 import Script from "next/script"
 import { Inter } from "next/font/google"
+import siteContent from "@/content/site-content.json"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -8,7 +9,7 @@ const inter = Inter({
   display: "swap",
 })
 
-const siteUrl = "https://jjstudio.mx"
+const siteUrl = siteContent.siteUrl
 
 export const metadata = {
   metadataBase: new URL(siteUrl),

@@ -1,4 +1,6 @@
-const siteUrl = "https://jjstudio.mx"
+import siteContent from "@/content/site-content.json"
+
+const siteUrl = siteContent.siteUrl
 
 export default function sitemap() {
   return [

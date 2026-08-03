@@ -1,0 +1,61 @@
+{
+  "siteUrl": "https://www.jjstudio.mx",
+  "links": {
+    "nessty": "https://nessty.mx/@jjstudio",
+    "instagram": "https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==",
+    "whatsapp": "https://wa.me/524423947704",
+    "maps": "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6"
+  },
+  "promotion": {
+    "name": "Oferta de agosto",
+    "code": "AGOSTOJJ",
+    "discountLabel": "10% en Nessty",
+    "endsAt": "2026-09-01T05:59:59.999Z",
+    "packages": [
+      { "name": "12 clases", "nessty": "$3,024", "frontDesk": "$3,000", "drinks": "3 bebidas" },
+      { "name": "16 clases", "nessty": "$3,645", "frontDesk": "$3,600", "drinks": "3 bebidas" },
+      { "name": "Unlimited", "nessty": "$4,005", "frontDesk": "$3,900", "drinks": "5 bebidas" }
+    ]
+  },
+  "beverages": {
+    "sizesMl": [300, 500],
+    "sizesLabel": "300 ml y 500 ml",
+    "ceremonialPrice": {
+      "regular": "$165.00",
+      "noCup": "$135.00",
+      "discount": "$140.25",
+      "discountNoCup": "$114.75"
+    },
+    "menu": [
+      {
+        "name": "Matcha ceremonial",
+        "detail": "IKIGAI o Kokoro · 300 ml y 500 ml",
+        "price": { "regular": "$165.00", "noCup": "$135.00", "discount": "$140.25", "discountNoCup": "$114.75" }
+      },
+      {
+        "name": "Espresso",
+        "detail": "Café sobre hielo · 300 ml y 500 ml",
+        "price": { "regular": "$65.00", "noCup": "$35.00", "discount": "$55.25", "discountNoCup": "$29.75" }
+      },
+      {
+        "name": "Latte",
+        "detail": "Espresso y la base que elijas · 300 ml y 500 ml",
+        "price": { "regular": "$85.00", "noCup": "$55.00", "discount": "$72.25", "discountNoCup": "$46.75" }
+      },
+      {
+        "name": "Chai",
+        "detail": "Chai con base o agua · 300 ml y 500 ml",
+        "price": { "regular": "$85.00", "noCup": "$55.00", "discount": "$72.25", "discountNoCup": "$46.75" }
+      },
+      {
+        "name": "Americano",
+        "detail": "Espresso, agua y hielo · 300 ml y 500 ml",
+        "price": { "regular": "$65.00", "noCup": "$35.00", "discount": "$55.25", "discountNoCup": "$29.75" }
+      }
+    ]
+  },
+  "socks": {
+    "onePair": "$150",
+    "twoPairs": "$250"
+  }
+}
