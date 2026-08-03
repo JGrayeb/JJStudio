@@ -30,6 +30,33 @@ const COACHES = [
   { name: "Erika", image: "/images/Coach Erika.JPG" },
 ]
 
+const STUDIO_GALLERY = [
+  {
+    eyebrow: "El salón",
+    title: "Donde sucede el shake.",
+    image: "/images/estudio/salon-rojo-premium.png",
+    alt: "Salón de JJ Studio iluminado en rojo con siete Megaformers",
+  },
+  {
+    eyebrow: "La atmósfera",
+    title: "La luz cambia. El método se queda.",
+    image: "/images/estudio/salon-verde-premium.png",
+    alt: "Salón de JJ Studio con iluminación verde y azul",
+  },
+  {
+    eyebrow: "El ritmo",
+    title: "45 minutos para volver a ti.",
+    image: "/images/estudio/salon-azul-premium.png",
+    alt: "Salón de JJ Studio con iluminación azul y roja",
+  },
+  {
+    eyebrow: "La pausa",
+    title: "Café, matcha y comunidad.",
+    image: "/images/estudio/barra-cafe-matcha-premium.png",
+    alt: "Barra premium de café y matcha de JJ Studio",
+  },
+]
+
 const NAV_LINKS = [
   ["Método", "#metodo"],
   ["Calendario", "/horarios"],
@@ -515,50 +542,25 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="mt-16 grid gap-4 md:grid-cols-12 md:grid-rows-2">
-            <figure className="group relative min-h-[32rem] overflow-hidden rounded-3xl bg-[#1a1816] md:col-span-7 md:row-span-2">
-              <Image
-                src="/images/estudio/salon-lagree.jpg"
-                alt="Salón de entrenamiento de JJ Studio con Megaformers"
-                fill
-                sizes="(max-width: 768px) 100vw, 58vw"
-                className="object-cover transition duration-700 group-hover:scale-105"
-              />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent px-6 pb-6 pt-20 text-white sm:px-8 sm:pb-8">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">El salón</p>
-                <p className="mt-2 font-[family-name:var(--font-display)] text-4xl uppercase leading-none">Donde sucede el shake.</p>
-              </figcaption>
-            </figure>
-
-            <figure className="group relative min-h-64 overflow-hidden rounded-3xl bg-[#1a1816] md:col-span-5">
-              <Image
-                src="/images/estudio/megaformer-trust.jpg"
-                alt="Megaformer y frase Trust the Process en JJ Studio"
-                fill
-                sizes="(max-width: 768px) 100vw, 42vw"
-                className="object-cover transition duration-700 group-hover:scale-105"
-              />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent px-6 pb-6 pt-16 text-white">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">El método</p>
-                <p className="mt-2 font-[family-name:var(--font-display)] text-3xl uppercase leading-none">Trust the Process.</p>
-              </figcaption>
-            </figure>
-
-            <figure className="group relative min-h-64 overflow-hidden rounded-3xl bg-[#1a1816] md:col-span-5">
-              <Image
-                src="/images/estudio/barra-matcha.jpg"
-                alt="Barra de café y matcha de JJ Studio"
-                fill
-                sizes="(max-width: 768px) 100vw, 42vw"
-                className="object-cover transition duration-700 group-hover:scale-105"
-              />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-6 pb-6 pt-16 text-white">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#f04a3e]">La pausa</p>
-                <p className="mt-2 font-[family-name:var(--font-display)] text-3xl uppercase leading-none">Café, matcha y comunidad.</p>
-              </figcaption>
-            </figure>
+          <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {STUDIO_GALLERY.map((item, index) => (
+              <figure key={item.image} className={`group relative aspect-[3/4] overflow-hidden rounded-3xl bg-[#1a1816] shadow-[0_18px_45px_rgba(42,30,24,0.14)] ${index % 2 ? "lg:translate-y-8" : ""}`}>
+                <Image
+                  src={item.image}
+                  alt={item.alt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition duration-700 ease-out group-hover:scale-[1.035]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/5 to-transparent" aria-hidden="true" />
+                <figcaption className="absolute inset-x-0 bottom-0 px-5 pb-6 pt-20 text-white sm:px-6 sm:pb-7">
+                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#f04a3e]">{item.eyebrow}</p>
+                  <p className="mt-2 font-[family-name:var(--font-display)] text-3xl uppercase leading-[0.94]">{item.title}</p>
+                </figcaption>
+              </figure>
+            ))}
           </div>
-          <a href="/beverages" className="group mt-8 inline-flex items-center gap-3 rounded-full bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#f0e9df] shadow-lg shadow-[#1a1816]/15 transition hover:-translate-y-0.5 hover:bg-[#c83228] hover:shadow-xl">
+          <a href="/beverages" className="group mt-16 inline-flex items-center gap-3 rounded-full bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#f0e9df] shadow-lg shadow-[#1a1816]/15 transition hover:-translate-y-0.5 hover:bg-[#c83228] hover:shadow-xl lg:mt-20">
             Conoce nuestras bebidas <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         </div>
