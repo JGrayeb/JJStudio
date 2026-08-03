@@ -16,6 +16,7 @@ const MAPS_URL = siteContent.links.maps
 const STUDIO_STATS = [["45", "minutos"], ["Bajo", "impacto"], ["Alta", "intensidad"]]
 const AUGUST_OFFER_END = new Date(siteContent.promotion.endsAt)
 const AUGUST_PACKAGES = siteContent.promotion.packages
+const TRIAL_OFFER = siteContent.promotion.trialClass
 
 const COACHES = [
   { name: "Javi", image: "/images/Coach Javi.JPG" },
@@ -331,7 +332,7 @@ export default function Home() {
         )}
       </nav>
 
-      <section id="inicio" className="relative isolate min-h-[780px] bg-[#1a1816]">
+      <section id="inicio" className="relative isolate min-h-[940px] bg-[#1a1816] sm:min-h-[900px] lg:min-h-[820px]">
         <div className="absolute inset-y-0 right-0 w-full opacity-60 sm:w-[65%] sm:opacity-100 lg:left-[47.5%] lg:w-auto">
           <video
             key={previewShareQuery}
@@ -344,14 +345,14 @@ export default function Home() {
             className="h-full w-full object-cover object-center"
             aria-hidden="true"
           >
-            <source media="(max-width: 639px)" src={`/videos/jj-studio-hero-mobile.mp4${previewShareQuery}`} type="video/mp4" />
-            <source src={`/videos/jj-studio-hero.mp4${previewShareQuery}`} type="video/mp4" />
+            <source media="(max-width: 639px)" src={`/videos/jj-studio-hero-mobile-v2.mp4${previewShareQuery}`} type="video/mp4" />
+            <source src={`/videos/jj-studio-hero-v2.mp4${previewShareQuery}`} type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1816] via-[#1a1816]/70 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a1816] via-transparent to-transparent" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[780px] max-w-7xl items-end px-6 pb-16 pt-32 lg:px-8 lg:pb-24">
+        <div className="relative mx-auto flex min-h-[940px] max-w-7xl items-end px-6 pb-44 pt-32 sm:min-h-[900px] lg:min-h-[820px] lg:px-8 lg:pb-44">
           <div className="max-w-3xl">
             <p className="mb-6 text-[11px] font-bold uppercase tracking-[0.28em] text-[#f04a3e]">Lagree fitness · Querétaro</p>
             <AnimatedHeroTitle />
@@ -360,11 +361,26 @@ export default function Home() {
             </p>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.25em] text-[#f04a3e]">✦ Trust the Process ✦</p>
             {hasAugustOffer && (
-              <a href="#oferta-agosto" className="offer-card mt-7 inline-flex max-w-md flex-wrap items-center gap-x-3 gap-y-2 rounded-full border border-[#d9362b]/50 bg-[#151312]/75 px-4 py-2.5 text-left shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-sm transition hover:border-[#f04a3e] hover:bg-[#211b18]">
-                <span className="text-[9px] font-black uppercase tracking-[0.17em] text-[#f04a3e]">{siteContent.promotion.name}</span>
-                <span className="hidden h-3 w-px bg-white/20 sm:block" aria-hidden="true" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#f8f3eb]">{siteContent.promotion.discountLabel}</span>
-                <code className="rounded bg-white/10 px-2 py-1 text-[10px] font-black tracking-[0.1em] text-white">{siteContent.promotion.code}</code>
+              <a href="#oferta-agosto" className="offer-card mt-7 block max-w-lg overflow-hidden rounded-[1.4rem] border-2 border-[#f04a3e]/75 bg-[#d9362b] text-left text-[#151312] shadow-[0_20px_50px_rgba(0,0,0,0.35)] transition hover:border-white">
+                <div className="grid gap-3 px-4 py-4 sm:grid-cols-[0.85fr_1.15fr] sm:px-5">
+                  <div className="flex items-end gap-3 sm:block">
+                    <div>
+                      <span className="block text-[9px] font-black uppercase tracking-[0.2em]">{siteContent.promotion.name}</span>
+                      <span className="mt-1 block font-[family-name:var(--font-display)] text-6xl leading-[0.8] text-white">10%</span>
+                    </div>
+                    <code className="mb-1 rounded-full bg-[#151312] px-3 py-1.5 text-[10px] font-black tracking-[0.12em] text-white sm:mt-3 sm:inline-block">{siteContent.promotion.code}</code>
+                  </div>
+                  <div className="grid content-center gap-2 border-t border-[#151312]/20 pt-3 text-[10px] font-black uppercase tracking-[0.1em] sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
+                    <span className="flex items-center justify-between gap-3"><b>12 o 16 clases</b><strong className="rounded-full bg-white px-2.5 py-1 text-[#c83228]">+3 bebidas</strong></span>
+                    <span className="flex items-center justify-between gap-3"><b>Unlimited</b><strong className="rounded-full bg-[#151312] px-2.5 py-1 text-white">+5 bebidas</strong></span>
+                    <span className="border-t border-[#151312]/20 pt-2 text-[9px] tracking-[0.12em]">En Nessty · 10% de descuento</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/15 bg-[#151312] px-4 py-3 text-white sm:px-5">
+                  <span className="text-[9px] font-black uppercase tracking-[0.16em] text-[#f04a3e]">{TRIAL_OFFER.name}</span>
+                  <strong className="font-[family-name:var(--font-display)] text-3xl leading-none">{TRIAL_OFFER.price}</strong>
+                  <span className="text-[9px] font-black uppercase tracking-[0.12em]">{TRIAL_OFFER.guestLabel}</span>
+                </div>
               </a>
             )}
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -438,6 +454,15 @@ export default function Home() {
                 </article>
               ))}
             </div>
+
+            <article className="mt-5 grid gap-5 rounded-[1.6rem] border border-white/15 bg-[#151312] p-6 text-white shadow-[0_20px_50px_rgba(70,12,8,0.2)] sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-7">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#f04a3e]">Segunda promoción del mes</p>
+                <h3 className="mt-2 font-[family-name:var(--font-display)] text-5xl uppercase leading-none">{TRIAL_OFFER.name}</h3>
+              </div>
+              <p className="font-[family-name:var(--font-display)] text-7xl leading-none text-[#f04a3e]">{TRIAL_OFFER.price}</p>
+              <p className="max-w-[15rem] text-sm font-black uppercase leading-snug tracking-[0.12em]">{TRIAL_OFFER.guestLabel}</p>
+            </article>
 
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs font-bold uppercase tracking-[0.14em]">Precios en MXN · Promoción de agosto 2026</p>

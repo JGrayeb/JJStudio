@@ -40,4 +40,6 @@ test("has a valid promotion configuration", () => {
   assert.equal(content.promotion.code, "AGOSTOJJ")
   assert.ok(Number.isFinite(Date.parse(content.promotion.endsAt)))
   assert.equal(content.promotion.packages.length, 3)
+  assert.equal(content.promotion.trialClass.price, "$245")
+  assert.match(content.promotion.trialClass.guestLabel, /gratis/i)
 })

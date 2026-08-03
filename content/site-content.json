@@ -11,6 +11,11 @@
     "code": "AGOSTOJJ",
     "discountLabel": "10% en Nessty",
     "endsAt": "2026-09-01T05:59:59.999Z",
+    "trialClass": {
+      "name": "Clase de muestra",
+      "price": "$245",
+      "guestLabel": "Invita a alguien gratis"
+    },
     "packages": [
       { "name": "12 clases", "nessty": "$3,024", "frontDesk": "$3,000", "drinks": "3 bebidas" },
       { "name": "16 clases", "nessty": "$3,645", "frontDesk": "$3,600", "drinks": "3 bebidas" },
