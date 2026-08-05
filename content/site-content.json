@@ -2,9 +2,11 @@
   "siteUrl": "https://www.jjstudio.mx",
   "links": {
     "nessty": "https://nessty.mx/@jjstudio",
-    "instagram": "https://www.instagram.com/jj_lagree_experience?igsh=MThwanZrcXg5ZnZ6dg==",
+    "schedule": "https://nessty.mx/%40jjstudio/jjstudio-xentric-lomas",
+    "instagram": "https://www.instagram.com/jj_lagree_experience/",
     "whatsapp": "https://wa.me/524423947704",
-    "maps": "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6"
+    "maps": "https://maps.app.goo.gl/oYNkGBsFisNvJTVz6",
+    "mapsEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3733.8705925223153!2d-100.34342662385824!3d20.634130901213975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d34f251da9d817%3A0xb4c15d32004991d5!2sJJStudio!5e0!3m2!1sen!2sca!4v1785927350771!5m2!1sen!2sca"
   },
   "promotion": {
     "name": "Oferta de agosto",
@@ -17,11 +19,52 @@
       "guestLabel": "Invita a alguien gratis"
     },
     "packages": [
-      { "name": "12 clases", "nessty": "$3,024", "frontDesk": "$3,000", "drinks": "3 bebidas" },
-      { "name": "16 clases", "nessty": "$3,645", "frontDesk": "$3,600", "drinks": "3 bebidas" },
-      { "name": "Unlimited", "nessty": "$4,005", "frontDesk": "$3,900", "drinks": "5 bebidas" }
+      { "name": "12 clases", "nessty": "$3,024", "nesstyPerClass": "$252", "frontDesk": "$3,000", "frontDeskPerClass": "$250", "drinks": "3 bebidas" },
+      { "name": "16 clases", "nessty": "$3,645", "nesstyPerClass": "$227.81", "frontDesk": "$3,600", "frontDeskPerClass": "$225", "drinks": "3 bebidas" },
+      { "name": "Unlimited", "nessty": "$4,005", "nesstyPerClass": null, "frontDesk": "$3,900", "frontDeskPerClass": null, "drinks": "5 bebidas" }
     ]
   },
+  "pricing": {
+    "currency": "MXN",
+    "validityDays": 30,
+    "trial": [
+      { "name": "1 muestra", "classes": 1, "price": "$245", "perClass": "$245" },
+      { "name": "3 muestra", "classes": 3, "price": "$720", "perClass": "$240" }
+    ],
+    "normal": [
+      { "name": "1 clase", "classes": 1, "price": "$360", "perClass": "$360" },
+      { "name": "4 clases", "classes": 4, "price": "$1,390", "perClass": "$347.50" },
+      { "name": "8 clases", "classes": 8, "price": "$2,550", "perClass": "$318.75" },
+      { "name": "12 clases", "classes": 12, "price": "$3,360", "perClass": "$280" },
+      { "name": "16 clases", "classes": 16, "price": "$4,050", "perClass": "$253.13" },
+      { "name": "Unlimited", "classes": null, "price": "$4,450", "perClass": null }
+    ]
+  },
+  "reviews": [
+    {
+      "author": "Ivan Rc",
+      "rating": 5,
+      "text": "Excelente experiencia en JJ Studio. El lugar está muy bonito, limpio y siempre se siente un ambiente agradable y profesional. Los instructores son muy atentos y explican muy bien los ejercicios."
+    },
+    {
+      "author": "Lucero EC",
+      "rating": 5,
+      "text": "Clases donde trabajas tooodooo, muy completas, con música muy padre y los coaches explican súper bien."
+    },
+    {
+      "author": "lili dena",
+      "rating": 5,
+      "text": "¡Increíble clase! Salí encantada; trabajamos mucha fuerza en abdomen y pierna. El mejor ejercicio que he hecho definitivamente."
+    }
+  ],
+  "giftPackages": [
+    { "name": "1 clase", "classes": 1, "price": 360 },
+    { "name": "4 clases", "classes": 4, "price": 1390 },
+    { "name": "8 clases", "classes": 8, "price": 2550 },
+    { "name": "12 clases", "classes": 12, "price": 3360 },
+    { "name": "16 clases", "classes": 16, "price": 4050 },
+    { "name": "Unlimited", "classes": null, "price": 4450 }
+  ],
   "beverages": {
     "sizesMl": [300, 500],
     "sizesLabel": "300 ml y 500 ml",

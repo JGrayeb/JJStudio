@@ -2,9 +2,10 @@
 
 import Image from "next/image"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import { ArrowUpRight, MapPin, Menu, X } from "lucide-react"
+import { ArrowUpRight, CalendarDays, Camera, Gift, MapPin, Menu, MessageCircle, Star, X } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
 import siteContent from "@/content/site-content.json"
+import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
@@ -13,10 +14,11 @@ const NESSTY_URL = siteContent.links.nessty
 const INSTAGRAM_URL = siteContent.links.instagram
 const WHATSAPP_URL = siteContent.links.whatsapp
 const MAPS_URL = siteContent.links.maps
-const STUDIO_STATS = [["45", "minutos"], ["Bajo", "impacto"], ["Alta", "intensidad"]]
-const AUGUST_OFFER_END = new Date(siteContent.promotion.endsAt)
-const AUGUST_PACKAGES = siteContent.promotion.packages
-const TRIAL_OFFER = siteContent.promotion.trialClass
+const MAPS_EMBED_URL = siteContent.links.mapsEmbed
+const SCHEDULE_URL = siteContent.links.schedule
+const GOOGLE_REVIEWS = siteContent.reviews
+const NORMAL_PRICES = siteContent.pricing.normal
+const TRIAL_PRICES = siteContent.pricing.trial
 
 const COACHES = [
   { name: "Javi", image: "/images/Coach Javi.JPG" },
@@ -57,14 +59,18 @@ const STUDIO_GALLERY = [
 const NAV_LINKS = [
   ["Método", "#metodo"],
   ["Calendario", "/horarios"],
+  ["Precios", "#precios"],
   ["Primera clase", "#primera-clase"],
   ["Equipo", "#equipo"],
   ["El estudio", "#estudio"],
   ["Bebidas", "/beverages"],
+  ["Regalos", "/regalos"],
   ["FAQ", "#faq"],
 ]
 
 const HERO_TITLE_LINES = ["Trust", "the Process."]
+
+const formatPromoPrice = (value) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: Number(value) % 1 ? 2 : 0, maximumFractionDigits: 2 }).format(Number(value))
 
 const BENEFITS = [
   ["01", "Bajo impacto", "Movimiento inteligente que cuida tus articulaciones."],
@@ -217,7 +223,7 @@ function AnimatedHeroTitle() {
     <h1
       ref={titleRef}
       aria-label="Trust the Process."
-      className="hero-title font-[family-name:var(--font-display)] text-[clamp(5.3rem,13vw,10.5rem)] uppercase leading-[0.78] tracking-[-0.025em] text-[#f8f3eb]"
+      className="hero-title font-[family-name:var(--font-display)] text-[3.9rem] uppercase leading-[0.78] tracking-[-0.025em] text-[#f8f3eb] sm:text-[clamp(5.3rem,13vw,10.5rem)]"
     >
       <span aria-hidden="true" className="hero-ttp">
         {["T", "T", "P"].map((letter, index) => (
@@ -239,7 +245,7 @@ function AnimatedHeroTitle() {
       </span>
       <span aria-hidden="true" className="hero-title-lines">
         {HERO_TITLE_LINES.map((line, lineIndex) => (
-          <span key={line} className={`block${lineIndex ? " text-[#d9362b]" : ""}`}>
+          <span key={line} className={`flex flex-nowrap${lineIndex ? " text-[#d9362b]" : ""}`}>
             {Array.from(line).map((letter, index) => (
               (() => {
                 const isTtpInitial = (lineIndex === 0 && index === 0) || (lineIndex === 1 && (index === 0 || index === 4))
@@ -267,12 +273,45 @@ function AnimatedHeroTitle() {
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [previewShareQuery, setPreviewShareQuery] = useState("")
+  const [promotion, setPromotion] = useState(siteContent.promotion)
   const heroVideoRef = useRef(null)
-  const hasAugustOffer = new Date() <= AUGUST_OFFER_END
+  const hasAugustOffer = new Date() <= new Date(promotion.endsAt)
+  const augustPackages = promotion.packages
+  const trialOffer = promotion.trialClass
 
   useEffect(() => {
     const previewShare = new URLSearchParams(window.location.search).get("_vercel_share")
     setPreviewShareQuery(previewShare ? `?_vercel_share=${encodeURIComponent(previewShare)}` : "")
+  }, [])
+
+  useEffect(() => {
+    const supabase = getSupabaseBrowserClient()
+    if (!supabase) return
+
+    supabase
+      .from("site_promotions")
+      .select("name,code,discount_percent,ends_at,trial_price,trial_guest_label,packages")
+      .order("starts_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!data) return
+        setPromotion({
+          name: data.name,
+          code: data.code,
+          discountLabel: `${data.discount_percent}% en Nessty`,
+          endsAt: data.ends_at,
+          trialClass: { name: "Clase de muestra", price: formatPromoPrice(data.trial_price), guestLabel: data.trial_guest_label },
+          packages: data.packages.map((item) => ({
+            name: item.name,
+            nessty: formatPromoPrice(item.nessty),
+            nesstyPerClass: item.nesstyPerClass == null ? null : formatPromoPrice(item.nesstyPerClass),
+            frontDesk: formatPromoPrice(item.frontDesk),
+            frontDeskPerClass: item.frontDeskPerClass == null ? null : formatPromoPrice(item.frontDeskPerClass),
+            drinks: `${item.drinks} bebidas`,
+          })),
+        })
+      })
   }, [])
 
   useEffect(() => {
@@ -365,21 +404,21 @@ export default function Home() {
                 <div className="grid gap-3 px-4 py-4 sm:grid-cols-[0.85fr_1.15fr] sm:px-5">
                   <div className="flex items-end gap-3 sm:block">
                     <div>
-                      <span className="block text-[9px] font-black uppercase tracking-[0.2em]">{siteContent.promotion.name}</span>
-                      <span className="mt-1 block font-[family-name:var(--font-display)] text-6xl leading-[0.8] text-white">10%</span>
+                      <span className="block text-[9px] font-black uppercase tracking-[0.2em]">{promotion.name}</span>
+                      <span className="mt-1 block font-[family-name:var(--font-display)] text-6xl leading-[0.8] text-white">{promotion.discountLabel.split(" ")[0]}</span>
                     </div>
-                    <code className="mb-1 rounded-full bg-[#151312] px-3 py-1.5 text-[10px] font-black tracking-[0.12em] text-white sm:mt-3 sm:inline-block">{siteContent.promotion.code}</code>
+                    <code className="mb-1 rounded-full bg-[#151312] px-3 py-1.5 text-[10px] font-black tracking-[0.12em] text-white sm:mt-3 sm:inline-block">{promotion.code}</code>
                   </div>
                   <div className="grid content-center gap-2 border-t border-[#151312]/20 pt-3 text-[10px] font-black uppercase tracking-[0.1em] sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
                     <span className="flex items-center justify-between gap-3"><b>12 o 16 clases</b><strong className="rounded-full bg-white px-2.5 py-1 text-[#c83228]">+3 bebidas</strong></span>
                     <span className="flex items-center justify-between gap-3"><b>Unlimited</b><strong className="rounded-full bg-[#151312] px-2.5 py-1 text-white">+5 bebidas</strong></span>
-                    <span className="border-t border-[#151312]/20 pt-2 text-[9px] tracking-[0.12em]">En Nessty · 10% de descuento</span>
+                    <span className="border-t border-[#151312]/20 pt-2 text-[9px] tracking-[0.12em]">En Nessty · {promotion.discountLabel}</span>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/15 bg-[#151312] px-4 py-3 text-white sm:px-5">
-                  <span className="text-[9px] font-black uppercase tracking-[0.16em] text-[#f04a3e]">{TRIAL_OFFER.name}</span>
-                  <strong className="font-[family-name:var(--font-display)] text-3xl leading-none">{TRIAL_OFFER.price}</strong>
-                  <span className="text-[9px] font-black uppercase tracking-[0.12em]">{TRIAL_OFFER.guestLabel}</span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.16em] text-[#f04a3e]">{trialOffer.name}</span>
+                  <strong className="font-[family-name:var(--font-display)] text-3xl leading-none">{trialOffer.price}</strong>
+                  <span className="text-[9px] font-black uppercase tracking-[0.12em]">{trialOffer.guestLabel}</span>
                 </div>
               </a>
             )}
@@ -392,14 +431,20 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 border-t border-white/15 bg-[#1a1816]/80 backdrop-blur">
-          <div className="stat-marquee overflow-hidden border-b border-white/15">
+        <div className="absolute bottom-0 left-0 right-0 border-t border-white/15 bg-[#1a1816]/90 backdrop-blur">
+          <div className="stat-marquee overflow-hidden border-b border-white/15" aria-label="Reseñas de cinco estrellas en Google">
             <div className="stat-marquee-track">
-              {[...STUDIO_STATS, ...STUDIO_STATS, ...STUDIO_STATS].map(([value, label], index) => (
-                <div key={`${label}-${index}`} className="flex min-w-[13rem] items-center gap-3 border-r border-white/15 px-7 py-5 sm:min-w-[17rem] sm:px-10 sm:py-6">
-                  <p className="font-[family-name:var(--font-display)] text-3xl leading-none text-white sm:text-4xl">{value}</p>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-[#bcb4aa] sm:text-[10px]">{label}</p>
-                </div>
+              {[...GOOGLE_REVIEWS, ...GOOGLE_REVIEWS, ...GOOGLE_REVIEWS].map((review, index) => (
+                <article key={`${review.author}-${index}`} className="flex w-[22rem] shrink-0 items-center gap-4 border-r border-white/15 px-6 py-4 sm:w-[31rem] sm:px-8">
+                  <div className="shrink-0">
+                    <div className="flex gap-0.5 text-[#f04a3e]" aria-label="5 de 5 estrellas">
+                      {Array.from({ length: review.rating }).map((_, star) => <Star key={star} size={11} fill="currentColor" />)}
+                    </div>
+                    <p className="mt-2 text-[9px] font-black uppercase tracking-[0.14em] text-white">{review.author}</p>
+                    <p className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.14em] text-[#8f867d]">Google</p>
+                  </div>
+                  <p className="line-clamp-3 text-[11px] leading-relaxed text-[#cfc6bc] sm:text-xs">“{review.text}”</p>
+                </article>
               ))}
             </div>
           </div>
@@ -425,14 +470,14 @@ export default function Home() {
               </div>
               <div className="max-w-xl lg:justify-self-end">
                 <p className="text-base font-semibold leading-relaxed sm:text-lg">
-                  Compra en Nessty con 10% de descuento usando el código <code className="rounded bg-[#151312] px-2.5 py-1 text-sm font-black tracking-[0.1em] text-white">{siteContent.promotion.code}</code>, o aprovecha un precio especial pagando directamente en caja.
+                  Compra en Nessty con {promotion.discountLabel} usando el código <code className="rounded bg-[#151312] px-2.5 py-1 text-sm font-black tracking-[0.1em] text-white">{promotion.code}</code>, o aprovecha un precio especial pagando directamente en caja.
                 </p>
-                <p className="mt-4 text-sm leading-relaxed text-[#351512]">Cada paquete incluye bebidas para disfrutar matcha, chai, café, proteína y más opciones disponibles en nuestra barra.</p>
+                <p className="mt-4 text-sm leading-relaxed text-[#351512]">Al comprar con el código en Nessty recibes 3 bebidas con los paquetes de 12 o 16 clases, y 5 con Unlimited.</p>
               </div>
             </div>
 
             <div className="mt-8 grid gap-4 lg:grid-cols-3">
-              {AUGUST_PACKAGES.map((offer, index) => (
+              {augustPackages.map((offer, index) => (
                 <article key={offer.name} className="rounded-[1.6rem] border border-[#151312]/20 bg-[#f0e9df] p-6 shadow-[0_18px_45px_rgba(70,12,8,0.12)] sm:p-7">
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -443,12 +488,14 @@ export default function Home() {
                   </div>
                   <div className="mt-7 grid grid-cols-2 gap-3 border-t border-[#151312]/15 pt-5">
                     <div>
-                      <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#776c62]">En Nessty · 10%</p>
+                      <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#776c62]">En Nessty · {promotion.discountLabel.split(" ")[0]}</p>
                       <p className="mt-1 font-[family-name:var(--font-display)] text-4xl leading-none text-[#c83228]">{offer.nessty}</p>
+                      {offer.nesstyPerClass && <p className="mt-2 text-[9px] font-black uppercase tracking-[0.12em] text-[#776c62]">{offer.nesstyPerClass} por clase</p>}
                     </div>
                     <div className="border-l border-[#151312]/15 pl-4">
-                      <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#776c62]">Pago en caja</p>
+                      <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#776c62]">Caja / transferencia</p>
                       <p className="mt-1 font-[family-name:var(--font-display)] text-4xl leading-none">{offer.frontDesk}</p>
+                      {offer.frontDeskPerClass && <p className="mt-2 text-[9px] font-black uppercase tracking-[0.12em] text-[#776c62]">{offer.frontDeskPerClass} por clase</p>}
                     </div>
                   </div>
                 </article>
@@ -458,10 +505,10 @@ export default function Home() {
             <article className="mt-5 grid gap-5 rounded-[1.6rem] border border-white/15 bg-[#151312] p-6 text-white shadow-[0_20px_50px_rgba(70,12,8,0.2)] sm:grid-cols-[1fr_auto_auto] sm:items-center sm:p-7">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#f04a3e]">Segunda promoción del mes</p>
-                <h3 className="mt-2 font-[family-name:var(--font-display)] text-5xl uppercase leading-none">{TRIAL_OFFER.name}</h3>
+                <h3 className="mt-2 font-[family-name:var(--font-display)] text-5xl uppercase leading-none">{trialOffer.name}</h3>
               </div>
-              <p className="font-[family-name:var(--font-display)] text-7xl leading-none text-[#f04a3e]">{TRIAL_OFFER.price}</p>
-              <p className="max-w-[15rem] text-sm font-black uppercase leading-snug tracking-[0.12em]">{TRIAL_OFFER.guestLabel}</p>
+              <p className="font-[family-name:var(--font-display)] text-7xl leading-none text-[#f04a3e]">{trialOffer.price}</p>
+              <p className="max-w-[15rem] text-sm font-black uppercase leading-snug tracking-[0.12em]">{trialOffer.guestLabel}</p>
             </article>
 
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -474,7 +521,68 @@ export default function Home() {
         </section>
       )}
 
-      <section id="metodo" className="bg-[#f0e9df] px-6 py-24 text-[#1a1816] sm:py-32 lg:px-8">
+      <section id="precios" className="bg-[#f0e9df] px-6 py-24 text-[#1a1816] sm:py-32 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-8 border-b border-[#1a1816]/20 pb-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div>
+              <p className="eyebrow text-[#c83228]">Precios JJ Studio</p>
+              <h2 className="mt-5 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] sm:text-8xl">Elige tu<br /><span className="text-[#c83228]">proceso.</span></h2>
+            </div>
+            <div className="max-w-xl lg:justify-self-end">
+              <p className="text-base leading-relaxed text-[#514b45] sm:text-lg">Todos los paquetes tienen 30 días de vigencia. En transferencia cuentan desde que asistes a tu primera clase; en Nessty, desde el momento del pago.</p>
+              <div className="mt-5 flex flex-wrap gap-2 text-[9px] font-black uppercase tracking-[0.14em]">
+                <span className="rounded-full bg-[#1a1816] px-3 py-2 text-white">Precios en MXN</span>
+                <span className="rounded-full border border-[#1a1816]/25 px-3 py-2">30 días de vigencia</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-8 lg:grid-cols-[0.72fr_1.28fr]">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c83228]">Paquetes de muestra</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                {TRIAL_PRICES.map((item) => (
+                  <article key={item.name} className="rounded-[1.5rem] bg-[#d9362b] p-6 text-white">
+                    <p className="text-[10px] font-black uppercase tracking-[0.16em]">{item.name}</p>
+                    <div className="mt-6 flex items-end justify-between gap-4">
+                      <p className="font-[family-name:var(--font-display)] text-6xl leading-none">{item.price}</p>
+                      <p className="text-right text-[9px] font-black uppercase tracking-[0.13em] text-white/75">{item.perClass}<br />por clase</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c83228]">Paquetes normales</p>
+              <div className="mt-4 grid gap-px overflow-hidden rounded-[1.5rem] border border-[#1a1816]/15 bg-[#1a1816]/15 sm:grid-cols-2">
+                {NORMAL_PRICES.map((item) => (
+                  <article key={item.name} className="flex min-h-36 flex-col justify-between bg-[#f8f3eb] p-5 sm:p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="text-sm font-black uppercase tracking-[0.1em]">{item.name}</h3>
+                      {item.perClass && <span className="rounded-full bg-[#1a1816] px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.12em] text-white">{item.perClass} / clase</span>}
+                    </div>
+                    <p className="mt-7 font-[family-name:var(--font-display)] text-5xl leading-none text-[#c83228]">{item.price}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col gap-4 rounded-[1.6rem] bg-[#1a1816] p-6 text-white sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f04a3e]">¿Prefieres transferencia?</p>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#cfc6bc]">Escríbenos y te compartimos los datos. En los paquetes de agosto, pagar directamente tiene un precio aún menor.</p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <a href={`${WHATSAPP_URL}?text=${encodeURIComponent("Hola JJ Studio, quiero comprar un paquete por transferencia.")}`} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d9362b] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] transition hover:bg-[#f04a3e]">Comprar por WhatsApp <MessageCircle size={15} /></a>
+              <a href="/regalos" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] transition hover:bg-white hover:text-[#1a1816]">Regalar clases <Gift size={15} /></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="metodo" className="bg-[#e7ded2] px-6 py-24 text-[#1a1816] sm:py-32 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-[0.9fr_1.2fr] lg:gap-24">
             <div>
@@ -490,6 +598,10 @@ export default function Home() {
               <a href="/metodo-lagree" className="group mt-8 inline-flex items-center gap-3 rounded-full bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#f0e9df] shadow-lg shadow-[#1a1816]/15 transition hover:-translate-y-0.5 hover:bg-[#c83228] hover:shadow-xl">
                 ¿Qué es Lagree? <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </a>
+              <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[10px] font-bold uppercase tracking-[0.13em] text-[#776f67]">
+                <a href="/lagree-vs-pilates" className="transition hover:text-[#c83228]">Lagree vs Pilates</a>
+                <a href="/primera-clase-lagree" className="transition hover:text-[#c83228]">Guía para tu primera clase</a>
+              </div>
             </div>
           </div>
 
@@ -501,6 +613,24 @@ export default function Home() {
                 <p className="mt-3 max-w-xs text-sm leading-relaxed text-[#665f57]">{description}</p>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="calendario" className="border-y border-white/10 bg-[#151312] px-6 py-24 sm:py-28 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+            <div>
+              <p className="eyebrow text-[#f04a3e]">Agenda en vivo</p>
+              <h2 className="mt-5 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-8xl">Tu hora.<br /><span className="text-[#d9362b]">Tu clase.</span></h2>
+            </div>
+            <div className="max-w-xl lg:justify-self-end">
+              <p className="text-base leading-relaxed text-[#cfc6bc] sm:text-lg">El calendario viene directamente de Nessty. Los cambios de horarios y lugares disponibles aparecen aquí sin que tengamos que actualizarlos manualmente.</p>
+              <a href={SCHEDULE_URL} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#f04a3e] transition hover:text-white">Abrir en Nessty <ArrowUpRight size={15} /></a>
+            </div>
+          </div>
+          <div className="mt-10 overflow-hidden rounded-[2rem] border border-white/10 bg-white shadow-[0_24px_80px_rgba(0,0,0,0.25)]">
+            <iframe title="Agenda en vivo y reservaciones de JJ Studio" src={SCHEDULE_URL} className="h-[680px] w-full border-0 sm:h-[760px]" loading="lazy" allow="payment" />
           </div>
         </div>
       </section>
@@ -677,7 +807,24 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="contacto" className="bg-[#151312] px-6 py-24 sm:py-32 lg:px-8">
+      <section id="ubicacion" className="border-t border-white/10 bg-[#1d1a18] px-6 py-24 sm:py-28 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-stretch">
+          <div className="flex flex-col justify-between rounded-[2rem] bg-[#d9362b] p-8 text-[#151312] sm:p-10">
+            <div>
+              <MapPin size={26} strokeWidth={2.4} />
+              <p className="mt-10 text-[10px] font-black uppercase tracking-[0.2em]">Cómo llegar</p>
+              <h2 className="mt-4 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.82]">Estamos<br />cerca de ti.</h2>
+              <p className="mt-6 max-w-sm text-sm font-semibold leading-relaxed">Xentric Lomas Norte, segundo piso, local 211. Frente a las escaleras.</p>
+            </div>
+            <a href={MAPS_URL} target="_blank" rel="noreferrer" className="mt-10 inline-flex items-center justify-center gap-2 rounded-full bg-[#151312] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] text-white transition hover:bg-white hover:text-[#151312]">Abrir en Google Maps <ArrowUpRight size={15} /></a>
+          </div>
+          <div className="min-h-[430px] overflow-hidden rounded-[2rem] border border-white/10 bg-[#151312]">
+            <iframe title="Ubicación de JJ Studio en Xentric Lomas Norte" src={MAPS_EMBED_URL} className="h-full min-h-[430px] w-full border-0" loading="lazy" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
+          </div>
+        </div>
+      </section>
+
+      <section id="contacto" className="bg-[#151312] px-6 py-24 pb-32 sm:py-32 lg:px-8">
         <div className="mx-auto max-w-5xl text-center">
           <p className="eyebrow text-[#f04a3e]">Tu siguiente clase</p>
           <h2 className="mx-auto mt-5 max-w-3xl font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.82] text-white sm:text-8xl">Reserva tu<br /><span className="text-[#d9362b]">momento.</span></h2>
@@ -686,6 +833,7 @@ export default function Home() {
           <div className="mt-14 flex flex-col justify-center gap-3 text-xs font-bold uppercase tracking-[0.14em] text-[#a69d93] sm:flex-row sm:gap-8">
             <a href="tel:+524423947704" className="transition hover:text-white">+52 442 394 7704</a>
             <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="transition hover:text-white">WhatsApp</a>
+            <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="transition hover:text-white">Instagram</a>
             <a href="mailto:administracion@jjstudio.mx" className="normal-case tracking-normal transition hover:text-white">administracion@jjstudio.mx</a>
           </div>
         </div>
@@ -698,6 +846,12 @@ export default function Home() {
           <p className="text-[10px] text-[#81786e]">© {new Date().getFullYear()} JJ Studio</p>
         </div>
       </footer>
+
+      <div className="fixed inset-x-3 bottom-3 z-50 grid grid-cols-3 overflow-hidden rounded-2xl border border-white/15 bg-[#151312]/95 p-1.5 shadow-[0_18px_55px_rgba(0,0,0,0.5)] backdrop-blur lg:hidden">
+        <a href="/horarios" className="flex flex-col items-center gap-1 rounded-xl bg-[#d9362b] px-2 py-2.5 text-[8px] font-black uppercase tracking-[0.12em] text-white"><CalendarDays size={16} /> Reservar</a>
+        <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1 rounded-xl px-2 py-2.5 text-[8px] font-black uppercase tracking-[0.12em] text-white"><MessageCircle size={16} /> WhatsApp</a>
+        <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1 rounded-xl px-2 py-2.5 text-[8px] font-black uppercase tracking-[0.12em] text-white"><Camera size={16} /> Instagram</a>
+      </div>
 
       <script
         type="application/ld+json"

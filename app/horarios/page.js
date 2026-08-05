@@ -1,11 +1,12 @@
 import { ArrowLeft, ArrowUpRight, MapPin } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
+import siteContent from "@/content/site-content.json"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 
-const NESSTY_SCHEDULE_URL = "https://nessty.mx/%40jjstudio/jjstudio-xentric-lomas"
-const MAPS_URL = "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6"
+const NESSTY_SCHEDULE_URL = siteContent.links.schedule
+const MAPS_URL = siteContent.links.maps
 
 export const metadata = {
   title: "Horarios y reservaciones",

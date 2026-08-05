@@ -77,7 +77,7 @@ export default function RootLayout({ children }) {
       addressRegion: "Querétaro",
       addressCountry: "MX",
     },
-    hasMap: "https://maps.app.goo.gl/rKRTAWWS8aJ38gCi6",
+    hasMap: siteContent.links.maps,
     openingHoursSpecification: [
       { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "08:15", closes: "12:15" },
       { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "17:15", closes: "21:15" },

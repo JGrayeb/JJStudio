@@ -2,6 +2,7 @@ import Image from "next/image"
 import { ArrowLeft, ArrowUpRight, CupSoda, Leaf, Plus, Sparkles } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
 import siteContent from "@/content/site-content.json"
+import DrinkBuilder from "@/components/DrinkBuilder"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
@@ -41,7 +42,7 @@ const BASES = ["Leche entera o deslactosada", "Bebida de coco", "Bebida de soya"
 
 const BOOSTS = [
   { name: "Scoop de proteína", price: "+ $20" },
-  { name: "Creatina", price: "+ $15" },
+  { name: "Creatina monohidratada ELEMENTAL", price: "+ $15" },
   { name: "Crema batida", price: "Consulta" },
 ]
 
@@ -102,6 +103,14 @@ export default function BeveragesPage() {
               </figure>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="border-y border-white/10 bg-[#11100f] px-6 py-20 sm:py-24 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#f04a3e]">Arma tu bebida</p>
+          <div className="mt-4 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end"><h2 className="font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-8xl">Tu mezcla.<br /><span className="text-[#d9362b]">Tu momento.</span></h2><p className="max-w-xl text-base leading-relaxed text-[#bcb4aa] lg:justify-self-end">Elige bebida, tamaño, termo y extras. Te preparamos un mensaje con el pedido para confirmar por WhatsApp.</p></div>
+          <div className="mt-10"><DrinkBuilder /></div>
         </div>
       </section>
 

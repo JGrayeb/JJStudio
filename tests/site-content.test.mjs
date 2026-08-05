@@ -43,3 +43,27 @@ test("has a valid promotion configuration", () => {
   assert.equal(content.promotion.trialClass.price, "$245")
   assert.match(content.promotion.trialClass.guestLabel, /gratis/i)
 })
+
+test("publishes exact package prices and per-class amounts", () => {
+  const prices = new Map(content.pricing.normal.map((item) => [item.name, item]))
+  assert.equal(prices.get("12 clases").price, "$3,360")
+  assert.equal(prices.get("12 clases").perClass, "$280")
+  assert.equal(prices.get("16 clases").price, "$4,050")
+  assert.equal(content.pricing.validityDays, 30)
+
+  const promo = new Map(content.promotion.packages.map((item) => [item.name, item]))
+  assert.equal(promo.get("12 clases").frontDeskPerClass, "$250")
+  assert.equal(promo.get("16 clases").nesstyPerClass, "$227.81")
+})
+
+test("uses curated Google reviews without owner names", () => {
+  assert.ok(content.reviews.length >= 3)
+  for (const review of content.reviews) {
+    assert.equal(review.rating, 5)
+    assert.doesNotMatch(review.author, /Juan Grayeb|Javier Garc/i)
+  }
+})
+
+test("gift flow is limited to package choices", () => {
+  assert.deepEqual(content.giftPackages.map((item) => item.name), ["1 clase", "4 clases", "8 clases", "12 clases", "16 clases", "Unlimited"])
+})
