@@ -67,3 +67,11 @@ test("uses curated Google reviews without owner names", () => {
 test("gift flow is limited to package choices", () => {
   assert.deepEqual(content.giftPackages.map((item) => item.name), ["1 clase", "4 clases", "8 clases", "12 clases", "16 clases", "Unlimited"])
 })
+
+test("gift promotion applies only the transfer prices configured for eligible packages", () => {
+  const promotion = new Map(content.promotion.packages.map((item) => [item.name, item.frontDesk]))
+  assert.deepEqual([...promotion.keys()], ["12 clases", "16 clases", "Unlimited"])
+  assert.equal(promotion.get("12 clases"), "$3,000")
+  assert.equal(promotion.get("16 clases"), "$3,600")
+  assert.equal(promotion.get("Unlimited"), "$3,900")
+})
