@@ -86,7 +86,7 @@ export default function BeveragesPage() {
             {beverages.matchaFlavors.map((drink, index) => (
               <article key={drink.id} className="group overflow-hidden rounded-[1.5rem] border border-[#1a1816]/15 bg-[#e7ded2]">
                 <div className="relative aspect-[4/5] overflow-hidden bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.76),transparent_58%)]">
-                  <Image src={drink.image} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw" className={`object-contain p-5 drop-shadow-[0_22px_18px_rgba(39,25,20,0.22)] transition duration-700 group-hover:-translate-y-2 group-hover:scale-[1.035] ${drink.id === "original" ? "saturate-[0.78]" : ""}`} />
+                  <Image src={drink.image} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw" className="object-contain p-5 drop-shadow-[0_22px_18px_rgba(39,25,20,0.22)] transition duration-700 group-hover:-translate-y-2 group-hover:scale-[1.035]" />
                   <span className="absolute left-4 top-4 rounded-full bg-[#1a1816] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-white">0{index + 1}</span>
                 </div>
                 <div className="border-t border-[#1a1816]/10 p-5">

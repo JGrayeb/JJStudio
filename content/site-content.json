@@ -77,7 +77,7 @@
       { "id": "ceremonial", "name": "Ceremonial", "price": 165 }
     ],
     "matchaFlavors": [
-      { "id": "original", "name": "Matcha", "detail": "Original premium", "image": "/images/bebidas/cloud-matcha.png" },
+      { "id": "original", "name": "Matcha", "detail": "Original premium", "image": "/images/bebidas/matcha-original.png" },
       { "id": "ichigo", "name": "Ichigo Matcha", "detail": "Capa de fresa", "image": "/images/bebidas/ichigo-matcha.png" },
       { "id": "espresso", "name": "Espresso Matcha", "detail": "Matcha + espresso", "image": "/images/bebidas/espresso-matcha.png" },
       { "id": "cloud", "name": "Cloud Matcha", "detail": "Cold foam", "image": "/images/bebidas/cloud-matcha.png" },
