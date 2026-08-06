@@ -5,10 +5,6 @@ import test from "node:test"
 const contentUrl = new URL("../content/site-content.json", import.meta.url)
 const content = JSON.parse(await readFile(contentUrl, "utf8"))
 
-function amount(value) {
-  return Number(value.replace(/[$,]/g, ""))
-}
-
 test("uses the canonical www domain and secure public links", () => {
   assert.equal(content.siteUrl, "https://www.jjstudio.mx")
 
@@ -18,22 +14,39 @@ test("uses the canonical www domain and secure public links", () => {
 })
 
 test("publishes both beverage sizes", () => {
-  assert.deepEqual(content.beverages.sizesMl, [300, 500])
-  assert.match(content.beverages.sizesLabel, /300 ml/)
+  assert.deepEqual(content.beverages.sizesMl, [250, 500])
+  assert.match(content.beverages.sizesLabel, /250 ml/)
   assert.match(content.beverages.sizesLabel, /500 ml/)
 })
 
-test("keeps beverage discounts internally consistent", () => {
-  for (const drink of content.beverages.menu) {
-    const regular = amount(drink.price.regular)
-    const noCup = amount(drink.price.noCup)
-    const discount = amount(drink.price.discount)
-    const discountNoCup = amount(drink.price.discountNoCup)
+test("publishes the exact beverage menu and Eco-Lagree discounts", () => {
+  assert.deepEqual(content.beverages.matchaGrades.map(({ name, price }) => [name, price]), [["Premium", 145], ["Ceremonial", 165]])
+  assert.deepEqual(content.beverages.matchaFlavors.map((item) => item.name), ["Matcha", "Ichigo Matcha", "Espresso Matcha", "Cloud Matcha", "Coconut Cloud Matcha"])
+  assert.deepEqual(content.beverages.cold.map(({ name, price, sizeMl }) => [name, price, sizeMl]), [
+    ["Cold Latte", 110, 500],
+    ["Cold Americano", 95, 500],
+    ["Cold Chai", 110, 500],
+  ])
+  assert.deepEqual(content.beverages.hot.map(({ name, price, sizeMl }) => [name, price, sizeMl]), [
+    ["Hot Espresso", 65, 250],
+    ["Hot Americano", 65, 250],
+    ["Hot Latte", 75, 250],
+    ["Hot Chai", 75, 250],
+    ["Hot Matcha", 85, 250],
+  ])
+  assert.deepEqual(content.beverages.ecoDiscount, { hot250: 10, cold500: 30 })
+})
 
-    assert.equal(regular - noCup, 30, `${drink.name}: descuento por termo`)
-    assert.equal(discount, regular * 0.85, `${drink.name}: descuento de 15%`)
-    assert.equal(discountNoCup, noCup * 0.85, `${drink.name}: termo + descuento de 15%`)
-  }
+test("keeps beverage customizations aligned with the printed menu", () => {
+  assert.deepEqual(content.beverages.bases, ["Coco", "Soya", "Avena", "Leche deslactosada"])
+  assert.deepEqual(content.beverages.sweeteners, ["Sin endulzante", "Miel", "Stevia"])
+  assert.deepEqual(content.beverages.extras.map(({ name, price }) => [name, price]), [
+    ["Shot de espresso", 10],
+    ["Scoop de proteína", 20],
+    ["Creatina monohidratada ELEMENTAL", 15],
+    ["Caramel drizzle", 5],
+  ])
+  assert.equal(content.beverages.proteinShake.price, 65)
 })
 
 test("has a valid promotion configuration", () => {

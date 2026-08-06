@@ -66,41 +66,44 @@
     { "name": "Unlimited", "classes": null, "price": 4450 }
   ],
   "beverages": {
-    "sizesMl": [300, 500],
-    "sizesLabel": "300 ml y 500 ml",
-    "ceremonialPrice": {
-      "regular": "$165.00",
-      "noCup": "$135.00",
-      "discount": "$140.25",
-      "discountNoCup": "$114.75"
+    "sizesMl": [250, 500],
+    "sizesLabel": "250 ml calientes · 500 ml frías",
+    "ecoDiscount": {
+      "hot250": 10,
+      "cold500": 30
     },
-    "menu": [
-      {
-        "name": "Matcha ceremonial",
-        "detail": "IKIGAI o Kokoro · 300 ml y 500 ml",
-        "price": { "regular": "$165.00", "noCup": "$135.00", "discount": "$140.25", "discountNoCup": "$114.75" }
-      },
-      {
-        "name": "Espresso",
-        "detail": "Café sobre hielo · 300 ml y 500 ml",
-        "price": { "regular": "$65.00", "noCup": "$35.00", "discount": "$55.25", "discountNoCup": "$29.75" }
-      },
-      {
-        "name": "Latte",
-        "detail": "Espresso y la base que elijas · 300 ml y 500 ml",
-        "price": { "regular": "$85.00", "noCup": "$55.00", "discount": "$72.25", "discountNoCup": "$46.75" }
-      },
-      {
-        "name": "Chai",
-        "detail": "Chai con base o agua · 300 ml y 500 ml",
-        "price": { "regular": "$85.00", "noCup": "$55.00", "discount": "$72.25", "discountNoCup": "$46.75" }
-      },
-      {
-        "name": "Americano",
-        "detail": "Espresso, agua y hielo · 300 ml y 500 ml",
-        "price": { "regular": "$65.00", "noCup": "$35.00", "discount": "$55.25", "discountNoCup": "$29.75" }
-      }
-    ]
+    "matchaGrades": [
+      { "id": "premium", "name": "Premium", "price": 145 },
+      { "id": "ceremonial", "name": "Ceremonial", "price": 165 }
+    ],
+    "matchaFlavors": [
+      { "id": "original", "name": "Matcha", "detail": "Original premium", "image": "/images/bebidas/cloud-matcha.png" },
+      { "id": "ichigo", "name": "Ichigo Matcha", "detail": "Capa de fresa", "image": "/images/bebidas/ichigo-matcha.png" },
+      { "id": "espresso", "name": "Espresso Matcha", "detail": "Matcha + espresso", "image": "/images/bebidas/espresso-matcha.png" },
+      { "id": "cloud", "name": "Cloud Matcha", "detail": "Cold foam", "image": "/images/bebidas/cloud-matcha.png" },
+      { "id": "coconut-cloud", "name": "Coconut Cloud Matcha", "detail": "Coco + matcha", "image": "/images/bebidas/coco-matcha.png" }
+    ],
+    "cold": [
+      { "id": "cold-latte", "name": "Cold Latte", "detail": "Espresso + leche", "price": 110, "sizeMl": 500, "allowsBase": true },
+      { "id": "cold-americano", "name": "Cold Americano", "detail": "Espresso + agua + hielo", "price": 95, "sizeMl": 500, "allowsBase": false },
+      { "id": "cold-chai", "name": "Cold Chai", "detail": "Chai + base a elegir", "price": 110, "sizeMl": 500, "allowsBase": true }
+    ],
+    "hot": [
+      { "id": "hot-espresso", "name": "Hot Espresso", "detail": "Espresso recién extraído", "price": 65, "sizeMl": 250, "allowsBase": false },
+      { "id": "hot-americano", "name": "Hot Americano", "detail": "Espresso + agua caliente", "price": 65, "sizeMl": 250, "allowsBase": false },
+      { "id": "hot-latte", "name": "Hot Latte", "detail": "Espresso + leche", "price": 75, "sizeMl": 250, "allowsBase": true },
+      { "id": "hot-chai", "name": "Hot Chai", "detail": "Chai + base a elegir", "price": 75, "sizeMl": 250, "allowsBase": true },
+      { "id": "hot-matcha", "name": "Hot Matcha", "detail": "Matcha + base a elegir", "price": 85, "sizeMl": 250, "allowsBase": true }
+    ],
+    "bases": ["Coco", "Soya", "Avena", "Leche deslactosada"],
+    "sweeteners": ["Sin endulzante", "Miel", "Stevia"],
+    "extras": [
+      { "id": "espresso-shot", "name": "Shot de espresso", "price": 10 },
+      { "id": "protein", "name": "Scoop de proteína", "price": 20 },
+      { "id": "creatine", "name": "Creatina monohidratada ELEMENTAL", "price": 15 },
+      { "id": "caramel", "name": "Caramel drizzle", "price": 5 }
+    ],
+    "proteinShake": { "id": "protein-shake", "name": "Protein Shake", "price": 65 }
   },
   "socks": {
     "onePair": "$150",

@@ -1,58 +1,22 @@
 import Image from "next/image"
-import { ArrowLeft, ArrowUpRight, CupSoda, Leaf, Plus, Sparkles } from "lucide-react"
+import { ArrowLeft, ArrowUpRight, Coffee, CupSoda, Leaf, Plus, Sparkles } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
-import siteContent from "@/content/site-content.json"
 import DrinkBuilder from "@/components/DrinkBuilder"
+import siteContent from "@/content/site-content.json"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
-
-const CEREMONIAL_PRICE = siteContent.beverages.ceremonialPrice
-
-const SIGNATURE_MATCHAS = [
-  {
-    name: "Ichigo Matcha",
-    description: "Matcha ceremonial, leche y una capa fresca de fresa.",
-    image: "/images/bebidas/ichigo-matcha.png",
-    accent: "Fresa · cremoso",
-  },
-  {
-    name: "Espresso Matcha",
-    description: "Matcha ceremonial, leche y espresso para un impulso extra.",
-    image: "/images/bebidas/espresso-matcha.png",
-    accent: "Espresso · intenso",
-  },
-  {
-    name: "Cloud Matcha",
-    description: "Matcha ceremonial con una nube suave de cold foam.",
-    image: "/images/bebidas/cloud-matcha.png",
-    accent: "Cold foam · sedoso",
-  },
-  {
-    name: "Coco Matcha",
-    description: "Agua de coco fría con una nube de matcha ceremonial.",
-    image: "/images/bebidas/coco-matcha.png",
-    accent: "Coco · ligero",
-  },
-]
-
-const DRINK_PRICES = siteContent.beverages.menu
-
-const BASES = ["Leche entera o deslactosada", "Bebida de coco", "Bebida de soya", "Bebida de avena"]
-
-const BOOSTS = [
-  { name: "Scoop de proteína", price: "+ $20" },
-  { name: "Creatina monohidratada ELEMENTAL", price: "+ $15" },
-  { name: "Crema batida", price: "Consulta" },
-]
+const beverages = siteContent.beverages
+const heroDrinks = beverages.matchaFlavors.slice(1)
+const money = (value: number) => `$${value} MXN`
 
 export const metadata = {
   title: "Bebidas",
-  description: "Bebidas de 300 ml y 500 ml de JJ Studio: matcha ceremonial, café, chai y opciones para personalizar.",
+  description: "Matcha premium y ceremonial, café y chai de JJ Studio: bebidas frías de 500 ml y calientes de 250 ml en Querétaro.",
   alternates: { canonical: "/beverages" },
   openGraph: {
-    title: "Bebidas | JJ Studio",
-    description: "Matcha ceremonial, café y una pausa a tu ritmo antes o después de entrenar.",
+    title: "Drinks, Fuel & Movement | JJ Studio",
+    description: "Matcha, café, chai y boosts preparados al momento, antes o después de entrenar.",
     url: "/beverages",
   },
 }
@@ -70,35 +34,29 @@ export default function BeveragesPage() {
       </header>
 
       <section className="relative isolate overflow-hidden px-6 pb-20 pt-14 sm:pb-28 sm:pt-20 lg:px-8">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_78%_35%,rgba(217,54,43,0.22),transparent_34%),linear-gradient(145deg,#171513_0%,#11100f_60%,#1e1512_100%)]" aria-hidden="true" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_77%_30%,rgba(217,54,43,0.24),transparent_35%),radial-gradient(ellipse_at_22%_90%,rgba(112,140,54,0.12),transparent_34%),linear-gradient(145deg,#171513_0%,#11100f_60%,#1e1512_100%)]" aria-hidden="true" />
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#f04a3e]">JJ Fuel Bar · {siteContent.beverages.sizesLabel}</p>
-            <h1 className="mt-5 font-[family-name:var(--font-display)] text-[clamp(5rem,12vw,9.5rem)] uppercase leading-[0.78] text-white">
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#f04a3e]">Drinks, fuel & movement</p>
+            <h1 className="mt-5 font-[family-name:var(--font-display)] uppercase leading-[0.78] text-white [font-size:clamp(5rem,12vw,9.5rem)]">
               Matcha.<br /><span className="text-[#d9362b]">Your way.</span>
             </h1>
             <p className="mt-8 max-w-lg text-base leading-relaxed text-[#cfc6bc] sm:text-lg">
-              Matcha de grado ceremonial IKIGAI o Kokoro, preparado al momento en presentaciones de {siteContent.beverages.sizesLabel}.
+              Matcha, café y chai preparados al momento. Antes o después de entrenar, hazlo a tu manera.
             </p>
             <div className="mt-8 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#d9362b]/60 bg-[#d9362b]/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#f4b8b2]"><Sparkles size={14} /> Grado ceremonial</span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#d6cec4]"><CupSoda size={14} /> {siteContent.beverages.sizesLabel}</span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#d9362b]/60 bg-[#d9362b]/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#f4b8b2]"><Sparkles size={14} /> Premium o ceremonial</span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#d6cec4]"><CupSoda size={14} /> {beverages.sizesLabel}</span>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {SIGNATURE_MATCHAS.map((drink, index) => (
-              <figure key={drink.name} className={`group relative min-h-[18rem] overflow-hidden rounded-[1.7rem] border border-white/10 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.09),transparent_56%)] sm:min-h-[25rem] ${index % 2 ? "sm:translate-y-7" : ""}`}>
-                <Image
-                  src={drink.image}
-                  alt={`${drink.name} de JJ Studio en vaso transparente`}
-                  fill
-                  priority={index < 2}
-                  sizes="(max-width: 1024px) 50vw, 27vw"
-                  className="object-contain p-4 drop-shadow-[0_24px_20px_rgba(0,0,0,0.48)] transition duration-700 group-hover:-translate-y-2 group-hover:scale-[1.025] sm:p-6"
-                />
+            {heroDrinks.map((drink, index) => (
+              <figure key={drink.id} className={`group relative min-h-[18rem] overflow-hidden rounded-[1.7rem] border border-white/10 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.10),transparent_58%)] sm:min-h-[25rem] ${index % 2 ? "sm:translate-y-7" : ""}`}>
+                <Image src={drink.image} alt={`${drink.name} de JJ Studio`} fill priority sizes="(max-width: 1024px) 50vw, 27vw" className="object-contain p-4 drop-shadow-[0_24px_20px_rgba(0,0,0,0.48)] transition duration-700 group-hover:-translate-y-2 group-hover:scale-[1.025] sm:p-6" />
                 <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#11100f] via-[#11100f]/80 to-transparent px-4 pb-4 pt-16 sm:px-5 sm:pb-5">
                   <p className="font-[family-name:var(--font-display)] text-2xl uppercase leading-none text-white sm:text-3xl">{drink.name}</p>
+                  <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[#f04a3e]">{drink.detail}</p>
                 </figcaption>
               </figure>
             ))}
@@ -106,121 +64,98 @@ export default function BeveragesPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#11100f] px-6 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#f04a3e]">Arma tu bebida</p>
-          <div className="mt-4 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end"><h2 className="font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-8xl">Tu mezcla.<br /><span className="text-[#d9362b]">Tu momento.</span></h2><p className="max-w-xl text-base leading-relaxed text-[#bcb4aa] lg:justify-self-end">Elige bebida, tamaño, termo y extras. Te preparamos un mensaje con el pedido para confirmar por WhatsApp.</p></div>
-          <div className="mt-10"><DrinkBuilder /></div>
-        </div>
-      </section>
-
       <section className="bg-[#f0e9df] px-6 py-20 text-[#1a1816] sm:py-28 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-7 border-b border-[#1a1816]/20 pb-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
+          <div className="grid gap-8 border-b border-[#1a1816]/20 pb-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-end">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#c83228]">Matcha signatures</p>
-              <h2 className="mt-4 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] sm:text-8xl">Cuatro formas<br /><span className="text-[#c83228]">de hacer shake.</span></h2>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#c83228]">Matcha · 500 ml</p>
+              <h2 className="mt-4 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] sm:text-8xl">Cinco sabores.<br /><span className="text-[#c83228]">Dos grados.</span></h2>
             </div>
-            <p className="max-w-lg text-base leading-relaxed text-[#625b54] lg:justify-self-end">Todos se preparan con matcha ceremonial IKIGAI o Kokoro. Puedes pedirlos con scoop de proteína, creatina o crema batida.</p>
+            <div className="grid grid-cols-2 overflow-hidden rounded-[1.35rem] border border-[#1a1816]/15 lg:justify-self-end lg:min-w-[28rem]">
+              {beverages.matchaGrades.map((grade) => (
+                <div key={grade.id} className="p-5 first:border-r first:border-[#1a1816]/15">
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#766d65]">Matcha {grade.name}</p>
+                  <p className="mt-2 font-[family-name:var(--font-display)] text-5xl leading-none text-[#c83228]">${grade.price}</p>
+                  <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#766d65]">todos los sabores</p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {SIGNATURE_MATCHAS.map((drink, index) => (
-              <article key={drink.name} className="group overflow-hidden rounded-[1.6rem] border border-[#1a1816]/15 bg-[#e7ded2]">
-                <div className="relative aspect-[4/5] overflow-hidden bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.72),transparent_58%)]">
-                  <Image src={drink.image} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-contain p-5 drop-shadow-[0_24px_18px_rgba(39,25,20,0.22)] transition duration-700 group-hover:-translate-y-2 group-hover:scale-[1.035]" />
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {beverages.matchaFlavors.map((drink, index) => (
+              <article key={drink.id} className="group overflow-hidden rounded-[1.5rem] border border-[#1a1816]/15 bg-[#e7ded2]">
+                <div className="relative aspect-[4/5] overflow-hidden bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.76),transparent_58%)]">
+                  <Image src={drink.image} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw" className={`object-contain p-5 drop-shadow-[0_22px_18px_rgba(39,25,20,0.22)] transition duration-700 group-hover:-translate-y-2 group-hover:scale-[1.035] ${drink.id === "original" ? "saturate-[0.78]" : ""}`} />
                   <span className="absolute left-4 top-4 rounded-full bg-[#1a1816] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.15em] text-white">0{index + 1}</span>
                 </div>
                 <div className="border-t border-[#1a1816]/10 p-5">
-                  <p className="text-[9px] font-black uppercase tracking-[0.17em] text-[#c83228]">{drink.accent}</p>
-                  <h3 className="mt-2 font-[family-name:var(--font-display)] text-4xl uppercase leading-none">{drink.name}</h3>
-                  <p className="mt-3 min-h-12 text-sm leading-relaxed text-[#665f57]">{drink.description}</p>
-                  <div className="mt-5 flex items-end justify-between gap-3 border-t border-[#1a1816]/12 pt-4">
-                    <div><p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#776f67]">Con vaso</p><p className="font-[family-name:var(--font-display)] text-4xl leading-none text-[#c83228]">{CEREMONIAL_PRICE.regular}</p></div>
-                    <div className="text-right"><p className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#776f67]">Con tu termo</p><p className="font-[family-name:var(--font-display)] text-3xl leading-none">{CEREMONIAL_PRICE.noCup}</p></div>
-                  </div>
+                  <p className="text-[9px] font-black uppercase tracking-[0.17em] text-[#c83228]">{drink.detail}</p>
+                  <h3 className="mt-2 font-[family-name:var(--font-display)] text-3xl uppercase leading-none">{drink.name}</h3>
                 </div>
               </article>
             ))}
           </div>
+          <p className="mt-5 text-xs leading-relaxed text-[#766d65]">Premium $145 MXN · Ceremonial $165 MXN. Precios por bebida de 500 ml.</p>
         </div>
       </section>
 
-      <section className="border-y border-white/10 bg-[#1a1816] px-6 py-20 sm:py-24 lg:px-8">
+      <section className="border-y border-white/10 bg-[#11100f] px-6 py-20 sm:py-24 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-7 lg:grid-cols-[0.84fr_1.16fr] lg:items-end">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#f04a3e]">Carta y precios</p>
-              <h2 className="mt-4 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-8xl">Elige.<br /><span className="text-[#d9362b]">Personaliza.</span></h2>
-            </div>
-            <div className="rounded-[1.4rem] border border-[#d9362b]/40 bg-[#d9362b]/10 p-5 sm:p-6">
-              <div className="flex items-start gap-4">
-                <CupSoda className="mt-0.5 shrink-0 text-[#f04a3e]" size={21} />
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-white">Trae tu termo y ahorra $30</p>
-                  <p className="mt-2 text-sm leading-relaxed text-[#d6cec4]">La columna “sin vaso” ya refleja el descuento de $30 por usar tu propio termo.</p>
-                </div>
-              </div>
-            </div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#f04a3e]">Arma tu bebida</p>
+          <div className="mt-4 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+            <h2 className="font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-8xl">Tu mezcla.<br /><span className="text-[#d9362b]">Tu momento.</span></h2>
+            <p className="max-w-xl text-base leading-relaxed text-[#bcb4aa] lg:justify-self-end">Elige categoría, bebida, matcha, base, endulzante, extras y termo. Verás el total antes de enviar tu pedido por WhatsApp.</p>
           </div>
-
-          <p className="mt-8 text-right text-[9px] font-black uppercase tracking-[0.16em] text-[#f04a3e] sm:hidden">Desliza para ver todos los precios →</p>
-          <div className="mt-3 overflow-hidden rounded-[1.5rem] border border-white/10 sm:mt-10">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[880px] border-collapse text-left">
-                <thead className="bg-white/[0.055]">
-                  <tr className="text-[9px] font-black uppercase tracking-[0.15em] text-[#bcb4aa]">
-                    <th className="px-6 py-5">Bebida</th>
-                    <th className="px-5 py-5">Precio sin descuento</th>
-                    <th className="px-5 py-5">Sin vaso</th>
-                    <th className="px-5 py-5">Con 15% de descuento</th>
-                    <th className="px-5 py-5">Sin vaso + 15%</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10">
-                  {DRINK_PRICES.map((drink) => (
-                    <tr key={drink.name} className="transition hover:bg-white/[0.035]">
-                      <td className="px-6 py-6"><p className="text-sm font-black uppercase tracking-[0.08em] text-white">{drink.name}</p><p className="mt-1 text-xs text-[#928980]">{drink.detail}</p></td>
-                      <td className="px-5 py-6 font-[family-name:var(--font-display)] text-4xl leading-none text-[#f04a3e]">{drink.price.regular}</td>
-                      <td className="px-5 py-6 font-[family-name:var(--font-display)] text-3xl leading-none text-white">{drink.price.noCup}</td>
-                      <td className="px-5 py-6 font-[family-name:var(--font-display)] text-3xl leading-none text-white">{drink.price.discount}</td>
-                      <td className="px-5 py-6 font-[family-name:var(--font-display)] text-3xl leading-none text-white">{drink.price.discountNoCup}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <p className="mt-4 text-xs leading-relaxed text-[#8f867d]">Precios en MXN. El precio con 15% se aplica únicamente cuando corresponda el descuento vigente.</p>
+          <div className="mt-10"><DrinkBuilder /></div>
         </div>
       </section>
 
-      <section className="relative isolate overflow-hidden bg-[#151312] px-6 py-20 sm:py-28 lg:px-8">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_12%_0%,rgba(217,54,43,0.22),transparent_31%)]" aria-hidden="true" />
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.74fr_1.26fr] lg:gap-20">
+      <section className="bg-[#191716] px-6 py-20 sm:py-28 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-6 lg:grid-cols-2">
+            <MenuPanel eyebrow="Cold drinks · 500 ml" title="Frías" icon={<CupSoda size={20} />} items={beverages.cold} accent="red" />
+            <MenuPanel eyebrow="Hot drinks · 250 ml" title="Calientes" icon={<Coffee size={20} />} items={beverages.hot} accent="cream" />
+          </div>
+
+          <div className="mt-6 grid overflow-hidden rounded-[1.7rem] border border-[#d9362b]/40 bg-[#d9362b] text-[#171412] lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="p-7 sm:p-9">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em]">Eco-Lagree</p>
+              <h2 className="mt-3 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-8xl">Trae tu<br />termo.</h2>
+            </div>
+            <div className="grid grid-cols-2 border-t border-black/20 lg:border-l lg:border-t-0">
+              <EcoPrice size="500 ml" label="Bebidas frías" discount={beverages.ecoDiscount.cold500} />
+              <EcoPrice size="250 ml" label="Bebidas calientes" discount={beverages.ecoDiscount.hot250} border />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative isolate overflow-hidden bg-[#f0e9df] px-6 py-20 text-[#1a1816] sm:py-28 lg:px-8">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_8%_0%,rgba(217,54,43,0.13),transparent_31%)]" aria-hidden="true" />
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-20">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#f04a3e]">Hazla tuya</p>
-            <h2 className="mt-4 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-7xl">Tu base.<br /><span className="text-[#d9362b]">Tu boost.</span></h2>
-            <p className="mt-6 max-w-sm text-sm leading-relaxed text-[#bcb4aa]">Elige una base y añade el extra que mejor acompañe tu día.</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#c83228]">Hazla tuya</p>
+            <h2 className="mt-4 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] sm:text-7xl">Base.<br />Sweet.<br /><span className="text-[#c83228]">Boost.</span></h2>
+            <p className="mt-6 max-w-sm text-sm leading-relaxed text-[#625b54]">Personaliza sin complicaciones. Las bases y endulzantes no tienen costo adicional.</p>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            <article className="rounded-[1.5rem] border border-white/10 bg-white/[0.035] p-6 sm:p-7">
-              <div className="flex items-center gap-3 text-[#f04a3e]"><Leaf size={19} /><p className="text-[10px] font-bold uppercase tracking-[0.2em]">Elige tu base</p></div>
-              <div className="mt-6 divide-y divide-white/10 border-y border-white/10">
-                {BASES.map((base) => <p key={base} className="py-4 text-sm font-semibold text-[#f8f3eb]">{base}</p>)}
-              </div>
-            </article>
-
-            <article className="rounded-[1.5rem] border border-[#d9362b]/35 bg-[#d9362b]/10 p-6 sm:p-7">
-              <div className="flex items-center gap-3 text-[#f4b8b2]"><Plus size={19} /><p className="text-[10px] font-bold uppercase tracking-[0.2em]">Extras opcionales</p></div>
-              <div className="mt-6 divide-y divide-[#f4b8b2]/15 border-y border-[#f4b8b2]/15">
-                {BOOSTS.map((boost) => (
-                  <div key={boost.name} className="flex items-center justify-between gap-4 py-5">
-                    <p className="text-sm font-bold text-white">{boost.name}</p>
-                    <p className="shrink-0 font-[family-name:var(--font-display)] text-3xl leading-none text-[#f04a3e]">{boost.price}</p>
+            <InfoCard icon={<Leaf size={19} />} title="Bases sin costo" items={beverages.bases} />
+            <InfoCard icon={<Sparkles size={19} />} title="Endulzantes sin costo" items={beverages.sweeteners.filter((item) => item !== "Sin endulzante")} />
+            <article className="rounded-[1.5rem] border border-[#1a1816]/15 bg-[#e7ded2] p-6 sm:col-span-2 sm:p-7">
+              <div className="flex items-center gap-3 text-[#c83228]"><Plus size={19} /><p className="text-[10px] font-bold uppercase tracking-[0.2em]">Boosts & shakes</p></div>
+              <div className="mt-6 grid border-y border-[#1a1816]/15 sm:grid-cols-2">
+                {beverages.extras.map((extra, index) => (
+                  <div key={extra.id} className={`flex items-center justify-between gap-4 py-5 ${index % 2 === 0 ? "sm:border-r sm:pr-5" : "sm:pl-5"} ${index < 2 ? "border-b border-[#1a1816]/15" : ""}`}>
+                    <p className="text-sm font-bold">{extra.name}</p>
+                    <p className="shrink-0 font-[family-name:var(--font-display)] text-3xl leading-none text-[#c83228]">+${extra.price}</p>
                   </div>
                 ))}
+              </div>
+              <div className="mt-5 flex items-end justify-between gap-4 rounded-xl bg-[#1a1816] p-5 text-white">
+                <div><p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#f04a3e]">Shake completo</p><p className="mt-1 text-lg font-black">{beverages.proteinShake.name}</p></div>
+                <p className="font-[family-name:var(--font-display)] text-5xl leading-none text-[#f04a3e]">${beverages.proteinShake.price}</p>
               </div>
             </article>
           </div>
@@ -228,8 +163,48 @@ export default function BeveragesPage() {
       </section>
 
       <footer className="border-t border-white/10 px-6 py-8 text-center lg:px-8">
+        <p className="mb-4 text-[9px] font-bold uppercase tracking-[0.15em] text-[#776f67]">Precios en MXN · Sujeto a disponibilidad · Xentric Lomas Norte, Querétaro</p>
         <a href="/" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#b7ada3] transition hover:text-white">Volver a JJ Studio <ArrowUpRight size={15} /></a>
       </footer>
     </main>
+  )
+}
+
+function MenuPanel({ eyebrow, title, icon, items, accent }: { eyebrow: string; title: string; icon: React.ReactNode; items: Array<{ id: string; name: string; detail: string; price: number; sizeMl: number }>; accent: "red" | "cream" }) {
+  const isRed = accent === "red"
+  return (
+    <article className={`rounded-[1.7rem] border p-7 sm:p-9 ${isRed ? "border-[#d9362b]/35 bg-[#d9362b]/10" : "border-white/10 bg-white/[0.035]"}`}>
+      <div className={`flex items-center gap-3 ${isRed ? "text-[#f04a3e]" : "text-[#d6cec4]"}`}>{icon}<p className="text-[10px] font-bold uppercase tracking-[0.2em]">{eyebrow}</p></div>
+      <h2 className="mt-4 font-[family-name:var(--font-display)] text-6xl uppercase leading-none text-white">{title}</h2>
+      <div className="mt-6 divide-y divide-white/10 border-y border-white/10">
+        {items.map((item) => (
+          <div key={item.id} className="flex items-center justify-between gap-5 py-5">
+            <div><p className="text-sm font-black text-white">{item.name}</p><p className="mt-1 text-xs text-[#928980]">{item.detail}</p></div>
+            <p className="shrink-0 font-[family-name:var(--font-display)] text-4xl leading-none text-[#f04a3e]">${item.price}</p>
+          </div>
+        ))}
+      </div>
+    </article>
+  )
+}
+
+function EcoPrice({ size, label, discount, border = false }: { size: string; label: string; discount: number; border?: boolean }) {
+  return (
+    <div className={`flex flex-col justify-center p-6 sm:p-9 ${border ? "border-l border-black/20" : ""}`}>
+      <p className="text-[10px] font-black uppercase tracking-[0.16em]">{label}</p>
+      <p className="mt-2 font-[family-name:var(--font-display)] text-5xl leading-none text-white sm:text-7xl">-${discount}</p>
+      <p className="mt-2 text-xs font-bold">en presentación de {size}</p>
+    </div>
+  )
+}
+
+function InfoCard({ icon, title, items }: { icon: React.ReactNode; title: string; items: string[] }) {
+  return (
+    <article className="rounded-[1.5rem] border border-[#1a1816]/15 bg-[#e7ded2] p-6 sm:p-7">
+      <div className="flex items-center gap-3 text-[#c83228]">{icon}<p className="text-[10px] font-bold uppercase tracking-[0.2em]">{title}</p></div>
+      <div className="mt-6 divide-y divide-[#1a1816]/15 border-y border-[#1a1816]/15">
+        {items.map((item) => <p key={item} className="py-4 text-sm font-semibold">{item}</p>)}
+      </div>
+    </article>
   )
 }
