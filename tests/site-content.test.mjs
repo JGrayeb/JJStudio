@@ -1,6 +1,7 @@
 import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 import test from "node:test"
+import { calculateDrinkPrice } from "../lib/beverage-pricing.js"
 
 const contentUrl = new URL("../content/site-content.json", import.meta.url)
 const content = JSON.parse(await readFile(contentUrl, "utf8"))
@@ -35,6 +36,21 @@ test("publishes the exact beverage menu and Eco-Lagree discounts", () => {
     ["Hot Matcha", 85, 250],
   ])
   assert.deepEqual(content.beverages.ecoDiscount, { hot250: 10, cold500: 30 })
+  assert.equal(content.beverages.clientDiscountPercent, 20)
+})
+
+test("applies the client discount after subtracting the reusable-cup discount", () => {
+  const price = calculateDrinkPrice({
+    basePrice: 165,
+    cupDiscount: 30,
+    clientDiscountPercent: 20,
+    extrasTotal: 20,
+  })
+
+  assert.equal(price.beverageSubtotal, 135)
+  assert.equal(price.clientDiscount, 27)
+  assert.equal(price.beverageTotal, 108)
+  assert.equal(price.total, 128)
 })
 
 test("keeps beverage customizations aligned with the printed menu", () => {

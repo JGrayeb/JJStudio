@@ -270,6 +270,27 @@ function AnimatedHeroTitle() {
   )
 }
 
+function BeverageLaunchNudge() {
+  return (
+    <a
+      href="/beverages"
+      className="beverage-nudge group absolute right-3 top-[4.25rem] z-20 flex w-[10.5rem] items-center gap-1.5 overflow-hidden rounded-xl border border-white/20 bg-[#151312]/92 p-1.5 pr-2 text-left text-white shadow-[0_20px_55px_rgba(0,0,0,0.5)] backdrop-blur-md transition hover:border-[#f04a3e] hover:bg-[#1d1917] sm:right-8 sm:top-28 sm:w-[17rem] sm:gap-3 sm:rounded-[1.35rem] sm:p-3 sm:pr-4 lg:right-10"
+      aria-label="Conoce las bebidas y aplica tu descuento de cliente"
+    >
+      <span className="absolute inset-y-0 left-0 w-20 bg-[radial-gradient(circle_at_45%_45%,rgba(217,54,43,0.36),transparent_67%)]" aria-hidden="true" />
+      <span className="beverage-nudge-cup relative h-11 w-8 shrink-0 sm:h-20 sm:w-14">
+        <Image src="/images/bebidas/matcha-original.png" alt="" fill sizes="56px" className="object-contain drop-shadow-[0_12px_10px_rgba(0,0,0,0.38)]" />
+      </span>
+      <span className="relative min-w-0 flex-1">
+        <span className="hidden text-[8px] font-black uppercase tracking-[0.18em] text-[#f04a3e] sm:block">Beneficio clientes</span>
+        <strong className="block text-[10px] font-black uppercase leading-tight sm:mt-1 sm:text-sm">20% en bebidas</strong>
+        <span className="mt-0.5 block text-[7px] font-bold uppercase tracking-[0.1em] text-[#cfc6bc] sm:mt-1 sm:text-[9px] sm:tracking-[0.11em]"><span className="sm:hidden">Abrir carta</span><span className="hidden sm:inline">Arma la tuya aquí</span></span>
+      </span>
+      <ArrowUpRight className="relative shrink-0 text-[#f04a3e] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" size={18} />
+    </a>
+  )
+}
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [previewShareQuery, setPreviewShareQuery] = useState("")
@@ -390,6 +411,8 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a1816] via-[#1a1816]/70 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a1816] via-transparent to-transparent" />
         </div>
+
+        <BeverageLaunchNudge />
 
         <div className="relative mx-auto flex min-h-[940px] max-w-7xl items-end px-6 pb-44 pt-32 sm:min-h-[900px] lg:min-h-[820px] lg:px-8 lg:pb-44">
           <div className="max-w-3xl">
@@ -885,6 +908,10 @@ export default function Home() {
         .hero-letter-space { width: 0.25em; }
         @keyframes hero-ttp-settle { 0% { opacity: 0; filter: blur(7px); transform: translate3d(-50%, -50%, 0) scale(1.22); } 16% { top: var(--ttp-start-y); left: calc(var(--ttp-start-x) + var(--ttp-offset)); opacity: 1; filter: blur(0); transform: translate3d(-50%, -50%, 0) scale(1.22); } 58% { top: var(--ttp-start-y); left: calc(var(--ttp-start-x) + var(--ttp-offset)); opacity: 1; filter: blur(0); transform: translate3d(-50%, -50%, 0) scale(1.22); } 100% { top: var(--ttp-end-y); left: var(--ttp-end-x); opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0) scale(1); } }
         @keyframes hero-letter-in { from { opacity: 0; filter: blur(4px); transform: translate3d(0, 0.34em, 0); } to { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0); } }
+        .beverage-nudge { opacity: 0; will-change: transform, opacity; animation: beverage-nudge-in 820ms 2550ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .beverage-nudge-cup { transform-origin: 50% 72%; animation: beverage-cup-float 2600ms 3500ms ease-in-out infinite; }
+        @keyframes beverage-nudge-in { 0% { opacity: 0; filter: blur(6px); transform: translate3d(4rem, -0.5rem, 0) rotate(4deg) scale(0.9); } 72% { opacity: 1; filter: blur(0); transform: translate3d(-0.35rem, 0, 0) rotate(-1deg) scale(1.02); } 100% { opacity: 1; filter: blur(0); transform: translate3d(0, 0, 0) rotate(0) scale(1); } }
+        @keyframes beverage-cup-float { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-0.35rem) rotate(1deg); } }
         .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; }
         .stat-marquee-track { display: flex; width: max-content; animation: stat-marquee 16s linear infinite; }
         .stat-marquee:hover .stat-marquee-track { animation-play-state: paused; }
@@ -893,7 +920,7 @@ export default function Home() {
         .coach-marquee:hover .coach-marquee-track, .coach-marquee:focus-within .coach-marquee-track { animation-play-state: paused; }
         @keyframes coach-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         details[open] .faq-symbol { transform: rotate(45deg); border-color: #f04a3e; background: #f04a3e; color: #151312; }
-        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter { animation: none; } .hero-letter, .hero-initial-slot { opacity: 1 !important; } .hero-ttp { display: none; } .offer-card { transition: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
+        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter, .beverage-nudge, .beverage-nudge-cup { animation: none; } .hero-letter, .hero-initial-slot { opacity: 1 !important; } .hero-ttp { display: none; } .beverage-nudge { opacity: 1; transform: none; } .offer-card { transition: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
       `}</style>
     </main>
   )

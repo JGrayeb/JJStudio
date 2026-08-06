@@ -72,6 +72,7 @@
       "hot250": 10,
       "cold500": 30
     },
+    "clientDiscountPercent": 20,
     "matchaGrades": [
       { "id": "premium", "name": "Premium", "price": 145 },
       { "id": "ceremonial", "name": "Ceremonial", "price": 165 }
@@ -84,16 +85,16 @@
       { "id": "coconut-cloud", "name": "Coconut Cloud Matcha", "detail": "Coco + matcha", "image": "/images/bebidas/coco-matcha.png" }
     ],
     "cold": [
-      { "id": "cold-latte", "name": "Cold Latte", "detail": "Espresso + leche", "price": 110, "sizeMl": 500, "allowsBase": true },
-      { "id": "cold-americano", "name": "Cold Americano", "detail": "Espresso + agua + hielo", "price": 95, "sizeMl": 500, "allowsBase": false },
-      { "id": "cold-chai", "name": "Cold Chai", "detail": "Chai + base a elegir", "price": 110, "sizeMl": 500, "allowsBase": true }
+      { "id": "cold-latte", "name": "Cold Latte", "detail": "Espresso + leche", "price": 110, "sizeMl": 500, "allowsBase": true, "image": "/images/bebidas/cold-latte.png" },
+      { "id": "cold-americano", "name": "Cold Americano", "detail": "Espresso + agua + hielo", "price": 95, "sizeMl": 500, "allowsBase": false, "image": "/images/bebidas/cold-americano.png" },
+      { "id": "cold-chai", "name": "Cold Chai", "detail": "Chai + base a elegir", "price": 110, "sizeMl": 500, "allowsBase": true, "image": "/images/bebidas/cold-chai.png" }
     ],
     "hot": [
-      { "id": "hot-espresso", "name": "Hot Espresso", "detail": "Espresso recién extraído", "price": 65, "sizeMl": 250, "allowsBase": false },
-      { "id": "hot-americano", "name": "Hot Americano", "detail": "Espresso + agua caliente", "price": 65, "sizeMl": 250, "allowsBase": false },
-      { "id": "hot-latte", "name": "Hot Latte", "detail": "Espresso + leche", "price": 75, "sizeMl": 250, "allowsBase": true },
-      { "id": "hot-chai", "name": "Hot Chai", "detail": "Chai + base a elegir", "price": 75, "sizeMl": 250, "allowsBase": true },
-      { "id": "hot-matcha", "name": "Hot Matcha", "detail": "Matcha + base a elegir", "price": 85, "sizeMl": 250, "allowsBase": true }
+      { "id": "hot-espresso", "name": "Hot Espresso", "detail": "Espresso recién extraído", "price": 65, "sizeMl": 250, "allowsBase": false, "image": "/images/bebidas/hot-espresso.png" },
+      { "id": "hot-americano", "name": "Hot Americano", "detail": "Espresso + agua caliente", "price": 65, "sizeMl": 250, "allowsBase": false, "image": "/images/bebidas/hot-americano.png" },
+      { "id": "hot-latte", "name": "Hot Latte", "detail": "Espresso + leche", "price": 75, "sizeMl": 250, "allowsBase": true, "image": "/images/bebidas/hot-latte.png" },
+      { "id": "hot-chai", "name": "Hot Chai", "detail": "Chai + base a elegir", "price": 75, "sizeMl": 250, "allowsBase": true, "image": "/images/bebidas/hot-chai.png" },
+      { "id": "hot-matcha", "name": "Hot Matcha", "detail": "Matcha + base a elegir", "price": 85, "sizeMl": 250, "allowsBase": true, "image": "/images/bebidas/hot-matcha.png" }
     ],
     "bases": ["Coco", "Soya", "Avena", "Leche deslactosada"],
     "sweeteners": ["Sin endulzante", "Miel", "Stevia"],
@@ -103,7 +104,7 @@
       { "id": "creatine", "name": "Creatina monohidratada ELEMENTAL", "price": 15 },
       { "id": "caramel", "name": "Caramel drizzle", "price": 5 }
     ],
-    "proteinShake": { "id": "protein-shake", "name": "Protein Shake", "price": 65 }
+    "proteinShake": { "id": "protein-shake", "name": "Protein Shake", "price": 65, "image": "/images/bebidas/protein-shake.png" }
   },
   "socks": {
     "onePair": "$150",

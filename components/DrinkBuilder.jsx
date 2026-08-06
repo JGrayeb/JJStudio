@@ -1,9 +1,10 @@
 "use client"
 
 import Image from "next/image"
-import { Check, CupSoda, MessageCircle, Sparkles } from "lucide-react"
+import { BadgePercent, Check, CupSoda, MessageCircle, Sparkles } from "lucide-react"
 import { useState } from "react"
 import siteContent from "@/content/site-content.json"
+import { calculateDrinkPrice } from "@/lib/beverage-pricing"
 
 const drinks = siteContent.beverages
 const formatMoney = (value) => new Intl.NumberFormat("es-MX", {
@@ -35,6 +36,7 @@ export default function DrinkBuilder() {
   const [base, setBase] = useState(drinks.bases[0])
   const [sweetener, setSweetener] = useState(drinks.sweeteners[0])
   const [ownCup, setOwnCup] = useState(false)
+  const [isClient, setIsClient] = useState(false)
   const [selectedExtras, setSelectedExtras] = useState([])
 
   const selectedFlavor = drinks.matchaFlavors.find((item) => item.id === matchaFlavorId)
@@ -45,12 +47,12 @@ export default function DrinkBuilder() {
     selection = { name: `${selectedFlavor.name} ${selectedGrade.name}`, price: selectedGrade.price, sizeMl: 500, allowsBase: true, allowsSweetener: true, image: selectedFlavor.image }
   } else if (category === "cold") {
     const item = drinks.cold.find((drink) => drink.id === coldId)
-    selection = { ...item, allowsSweetener: item.allowsBase, image: null }
+    selection = { ...item, allowsSweetener: item.allowsBase }
   } else if (category === "hot") {
     const item = drinks.hot.find((drink) => drink.id === hotId)
-    selection = { ...item, allowsSweetener: item.allowsBase, image: null }
+    selection = { ...item, allowsSweetener: item.allowsBase }
   } else {
-    selection = { ...drinks.proteinShake, sizeMl: null, allowsBase: false, allowsSweetener: false, image: null }
+    selection = { ...drinks.proteinShake, sizeMl: null, allowsBase: false, allowsSweetener: false }
   }
 
   const cupDiscount = category === "hot"
@@ -59,7 +61,16 @@ export default function DrinkBuilder() {
       ? 0
       : drinks.ecoDiscount.cold500
   const selectedExtraItems = drinks.extras.filter((item) => selectedExtras.includes(item.id))
-  const total = selection.price - (ownCup ? cupDiscount : 0) + selectedExtraItems.reduce((sum, item) => sum + item.price, 0)
+  const extrasTotal = selectedExtraItems.reduce((sum, item) => sum + item.price, 0)
+  const appliedCupDiscount = ownCup ? cupDiscount : 0
+  const appliedClientDiscountPercent = isClient ? drinks.clientDiscountPercent : 0
+  const price = calculateDrinkPrice({
+    basePrice: selection.price,
+    cupDiscount: appliedCupDiscount,
+    clientDiscountPercent: appliedClientDiscountPercent,
+    extrasTotal,
+  })
+  const total = price.total
   const baseVisual = baseVisuals[base]
 
   const changeCategory = (nextCategory) => {
@@ -82,7 +93,9 @@ export default function DrinkBuilder() {
     selection.allowsBase ? `• Base: ${base}` : null,
     selection.allowsSweetener ? `• Endulzante: ${sweetener}` : null,
     ownCup ? `• Llevo mi termo (-${formatMoney(cupDiscount)})` : selection.sizeMl ? "• Con vaso JJ Studio" : null,
+    isClient ? `• Cliente Nessty/JJ Studio (-${drinks.clientDiscountPercent}% después del descuento por termo)` : null,
     ...selectedExtraItems.map((item) => `• ${item.name} (+${formatMoney(item.price)})`),
+    isClient ? `Descuento de cliente: -${formatMoney(price.clientDiscount)}` : null,
     `Total estimado: ${formatMoney(total)}`,
   ].filter(Boolean).join("\n")
   const previewProps = {
@@ -94,7 +107,12 @@ export default function DrinkBuilder() {
     baseVisual,
     sweetener,
     ownCup,
+    isClient,
+    appliedCupDiscount,
+    appliedClientDiscountPercent,
     selectedExtraItems,
+    extrasTotal,
+    price,
     total,
     message,
     details,
@@ -168,7 +186,7 @@ export default function DrinkBuilder() {
             {category === "cold" && (
               <ChoiceGroup label="Elige tu bebida fría">
                 {drinks.cold.map((item) => (
-                  <ChoiceButton key={item.id} active={coldId === item.id} onClick={() => setColdId(item.id)} title={item.name} detail={`${item.detail} · ${formatMoney(item.price)}`} />
+                  <ChoiceButton key={item.id} active={coldId === item.id} onClick={() => setColdId(item.id)} title={item.name} detail={`${item.detail} · ${formatMoney(item.price)}`} image={item.image} />
                 ))}
               </ChoiceGroup>
             )}
@@ -176,16 +194,19 @@ export default function DrinkBuilder() {
             {category === "hot" && (
               <ChoiceGroup label="Elige tu bebida caliente">
                 {drinks.hot.map((item) => (
-                  <ChoiceButton key={item.id} active={hotId === item.id} onClick={() => setHotId(item.id)} title={item.name} detail={`${item.detail} · ${formatMoney(item.price)}`} />
+                  <ChoiceButton key={item.id} active={hotId === item.id} onClick={() => setHotId(item.id)} title={item.name} detail={`${item.detail} · ${formatMoney(item.price)}`} image={item.image} />
                 ))}
               </ChoiceGroup>
             )}
 
             {category === "shake" && (
-              <div className="rounded-2xl border border-[#d9362b]/40 bg-[#d9362b]/10 p-5">
-                <p className="text-[10px] font-black uppercase tracking-[0.17em] text-[#f04a3e]">Boosts & shakes</p>
-                <p className="mt-2 text-xl font-black text-white">Protein Shake</p>
-                <p className="mt-1 text-sm text-[#bcb4aa]">{formatMoney(drinks.proteinShake.price)} · Preparado al momento</p>
+              <div className="flex items-center justify-between gap-5 overflow-hidden rounded-2xl border border-[#d9362b]/40 bg-[#d9362b]/10 p-5">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.17em] text-[#f04a3e]">Boosts & shakes</p>
+                  <p className="mt-2 text-xl font-black text-white">Protein Shake</p>
+                  <p className="mt-1 text-sm text-[#bcb4aa]">{formatMoney(drinks.proteinShake.price)} · Preparado al momento</p>
+                </div>
+                <Image src={drinks.proteinShake.image} alt="" width={84} height={112} className="h-24 w-20 shrink-0 object-contain drop-shadow-[0_12px_12px_rgba(0,0,0,0.32)]" />
               </div>
             )}
 
@@ -215,6 +236,15 @@ export default function DrinkBuilder() {
               </label>
             )}
 
+            <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 text-sm font-semibold transition ${isClient ? "border-[#d9362b] bg-[#d9362b]/10 text-white" : "border-white/15 text-white hover:border-white/30"}`}>
+              <input type="checkbox" checked={isClient} onChange={(event) => setIsClient(event.target.checked)} className="mt-0.5 h-4 w-4 accent-[#d9362b]" />
+              <BadgePercent className="mt-0.5 shrink-0 text-[#f04a3e]" size={18} />
+              <span>
+                Soy cliente de Nessty o JJ Studio
+                <small className="mt-1 block font-medium leading-relaxed text-[#bcb4aa]">También aplica si pagaste tu clase en caja · {drinks.clientDiscountPercent}% de descuento en tu bebida.</small>
+              </span>
+            </label>
+
             <fieldset>
               <legend className="text-[10px] font-black uppercase tracking-[0.16em] text-[#bcb4aa]">{category === "matcha" ? "5. Añade tus boosts" : "Extras opcionales"}</legend>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -235,7 +265,7 @@ export default function DrinkBuilder() {
   )
 }
 
-function LivePreview({ category, selection, selectedFlavor, selectedGrade, base, baseVisual, sweetener, ownCup, selectedExtraItems, total, message, details }) {
+function LivePreview({ category, selection, selectedFlavor, selectedGrade, base, baseVisual, sweetener, ownCup, isClient, appliedCupDiscount, appliedClientDiscountPercent, selectedExtraItems, extrasTotal, price, total, message, details }) {
   const isMatcha = category === "matcha"
   return (
     <aside className="order-first overflow-hidden rounded-[1.55rem] border border-white/10 bg-[#eee5d9] text-[#181513] lg:sticky lg:top-5 lg:order-last" aria-live="polite">
@@ -245,23 +275,24 @@ function LivePreview({ category, selection, selectedFlavor, selectedGrade, base,
           <span className="rounded-full bg-[#181513] px-3 py-2 text-[9px] font-black uppercase tracking-[0.14em] text-white">{selection.sizeMl ? `${selection.sizeMl} ml` : "Shake"}</span>
           {isMatcha && <span className="rounded-full bg-[#d9362b] px-3 py-2 text-[9px] font-black uppercase tracking-[0.14em] text-white">{selectedGrade.name}</span>}
         </div>
-        {isMatcha ? (
+        {selection.image ? (
           <Image
-            key={selectedFlavor.id}
+            key={selection.image}
             src={selection.image}
-            alt={`${selectedFlavor.name} con base de ${base}`}
+            alt={isMatcha ? `${selectedFlavor.name} con base de ${base}` : selection.name}
             fill
             priority
             sizes="(max-width: 1024px) 90vw, 40vw"
-            className="object-contain px-8 pb-7 pt-14 drop-shadow-[0_28px_22px_rgba(44,28,18,0.28)] transition duration-500 sm:px-14"
+            className={`object-contain pb-7 pt-14 drop-shadow-[0_28px_22px_rgba(44,28,18,0.28)] transition duration-500 ${category === "hot" ? "px-12 sm:px-20" : "px-8 sm:px-14"}`}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center"><CupSoda className="text-[#d9362b] drop-shadow-[0_20px_20px_rgba(0,0,0,0.16)]" size={150} strokeWidth={1.2} /></div>
         )}
         <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap gap-2">
-          {isMatcha && <VisualTag label={`Base: ${base}`} />}
-          {isMatcha && <VisualTag label={sweetener} />}
+          {selection.allowsBase && <VisualTag label={`Base: ${base}`} />}
+          {selection.allowsSweetener && <VisualTag label={sweetener} />}
           {ownCup && <VisualTag label="Con tu termo" accent />}
+          {isClient && <VisualTag label={`Cliente JJ · -${appliedClientDiscountPercent}%`} accent />}
           {selectedExtraItems.map((item) => <VisualTag key={item.id} label={`+ ${item.name}`} accent />)}
         </div>
       </div>
@@ -270,9 +301,15 @@ function LivePreview({ category, selection, selectedFlavor, selectedGrade, base,
         <p className="text-[9px] font-black uppercase tracking-[0.18em] text-[#c83228]">Así va quedando</p>
         <h3 className="mt-2 font-black uppercase leading-[0.92] [font-size:clamp(2rem,5vw,3.8rem)]">{selection.name}</h3>
         {details.length > 0 && <p className="mt-3 text-xs font-bold leading-relaxed text-[#625b54]">{details.join(" · ")}</p>}
-        <div className="mt-6 flex items-end justify-between gap-4 border-t border-black/10 pt-5">
+        <div className="mt-5 space-y-2 border-t border-black/10 pt-5 text-[10px] font-bold uppercase tracking-[0.11em] text-[#6d6258]">
+          <PriceLine label="Precio de la bebida" value={formatMoney(selection.price)} />
+          {ownCup && <PriceLine label="Descuento por termo" value={`-${formatMoney(appliedCupDiscount)}`} accent />}
+          {isClient && <PriceLine label={`${appliedClientDiscountPercent}% cliente (sobre ${formatMoney(price.beverageSubtotal)})`} value={`-${formatMoney(price.clientDiscount)}`} accent />}
+          {extrasTotal > 0 && <PriceLine label="Extras" value={`+${formatMoney(extrasTotal)}`} />}
+        </div>
+        <div className="mt-5 flex items-end justify-between gap-4 border-t border-black/10 pt-5">
           <div><p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#6d6258]">Total estimado</p><p className="mt-1 font-black leading-none text-[#d9362b] [font-size:clamp(2.8rem,7vw,4.8rem)]">{formatMoney(total)}</p></div>
-          {ownCup && <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-[#3b322b]"><Check size={13} /> Eco-Lagree</span>}
+          {(ownCup || isClient) && <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase text-[#3b322b]"><Check size={13} /> Ahorro aplicado</span>}
         </div>
         <a href={`${siteContent.links.whatsapp}?text=${encodeURIComponent(message)}`} target="_blank" rel="noreferrer" className="mt-5 flex items-center justify-center gap-2 rounded-full bg-[#181513] px-5 py-3 text-xs font-black uppercase tracking-[0.14em] text-white transition hover:bg-[#d9362b]">Pedir por WhatsApp <MessageCircle size={15} /></a>
       </div>
@@ -299,6 +336,10 @@ function VisualTag({ label, accent = false }) {
   return <span className={`rounded-full border px-3 py-2 text-[8px] font-black uppercase tracking-[0.12em] shadow-sm backdrop-blur-md ${accent ? "border-[#d9362b]/30 bg-[#d9362b] text-white" : "border-white/45 bg-white/75 text-[#29231e]"}`}>{label}</span>
 }
 
+function PriceLine({ label, value, accent = false }) {
+  return <div className="flex items-center justify-between gap-4"><span>{label}</span><strong className={accent ? "text-[#c83228]" : "text-[#3b322b]"}>{value}</strong></div>
+}
+
 function ChoiceGroup({ label, children }) {
   return (
     <fieldset>
@@ -308,10 +349,10 @@ function ChoiceGroup({ label, children }) {
   )
 }
 
-function ChoiceButton({ active, onClick, title, detail, icon = null, compact = false }) {
+function ChoiceButton({ active, onClick, title, detail, icon = null, image = null, compact = false }) {
   return (
     <button type="button" onClick={onClick} aria-pressed={active} className={`rounded-xl border p-4 text-left transition ${compact ? "min-h-20" : ""} ${active ? "border-[#d9362b] bg-[#d9362b]/10" : "border-white/15 hover:border-white/30 hover:bg-white/[0.035]"}`}>
-      <span className="flex items-start justify-between gap-3 text-sm font-black text-white"><span className="inline-flex items-center gap-2">{icon}{title}</span>{active && <Check className="shrink-0 text-[#f04a3e]" size={16} />}</span>
+      <span className="flex items-start justify-between gap-3 text-sm font-black text-white"><span className="inline-flex items-center gap-3">{image ? <Image src={image} alt="" width={42} height={42} className="h-10 w-10 shrink-0 object-contain drop-shadow-[0_7px_6px_rgba(0,0,0,0.28)]" /> : icon}{title}</span>{active && <Check className="shrink-0 text-[#f04a3e]" size={16} />}</span>
       <span className="mt-1.5 block text-xs text-[#9f968d]">{detail}</span>
     </button>
   )
