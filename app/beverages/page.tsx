@@ -7,7 +7,6 @@ import siteContent from "@/content/site-content.json"
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 const beverages = siteContent.beverages
-const heroDrinks = beverages.matchaFlavors.slice(1)
 const money = (value: number) => `$${value} MXN`
 
 export const metadata = {
@@ -33,33 +32,31 @@ export default function BeveragesPage() {
         </div>
       </header>
 
-      <section className="relative isolate overflow-hidden px-6 pb-20 pt-14 sm:pb-28 sm:pt-20 lg:px-8">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_77%_30%,rgba(217,54,43,0.24),transparent_35%),radial-gradient(ellipse_at_22%_90%,rgba(112,140,54,0.12),transparent_34%),linear-gradient(145deg,#171513_0%,#11100f_60%,#1e1512_100%)]" aria-hidden="true" />
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#f04a3e]">Drinks, fuel & movement</p>
-            <h1 className="mt-5 font-[family-name:var(--font-display)] uppercase leading-[0.78] text-white [font-size:clamp(5rem,12vw,9.5rem)]">
-              Matcha.<br /><span className="text-[#d9362b]">Your way.</span>
-            </h1>
-            <p className="mt-8 max-w-lg text-base leading-relaxed text-[#cfc6bc] sm:text-lg">
-              Matcha, café y chai preparados al momento. Antes o después de entrenar, hazlo a tu manera.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#d9362b]/60 bg-[#d9362b]/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#f4b8b2]"><Sparkles size={14} /> Premium o ceremonial</span>
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#d6cec4]"><CupSoda size={14} /> {beverages.sizesLabel}</span>
+      <section className="relative isolate overflow-hidden px-6 pb-20 pt-10 sm:pb-24 sm:pt-14 lg:px-8">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_76%_12%,rgba(217,54,43,0.22),transparent_31%),radial-gradient(ellipse_at_18%_54%,rgba(112,140,54,0.11),transparent_29%),linear-gradient(145deg,#171513_0%,#11100f_62%,#1e1512_100%)]" aria-hidden="true" />
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-7 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#f04a3e]">Drinks, fuel & movement</p>
+              <h1 className="mt-4 font-[family-name:var(--font-display)] uppercase leading-[0.8] text-white [font-size:clamp(4.5rem,9vw,8rem)]">
+                Matcha.<br /><span className="text-[#d9362b]">Your way.</span>
+              </h1>
+            </div>
+            <div className="pb-1 lg:justify-self-end">
+              <p className="max-w-xl text-sm leading-relaxed text-[#cfc6bc] sm:text-base">Elige tu sabor y míralo cambiar mientras seleccionas grado, base, endulzante y boosts.</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#d9362b]/60 bg-[#d9362b]/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#f4b8b2]"><Sparkles size={14} /> Premium o ceremonial</span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#d6cec4]"><CupSoda size={14} /> 500 ml</span>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {heroDrinks.map((drink, index) => (
-              <figure key={drink.id} className={`group relative min-h-[18rem] overflow-hidden rounded-[1.7rem] border border-white/10 bg-[radial-gradient(circle_at_50%_48%,rgba(255,255,255,0.10),transparent_58%)] sm:min-h-[25rem] ${index % 2 ? "sm:translate-y-7" : ""}`}>
-                <Image src={drink.image} alt={`${drink.name} de JJ Studio`} fill priority sizes="(max-width: 1024px) 50vw, 27vw" className="object-contain p-4 drop-shadow-[0_24px_20px_rgba(0,0,0,0.48)] transition duration-700 group-hover:-translate-y-2 group-hover:scale-[1.025] sm:p-6" />
-                <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#11100f] via-[#11100f]/80 to-transparent px-4 pb-4 pt-16 sm:px-5 sm:pb-5">
-                  <p className="font-[family-name:var(--font-display)] text-2xl uppercase leading-none text-white sm:text-3xl">{drink.name}</p>
-                  <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.15em] text-[#f04a3e]">{drink.detail}</p>
-                </figcaption>
-              </figure>
-            ))}
+          <div className="mt-9">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.19em] text-white">Arma el tuyo paso a paso</p>
+              <p className="hidden text-[9px] font-bold uppercase tracking-[0.15em] text-[#8f867d] sm:block">La imagen cambia con tu elección</p>
+            </div>
+            <DrinkBuilder />
           </div>
         </div>
       </section>
@@ -97,17 +94,6 @@ export default function BeveragesPage() {
             ))}
           </div>
           <p className="mt-5 text-xs leading-relaxed text-[#766d65]">Premium $145 MXN · Ceremonial $165 MXN. Precios por bebida de 500 ml.</p>
-        </div>
-      </section>
-
-      <section className="border-y border-white/10 bg-[#11100f] px-6 py-20 sm:py-24 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#f04a3e]">Arma tu bebida</p>
-          <div className="mt-4 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-            <h2 className="font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-8xl">Tu mezcla.<br /><span className="text-[#d9362b]">Tu momento.</span></h2>
-            <p className="max-w-xl text-base leading-relaxed text-[#bcb4aa] lg:justify-self-end">Elige categoría, bebida, matcha, base, endulzante, extras y termo. Verás el total antes de enviar tu pedido por WhatsApp.</p>
-          </div>
-          <div className="mt-10"><DrinkBuilder /></div>
         </div>
       </section>
 
