@@ -2,15 +2,15 @@
 
 import Image from "next/image"
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import { ArrowUpRight, CalendarDays, Camera, Gift, MapPin, Menu, MessageCircle, Star, X } from "lucide-react"
+import { ArrowUpRight, CalendarDays, Camera, CreditCard, Gift, MapPin, Menu, MessageCircle, Star, X } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
 import siteContent from "@/content/site-content.json"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
+import { PurchaseButton } from "@/components/PurchaseFlow"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
 
-const NESSTY_URL = siteContent.links.nessty
 const INSTAGRAM_URL = siteContent.links.instagram
 const WHATSAPP_URL = siteContent.links.whatsapp
 const MAPS_URL = siteContent.links.maps
@@ -19,6 +19,12 @@ const SCHEDULE_URL = siteContent.links.schedule
 const GOOGLE_REVIEWS = siteContent.reviews
 const NORMAL_PRICES = siteContent.pricing.normal
 const TRIAL_PRICES = siteContent.pricing.trial
+
+const PURCHASE_PACKAGE_IDS = {
+  "12 clases": "12-clases",
+  "16 clases": "16-clases",
+  Unlimited: "unlimited",
+}
 
 const COACHES = [
   { name: "Javi", image: "/images/Coach Javi.JPG" },
@@ -170,14 +176,12 @@ const FAQ_ITEMS = [
 
 function BookingButton({ className = "" }) {
   return (
-    <a
-      href={NESSTY_URL}
-      target="_blank"
-      rel="noreferrer"
+    <PurchaseButton
+      ariaLabel="Elegir entre Nessty o Stripe para reservar o comprar"
       className={`inline-flex items-center justify-center gap-2 rounded-full bg-[#d9362b] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#f04a3e] ${className}`}
     >
-      Reservar clase <ArrowUpRight size={15} strokeWidth={2.5} />
-    </a>
+      Nessty o Stripe <ArrowUpRight size={15} strokeWidth={2.5} />
+    </PurchaseButton>
   )
 }
 
@@ -493,7 +497,7 @@ export default function Home() {
               </div>
               <div className="max-w-xl lg:justify-self-end">
                 <p className="text-base font-semibold leading-relaxed sm:text-lg">
-                  Compra en Nessty con {promotion.discountLabel} usando el código <code className="rounded bg-[#151312] px-2.5 py-1 text-sm font-black tracking-[0.1em] text-white">{promotion.code}</code>, o aprovecha un precio especial pagando directamente en caja.
+                  Compra en Nessty con {promotion.discountLabel} usando el código <code className="rounded bg-[#151312] px-2.5 py-1 text-sm font-black tracking-[0.1em] text-white">{promotion.code}</code>, o aprovecha un precio especial pagando directamente con Stripe.
                 </p>
                 <p className="mt-4 text-sm leading-relaxed text-[#351512]">Al comprar con el código en Nessty recibes 3 bebidas con los paquetes de 12 o 16 clases, y 5 con Unlimited.</p>
               </div>
@@ -501,7 +505,12 @@ export default function Home() {
 
             <div className="mt-8 grid gap-4 lg:grid-cols-3">
               {augustPackages.map((offer, index) => (
-                <article key={offer.name} className="rounded-[1.6rem] border border-[#151312]/20 bg-[#f0e9df] p-6 shadow-[0_18px_45px_rgba(70,12,8,0.12)] sm:p-7">
+                <PurchaseButton
+                  key={offer.name}
+                  packageId={PURCHASE_PACKAGE_IDS[offer.name]}
+                  ariaLabel={`Elegir cómo comprar el paquete ${offer.name}`}
+                  className="monthly-package-card group block w-full rounded-[1.6rem] border border-[#151312]/20 bg-[#f0e9df] p-6 text-left shadow-[0_18px_45px_rgba(70,12,8,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#151312] focus-visible:ring-offset-4 focus-visible:ring-offset-[#d9362b] sm:p-7"
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#c83228]">Paquete 0{index + 1}</p>
@@ -516,12 +525,16 @@ export default function Home() {
                       {offer.nesstyPerClass && <p className="mt-2 text-[9px] font-black uppercase tracking-[0.12em] text-[#776c62]">{offer.nesstyPerClass} por clase</p>}
                     </div>
                     <div className="border-l border-[#151312]/15 pl-4">
-                      <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#776c62]">Caja / transferencia</p>
+                      <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#776c62]">Stripe · pago directo</p>
                       <p className="mt-1 font-[family-name:var(--font-display)] text-4xl leading-none">{offer.frontDesk}</p>
                       {offer.frontDeskPerClass && <p className="mt-2 text-[9px] font-black uppercase tracking-[0.12em] text-[#776c62]">{offer.frontDeskPerClass} por clase</p>}
                     </div>
                   </div>
-                </article>
+                  <div className="mt-5 flex items-center justify-between border-t border-[#151312]/15 pt-4 text-[#c83228]">
+                    <span className="text-[9px] font-black uppercase tracking-[0.16em]">Seleccionar paquete</span>
+                    <ArrowUpRight size={16} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-focus-visible:translate-x-1 group-focus-visible:-translate-y-1" />
+                  </div>
+                </PurchaseButton>
               ))}
             </div>
 
@@ -536,9 +549,9 @@ export default function Home() {
 
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs font-bold uppercase tracking-[0.14em]">Precios en MXN · Promoción de agosto 2026</p>
-              <a href={NESSTY_URL} target="_blank" rel="noreferrer" className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#151312] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:-translate-y-0.5 hover:bg-white hover:text-[#151312]">
-                Comprar en Nessty <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </a>
+              <PurchaseButton ariaLabel="Elegir entre Nessty o Stripe para comprar" className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#151312] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:-translate-y-0.5 hover:bg-white hover:text-[#151312]">
+                Nessty o Stripe <ArrowUpRight size={15} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </PurchaseButton>
             </div>
           </div>
         </section>
@@ -552,7 +565,7 @@ export default function Home() {
               <h2 className="mt-5 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] sm:text-8xl">Elige tu<br /><span className="text-[#c83228]">proceso.</span></h2>
             </div>
             <div className="max-w-xl lg:justify-self-end">
-              <p className="text-base leading-relaxed text-[#514b45] sm:text-lg">Todos los paquetes tienen 30 días de vigencia. En transferencia cuentan desde que asistes a tu primera clase; en Nessty, desde el momento del pago.</p>
+              <p className="text-base leading-relaxed text-[#514b45] sm:text-lg">Todos los paquetes tienen 30 días de vigencia. En pago directo con Stripe cuentan desde que asistes a tu primera clase; en Nessty, desde el momento del pago.</p>
               <div className="mt-5 flex flex-wrap gap-2 text-[9px] font-black uppercase tracking-[0.14em]">
                 <span className="rounded-full bg-[#1a1816] px-3 py-2 text-white">Precios en MXN</span>
                 <span className="rounded-full border border-[#1a1816]/25 px-3 py-2">30 días de vigencia</span>
@@ -594,11 +607,12 @@ export default function Home() {
 
           <div className="mt-10 flex flex-col gap-4 rounded-[1.6rem] bg-[#1a1816] p-6 text-white sm:flex-row sm:items-center sm:justify-between sm:p-8">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f04a3e]">¿Prefieres transferencia?</p>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#cfc6bc]">Escríbenos y te compartimos los datos. En los paquetes de agosto, pagar directamente tiene un precio aún menor.</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f04a3e]">¿Prefieres pago directo?</p>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#cfc6bc]">Compara el precio de Nessty con el precio directo y paga de forma segura con Stripe.</p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <a href={`${WHATSAPP_URL}?text=${encodeURIComponent("Hola JJ Studio, quiero comprar un paquete por transferencia.")}`} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d9362b] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] transition hover:bg-[#f04a3e]">Comprar por WhatsApp <MessageCircle size={15} /></a>
+              <PurchaseButton ariaLabel="Elegir entre Nessty o Stripe para comprar" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d9362b] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] transition hover:bg-[#f04a3e]">Nessty o Stripe <CreditCard size={15} /></PurchaseButton>
+              <a href={`${WHATSAPP_URL}?text=${encodeURIComponent("Hola JJ Studio, necesito ayuda para elegir un paquete.")}`} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] transition hover:bg-white hover:text-[#1a1816]">Ayuda por WhatsApp <MessageCircle size={15} /></a>
               <a href="/regalos" className="inline-flex items-center justify-center gap-2 rounded-full border border-white/25 px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] transition hover:bg-white hover:text-[#1a1816]">Regalar clases <Gift size={15} /></a>
             </div>
           </div>
@@ -898,6 +912,10 @@ export default function Home() {
         .nav-link:hover::after, .nav-link:focus-visible::after { transform: scaleX(1); transform-origin: left; }
         .offer-card { transform-origin: center; transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 240ms ease, border-color 240ms ease; }
         .offer-card:hover, .offer-card:focus-within { transform: scale(1.035); border-color: rgba(240, 74, 62, 0.9); box-shadow: 0 20px 46px rgba(0, 0, 0, 0.34), 0 0 0 1px rgba(240, 74, 62, 0.12); }
+        .monthly-package-card { transform: translateZ(0); transform-origin: center; transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 280ms ease, border-color 280ms ease, background-color 280ms ease; }
+        .monthly-package-card:focus-visible { transform: translateY(-0.45rem) scale(1.012); border-color: rgba(21, 19, 18, 0.48); background-color: #f8f2e9; box-shadow: 0 28px 58px rgba(70, 12, 8, 0.22), 0 0 0 1px rgba(21, 19, 18, 0.06); }
+        .monthly-package-card:active { transform: translateY(-0.12rem) scale(0.995); }
+        @media (hover: hover) and (pointer: fine) { .monthly-package-card:hover { transform: translateY(-0.45rem) scale(1.012); border-color: rgba(21, 19, 18, 0.48); background-color: #f8f2e9; box-shadow: 0 28px 58px rgba(70, 12, 8, 0.22), 0 0 0 1px rgba(21, 19, 18, 0.06); } }
         .hero-quick-link { transform-origin: center; transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, color 180ms ease; }
         .hero-quick-link:hover, .hero-quick-link:focus-visible { transform: translateY(-1px) scale(1.035); }
         .hero-title { position: relative; }
@@ -920,7 +938,7 @@ export default function Home() {
         .coach-marquee:hover .coach-marquee-track, .coach-marquee:focus-within .coach-marquee-track { animation-play-state: paused; }
         @keyframes coach-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         details[open] .faq-symbol { transform: rotate(45deg); border-color: #f04a3e; background: #f04a3e; color: #151312; }
-        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter, .beverage-nudge, .beverage-nudge-cup { animation: none; } .hero-letter, .hero-initial-slot { opacity: 1 !important; } .hero-ttp { display: none; } .beverage-nudge { opacity: 1; transform: none; } .offer-card { transition: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
+        @media (prefers-reduced-motion: reduce) { .stat-marquee-track, .coach-marquee-track, .hero-letter, .hero-ttp, .hero-ttp-letter, .beverage-nudge, .beverage-nudge-cup { animation: none; } .hero-letter, .hero-initial-slot { opacity: 1 !important; } .hero-ttp { display: none; } .beverage-nudge { opacity: 1; transform: none; } .offer-card, .monthly-package-card { transition: none; } .monthly-package-card:hover, .monthly-package-card:focus-visible, .monthly-package-card:active { transform: none; } .coach-marquee { overflow-x: auto; scrollbar-width: none; } .coach-marquee::-webkit-scrollbar { display: none; } }
       `}</style>
     </main>
   )

@@ -2,6 +2,7 @@ import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 import test from "node:test"
 import { calculateDrinkPrice } from "../lib/beverage-pricing.js"
+import { getCheckoutReturnOrigin, PURCHASE_PACKAGES } from "../lib/purchase-packages.mjs"
 
 const contentUrl = new URL("../content/site-content.json", import.meta.url)
 const content = JSON.parse(await readFile(contentUrl, "utf8"))
@@ -103,4 +104,27 @@ test("gift promotion applies only the transfer prices configured for eligible pa
   assert.equal(promotion.get("12 clases"), "$3,000")
   assert.equal(promotion.get("16 clases"), "$3,600")
   assert.equal(promotion.get("Unlimited"), "$3,900")
+})
+
+test("keeps secure Stripe amounts aligned with the direct package prices", () => {
+  const directPrices = new Map(content.promotion.packages.map((item) => [item.name, Number(item.frontDesk.replace(/[$,]/g, ""))]))
+
+  for (const item of PURCHASE_PACKAGES) {
+    assert.equal(item.stripeAmount, directPrices.get(item.name))
+    assert.ok(item.stripeAmount < item.nesstyAmount)
+  }
+})
+
+test("returns Stripe customers to the canonical domain in production", () => {
+  assert.equal(getCheckoutReturnOrigin({
+    vercelEnv: "production",
+    vercelUrl: "jj-studio-random-deployment.vercel.app",
+    siteUrl: content.siteUrl,
+  }), "https://www.jjstudio.mx")
+
+  assert.equal(getCheckoutReturnOrigin({
+    vercelEnv: "preview",
+    vercelUrl: "jj-studio-preview.vercel.app",
+    siteUrl: content.siteUrl,
+  }), "https://jj-studio-preview.vercel.app")
 })

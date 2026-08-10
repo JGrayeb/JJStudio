@@ -2,6 +2,7 @@ import "./globals.css"
 import Script from "next/script"
 import { Inter } from "next/font/google"
 import siteContent from "@/content/site-content.json"
+import { PurchaseProvider } from "@/components/PurchaseFlow"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -105,7 +106,7 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body>{children}</body>
+      <body><PurchaseProvider>{children}</PurchaseProvider></body>
     </html>
   )
 }
