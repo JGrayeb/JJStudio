@@ -6,7 +6,7 @@ test("builds an activation row from a paid Checkout Session", () => {
   const record = buildActivationRecord({
     id: "cs_live_example",
     created: 1786345200,
-    amount_total: 360000,
+    amount_total: 422500,
     customer_details: {
       name: "Nombre de pago",
       email: "cliente@example.com",
@@ -18,6 +18,9 @@ test("builds an activation row from a paid Checkout Session", () => {
     metadata: {
       packageId: "16-clases",
       packageName: "16 clases",
+      includedDrinks: "3",
+      drinkAddonQuantity: "5",
+      totalDrinks: "8",
     },
   })
 
@@ -25,9 +28,20 @@ test("builds an activation row from a paid Checkout Session", () => {
   assert.equal(record.email, "cliente@example.com")
   assert.equal(record.phone, "+524423947704")
   assert.equal(record.package, "16 clases")
-  assert.equal(record.amount, 3600)
+  assert.equal(record.drinks, 8)
+  assert.equal(record.amount, 4225)
   assert.equal(record.reference, "cs_live_example")
   assert.match(record.paidAt, /^2026-/)
+})
+
+test("keeps legacy Stripe sessions compatible when they have no drink metadata", () => {
+  const record = buildActivationRecord({
+    id: "cs_live_legacy",
+    amount_total: 24500,
+    metadata: { packageName: "1 muestra" },
+  }, 1786345200)
+
+  assert.equal(record.drinks, 0)
 })
 
 test("sends the activation secret only in the server-to-server request", async () => {
@@ -41,11 +55,12 @@ test("sends the activation secret only in the server-to-server request", async (
   }
 
   const result = await registerPaidActivation(
-    { reference: "cs_live_example", email: "cliente@example.com" },
+    { reference: "cs_live_example", email: "cliente@example.com", drinks: 8 },
     { url: "https://script.google.com/example", secret: "private-secret", fetchImpl },
   )
 
   assert.equal(requestBody.secret, "private-secret")
   assert.equal(requestBody.reference, "cs_live_example")
+  assert.equal(requestBody.drinks, 8)
   assert.equal(result.row, 2)
 })

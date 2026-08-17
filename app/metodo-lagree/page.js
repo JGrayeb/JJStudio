@@ -48,8 +48,8 @@ export default function MetodoLagree() {
           <p className="mt-8 max-w-xl text-base leading-relaxed text-[#cfc6bc] sm:text-lg">
             Lagree es una experiencia de fuerza y resistencia sobre Megaformer. Se mueve lento, se siente profundo y convierte 45 minutos de concentración en un reto completo.
           </p>
-          <PurchaseButton ariaLabel="Elegir entre Nessty o Stripe" className="mt-9 inline-flex items-center gap-2 rounded-full bg-[#d9362b] px-7 py-4 text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#f04a3e]">
-            Nessty o Stripe <ArrowUpRight size={15} strokeWidth={2.5} />
+          <PurchaseButton ariaLabel="Abrir opciones de compra" className="mt-9 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#d9362b] px-7 py-4 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#f04a3e]">
+            Opciones de compra <ArrowUpRight size={15} strokeWidth={2.5} />
           </PurchaseButton>
         </div>
       </section>

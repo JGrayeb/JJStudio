@@ -1,27 +1,73 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
+import { track } from "@vercel/analytics"
 import { Gift, MessageCircle, Minus, Plus } from "lucide-react"
 import siteContent from "@/content/site-content.json"
+import { readLocalPreference, writeLocalPreference } from "@/lib/local-preferences"
 
 const formatMoney = (value) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(value)
 const amount = (value) => Number(String(value).replace(/[$,]/g, ""))
-const promotionPrices = new Map(siteContent.promotion.packages.map((item) => [item.name, amount(item.frontDesk)]))
+const GIFT_PREFERENCE_KEY = "jjstudio:gift-builder:v1"
+const isActivePromotion = (promotion) => {
+  if (!promotion || promotion.active === false) return false
+  const startsAt = promotion.starts_at || promotion.startsAt
+  const endsAt = promotion.ends_at || promotion.endsAt
+  const now = Date.now()
+  return (!startsAt || now >= new Date(startsAt).getTime()) && Boolean(endsAt) && now <= new Date(endsAt).getTime()
+}
 
 export default function GiftBuilder() {
   const [quantities, setQuantities] = useState(() => Object.fromEntries(siteContent.giftPackages.map((item) => [item.name, 0])))
   const [applyPromotion, setApplyPromotion] = useState(false)
+  const [storageReady, setStorageReady] = useState(false)
+  const [activePromotion, setActivePromotion] = useState(() => isActivePromotion(siteContent.promotion) ? siteContent.promotion : null)
+  const promotionPrices = useMemo(() => new Map((activePromotion?.packages || []).map((item) => [item.name, amount(item.frontDesk)])), [activePromotion])
   const selected = useMemo(() => siteContent.giftPackages.filter((item) => quantities[item.name] > 0), [quantities])
-  const unitPrice = (item) => applyPromotion && promotionPrices.has(item.name) ? promotionPrices.get(item.name) : item.price
+  const promotionApplied = applyPromotion && Boolean(activePromotion)
+  const unitPrice = (item) => promotionApplied && promotionPrices.has(item.name) ? promotionPrices.get(item.name) : item.price
   const hasPromotion = (item) => promotionPrices.has(item.name)
   const total = selected.reduce((sum, item) => sum + unitPrice(item) * quantities[item.name], 0)
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetch("/api/site-settings", { signal: controller.signal })
+      .then((response) => response.ok ? response.json() : null)
+      .then((payload) => {
+        if (!payload || payload.stale) return
+        const data = payload?.promotion
+        setActivePromotion(data && isActivePromotion(data) ? data : null)
+      })
+      .catch(() => {})
+
+    return () => controller.abort()
+  }, [])
+
+  useEffect(() => {
+    if (!activePromotion) setApplyPromotion(false)
+  }, [activePromotion])
+
+  useEffect(() => {
+    const saved = readLocalPreference(GIFT_PREFERENCE_KEY)
+    if (saved?.quantities && typeof saved.quantities === "object") {
+      setQuantities(Object.fromEntries(siteContent.giftPackages.map((item) => [item.name, Math.max(0, Math.min(9, Number(saved.quantities[item.name]) || 0))])))
+    }
+    setApplyPromotion(Boolean(saved?.applyPromotion))
+    setStorageReady(true)
+  }, [])
+
+  useEffect(() => {
+    if (!storageReady) return
+    writeLocalPreference(GIFT_PREFERENCE_KEY, { quantities, applyPromotion })
+  }, [applyPromotion, quantities, storageReady])
 
   const update = (name, amount) => setQuantities((current) => ({ ...current, [name]: Math.max(0, Math.min(9, current[name] + amount)) }))
   const message = [
     "Hola JJ Studio, quiero comprar como regalo:",
     ...selected.map((item) => {
       const quantity = quantities[item.name]
-      const promotionLabel = applyPromotion && hasPromotion(item) ? " con promoción del mes" : ""
+      const promotionLabel = promotionApplied && hasPromotion(item) ? " con promoción del mes" : ""
       return `• ${quantity} ${quantity === 1 ? "paquete" : "paquetes"} de ${item.name}${promotionLabel} — ${formatMoney(unitPrice(item) * quantity)}`
     }),
     `Total: ${formatMoney(total)}`,
@@ -39,7 +85,7 @@ export default function GiftBuilder() {
                 <h2 className="mt-2 text-xl font-black uppercase tracking-tight text-white">{item.name}</h2>
               </div>
               <div className="text-right">
-                {applyPromotion && hasPromotion(item) && <p className="text-xs font-bold text-white/45 line-through">{formatMoney(item.price)}</p>}
+                {promotionApplied && hasPromotion(item) && <p className="text-xs font-bold text-white/45 line-through">{formatMoney(item.price)}</p>}
                 <p className="text-2xl font-black text-white">{formatMoney(unitPrice(item))}</p>
                 {hasPromotion(item) && <p className="mt-1 text-[8px] font-black uppercase tracking-[0.12em] text-[#f04a3e]">Promoción disponible</p>}
               </div>
@@ -56,23 +102,23 @@ export default function GiftBuilder() {
       <aside className="h-fit rounded-[1.7rem] bg-[#d9362b] p-6 text-[#151312] lg:sticky lg:top-6 sm:p-8">
         <Gift size={25} />
         <p className="mt-8 text-[10px] font-black uppercase tracking-[0.18em]">Tu regalo</p>
-        <button type="button" aria-pressed={applyPromotion} onClick={() => setApplyPromotion((current) => !current)} className={`mt-5 flex w-full items-center justify-between gap-4 rounded-xl border px-4 py-4 text-left transition ${applyPromotion ? "border-[#151312] bg-[#151312] text-white" : "border-[#151312]/25 bg-white/20 text-[#151312] hover:bg-white/35"}`}>
+        <button type="button" aria-pressed={promotionApplied} disabled={!activePromotion} onClick={() => setApplyPromotion((current) => !current)} className={`mt-5 flex w-full items-center justify-between gap-4 rounded-xl border px-4 py-4 text-left transition disabled:cursor-not-allowed disabled:opacity-55 ${promotionApplied ? "border-[#151312] bg-[#151312] text-white" : "border-[#151312]/25 bg-white/20 text-[#151312] hover:bg-white/35"}`}>
           <span>
-            <strong className="block text-xs font-black uppercase tracking-[0.12em]">{applyPromotion ? "Promoción aplicada" : "Aplicar promoción del mes"}</strong>
-            <small className={`mt-1 block text-[9px] font-semibold leading-relaxed ${applyPromotion ? "text-white/65" : "text-[#151312]/65"}`}>12 clases, 16 clases y Unlimited</small>
+            <strong className="block text-xs font-black uppercase tracking-[0.12em]">{promotionApplied ? "Promoción aplicada" : activePromotion ? "Aplicar promoción del mes" : "Sin promoción activa"}</strong>
+            <small className={`mt-1 block text-[9px] font-semibold leading-relaxed ${promotionApplied ? "text-white/65" : "text-[#151312]/65"}`}>12 clases, 16 clases y Unlimited</small>
           </span>
-          <span className={`grid h-6 w-11 shrink-0 place-items-center rounded-full p-0.5 transition ${applyPromotion ? "bg-[#d9362b]" : "bg-[#151312]/25"}`} aria-hidden="true"><span className={`h-5 w-5 rounded-full bg-white shadow transition ${applyPromotion ? "translate-x-2.5" : "-translate-x-2.5"}`} /></span>
+          <span className={`grid h-6 w-11 shrink-0 place-items-center rounded-full p-0.5 transition ${promotionApplied ? "bg-[#d9362b]" : "bg-[#151312]/25"}`} aria-hidden="true"><span className={`h-5 w-5 rounded-full bg-white shadow transition ${promotionApplied ? "translate-x-2.5" : "-translate-x-2.5"}`} /></span>
         </button>
         {selected.length ? (
           <div className="mt-5 divide-y divide-[#151312]/20 border-y border-[#151312]/20">
-            {selected.map((item) => <div key={item.name} className="flex justify-between gap-4 py-4 text-sm font-bold"><span>{quantities[item.name]} × {item.name}{applyPromotion && hasPromotion(item) && <small className="mt-1 block text-[8px] font-black uppercase tracking-[0.1em]">Promoción del mes</small>}</span><span>{formatMoney(unitPrice(item) * quantities[item.name])}</span></div>)}
+            {selected.map((item) => <div key={item.name} className="flex justify-between gap-4 py-4 text-sm font-bold"><span>{quantities[item.name]} × {item.name}{promotionApplied && hasPromotion(item) && <small className="mt-1 block text-[8px] font-black uppercase tracking-[0.1em]">Promoción del mes</small>}</span><span>{formatMoney(unitPrice(item) * quantities[item.name])}</span></div>)}
           </div>
         ) : <p className="mt-5 text-sm font-semibold leading-relaxed">Agrega uno o varios paquetes para preparar tu solicitud.</p>}
         <div className="mt-7 flex items-end justify-between gap-4">
           <span className="text-[10px] font-black uppercase tracking-[0.16em]">Total</span>
           <strong className="text-4xl leading-none">{formatMoney(total)}</strong>
         </div>
-        <a href={selected.length ? `${siteContent.links.whatsapp}?text=${encodeURIComponent(message)}` : undefined} aria-disabled={!selected.length} target={selected.length ? "_blank" : undefined} rel="noreferrer" className={`mt-7 flex items-center justify-center gap-2 rounded-full px-6 py-4 text-xs font-black uppercase tracking-[0.14em] transition ${selected.length ? "bg-[#151312] text-white hover:bg-white hover:text-[#151312]" : "cursor-not-allowed bg-[#151312]/25 text-[#151312]/45"}`}>
+        <a href={selected.length ? `${siteContent.links.whatsapp}?text=${encodeURIComponent(message)}` : undefined} aria-disabled={!selected.length} target={selected.length ? "_blank" : undefined} rel="noreferrer" onClick={() => selected.length && track("gift_whatsapp_clicked", { packages: selected.length, total, promotion: promotionApplied })} className={`mt-7 flex items-center justify-center gap-2 rounded-full px-6 py-4 text-xs font-black uppercase tracking-[0.14em] transition ${selected.length ? "bg-[#151312] text-white hover:bg-white hover:text-[#151312]" : "cursor-not-allowed bg-[#151312]/25 text-[#151312]/45"}`}>
           Continuar por WhatsApp <MessageCircle size={16} />
         </a>
         <p className="mt-5 text-[10px] font-semibold leading-relaxed text-[#151312]/70">La promoción usa precios de caja/transferencia y no agrega bebidas al regalo. Confirmamos el pago y después asignamos un folio único JJG-0001 a JJG-0050.</p>

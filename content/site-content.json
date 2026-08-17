@@ -5,13 +5,15 @@
     "schedule": "https://nessty.mx/%40jjstudio/jjstudio-xentric-lomas",
     "instagram": "https://www.instagram.com/jj_lagree_experience/",
     "whatsapp": "https://wa.me/524423947704",
-    "maps": "https://maps.app.goo.gl/oYNkGBsFisNvJTVz6",
+    "maps": "https://maps.app.goo.gl/mBrxHJePpTkEMZNy5",
     "mapsEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3733.8705925223153!2d-100.34342662385824!3d20.634130901213975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d34f251da9d817%3A0xb4c15d32004991d5!2sJJStudio!5e0!3m2!1sen!2sca!4v1785927350771!5m2!1sen!2sca"
   },
   "promotion": {
+    "active": true,
     "name": "Oferta de agosto",
     "code": "AGOSTOJJ",
     "discountLabel": "10% en Nessty",
+    "startsAt": "2026-08-01T06:00:00.000Z",
     "endsAt": "2026-09-01T05:59:59.999Z",
     "trialClass": {
       "name": "Clase de muestra",
@@ -40,21 +42,85 @@
       { "name": "Unlimited", "classes": null, "price": "$4,450", "perClass": null }
     ]
   },
+  "reviewSummary": {
+    "totalCount": 249,
+    "average": 4.98,
+    "fiveStarCount": 245,
+    "fitpass": { "count": 239, "average": 4.98, "fiveStarCount": 235 },
+    "google": { "count": 10, "average": 5, "fiveStarCount": 10 }
+  },
   "reviews": [
     {
       "author": "Ivan Rc",
+      "source": "Google",
       "rating": 5,
       "text": "Excelente experiencia en JJ Studio. El lugar está muy bonito, limpio y siempre se siente un ambiente agradable y profesional. Los instructores son muy atentos y explican muy bien los ejercicios."
     },
     {
       "author": "Lucero EC",
+      "source": "Google",
       "rating": 5,
       "text": "Clases donde trabajas tooodooo, muy completas, con música muy padre y los coaches explican súper bien."
     },
     {
       "author": "lili dena",
+      "source": "Google",
       "rating": 5,
       "text": "¡Increíble clase! Salí encantada; trabajamos mucha fuerza en abdomen y pierna. El mejor ejercicio que he hecho definitivamente."
+    },
+    {
+      "author": "Cinthya Rivera",
+      "source": "Google",
+      "rating": 5,
+      "text": "Excelente lugar para entrenar, se trabaja todo y sin impacto. Los coaches están muy capacitados, con disposición de apoyarte, explicarte y sacar lo mejor de ti."
+    },
+    {
+      "author": "saida grayeb pereira",
+      "source": "Google",
+      "rating": 5,
+      "text": "Me parece que el lugar está increíble."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "Excelente experiencia, la volvería a repetir. La coach súper preparada. ¡Felicidades!"
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "Estuvo súper bien la paciencia, el nivel de intensidad y la preparación de la coach. Volveré y recomendaré el lugar."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 4,
+      "text": "La clase duró 35 minutos nada más."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "¡Muy buena instructora!"
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "Me encantó la exigencia de la clase y el coach, súper respetuoso siempre."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "¡Muchas gracias y mucho éxito! Ojalá no lo quiten de Fitpass Classic."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "Es la clase de pilates más exigente y la que más me ha gustado."
     }
   ],
   "giftPackages": [
@@ -66,11 +132,12 @@
     { "name": "Unlimited", "classes": null, "price": 4450 }
   ],
   "beverages": {
-    "sizesMl": [250, 500],
-    "sizesLabel": "250 ml calientes · 500 ml frías",
+    "sizesMl": [300, 500],
+    "sizesLabel": "300 ml calientes · 500 ml frías",
     "ecoDiscount": {
-      "hot250": 10,
-      "cold500": 30
+      "hot300": 0,
+      "cold500": 30,
+      "shake": 30
     },
     "clientDiscountPercent": 20,
     "matchaGrades": [
@@ -90,11 +157,11 @@
       { "id": "cold-chai", "name": "Cold Chai", "detail": "Chai + base a elegir", "price": 110, "sizeMl": 500, "allowsBase": true, "image": "/images/bebidas/cold-chai.png" }
     ],
     "hot": [
-      { "id": "hot-espresso", "name": "Hot Espresso", "detail": "Espresso recién extraído", "price": 65, "sizeMl": 250, "allowsBase": false, "image": "/images/bebidas/hot-espresso.png" },
-      { "id": "hot-americano", "name": "Hot Americano", "detail": "Espresso + agua caliente", "price": 65, "sizeMl": 250, "allowsBase": false, "image": "/images/bebidas/hot-americano.png" },
-      { "id": "hot-latte", "name": "Hot Latte", "detail": "Espresso + leche", "price": 75, "sizeMl": 250, "allowsBase": true, "image": "/images/bebidas/hot-latte.png" },
-      { "id": "hot-chai", "name": "Hot Chai", "detail": "Chai + base a elegir", "price": 75, "sizeMl": 250, "allowsBase": true, "image": "/images/bebidas/hot-chai.png" },
-      { "id": "hot-matcha", "name": "Hot Matcha", "detail": "Matcha + base a elegir", "price": 85, "sizeMl": 250, "allowsBase": true, "image": "/images/bebidas/hot-matcha.png" }
+      { "id": "hot-espresso", "name": "Hot Espresso", "detail": "Espresso recién extraído", "price": 65, "sizeMl": 300, "allowsBase": false, "image": "/images/bebidas/hot-espresso.png" },
+      { "id": "hot-americano", "name": "Hot Americano", "detail": "Espresso + agua caliente", "price": 65, "sizeMl": 300, "allowsBase": false, "image": "/images/bebidas/hot-americano.png" },
+      { "id": "hot-latte", "name": "Hot Latte", "detail": "Espresso + leche", "price": 75, "sizeMl": 300, "allowsBase": true, "image": "/images/bebidas/hot-latte.png" },
+      { "id": "hot-chai", "name": "Hot Chai", "detail": "Chai + base a elegir", "price": 75, "sizeMl": 300, "allowsBase": true, "image": "/images/bebidas/hot-chai.png" },
+      { "id": "hot-matcha", "name": "Hot Matcha", "detail": "Matcha + base a elegir", "price": 85, "sizeMl": 300, "allowsBase": true, "image": "/images/bebidas/hot-matcha.png" }
     ],
     "bases": ["Coco", "Soya", "Avena", "Leche deslactosada"],
     "sweeteners": ["Sin endulzante", "Miel", "Stevia"],

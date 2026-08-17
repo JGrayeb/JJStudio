@@ -1,0 +1,19 @@
+name: Vigilar sitio y pagos
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Revisar página principal
+        run: curl --fail --silent --show-error --retry 2 --max-time 20 https://www.jjstudio.mx/ > /dev/null
+      - name: Revisar configuración de pagos y activaciones
+        run: curl --fail --silent --show-error --retry 2 --max-time 20 https://www.jjstudio.mx/api/health

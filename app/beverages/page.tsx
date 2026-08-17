@@ -3,15 +3,18 @@ import { ArrowLeft, ArrowUpRight, BadgePercent, Coffee, CupSoda, Leaf, Plus, Spa
 import { Bebas_Neue, Inter } from "next/font/google"
 import DrinkBuilder from "@/components/DrinkBuilder"
 import siteContent from "@/content/site-content.json"
+import { applyBeveragePrices } from "@/lib/beverage-settings.mjs"
+import { getBeveragePrices } from "@/lib/supabase/server"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
-const beverages = siteContent.beverages
 const money = (value: number) => `$${value} MXN`
+
+export const dynamic = "force-dynamic"
 
 export const metadata = {
   title: "Bebidas",
-  description: "Matcha premium y ceremonial, café y chai de JJ Studio: bebidas frías de 500 ml y calientes de 250 ml en Querétaro.",
+  description: "Matcha premium y ceremonial, café y chai de JJ Studio: bebidas frías de 500 ml y calientes de 300 ml en Querétaro.",
   alternates: { canonical: "/beverages" },
   openGraph: {
     title: "Drinks, Fuel & Movement | JJ Studio",
@@ -20,7 +23,9 @@ export const metadata = {
   },
 }
 
-export default function BeveragesPage() {
+export default async function BeveragesPage() {
+  const storedPrices = await getBeveragePrices()
+  const beverages = applyBeveragePrices(siteContent.beverages, storedPrices)
   return (
     <main className={`${bebas.variable} ${inter.variable} min-h-screen bg-[#11100f] font-[family-name:var(--font-body)] text-[#f8f3eb]`}>
       <header className="border-b border-white/10 px-6 py-5 lg:px-8">
@@ -52,12 +57,12 @@ export default function BeveragesPage() {
             </div>
           </div>
 
-          <div className="mt-9">
+          <div id="arma-tu-bebida" className="mt-9 scroll-mt-24">
             <div className="mb-4 flex items-center justify-between gap-4">
               <p className="text-[10px] font-black uppercase tracking-[0.19em] text-white">Arma el tuyo paso a paso</p>
               <p className="hidden text-[9px] font-bold uppercase tracking-[0.15em] text-[#8f867d] sm:block">La imagen cambia con tu elección</p>
             </div>
-            <DrinkBuilder />
+            <DrinkBuilder beverages={beverages} />
           </div>
         </div>
       </section>
@@ -94,26 +99,37 @@ export default function BeveragesPage() {
               </article>
             ))}
           </div>
-          <p className="mt-5 text-xs leading-relaxed text-[#766d65]">Premium $145 MXN · Ceremonial $165 MXN. Precios por bebida de 500 ml.</p>
+          <p className="mt-5 text-xs leading-relaxed text-[#766d65]">Premium {money(beverages.matchaGrades.find((grade) => grade.id === "premium")?.price ?? 0)} · Ceremonial {money(beverages.matchaGrades.find((grade) => grade.id === "ceremonial")?.price ?? 0)}. Precios por bebida de 500 ml.</p>
         </div>
       </section>
 
-      <section className="bg-[#191716] px-6 py-20 sm:py-28 lg:px-8">
+      <section id="carta-bebidas" className="scroll-mt-20 bg-[#191716] px-6 py-20 sm:py-28 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-6 lg:grid-cols-2">
             <MenuPanel eyebrow="Cold drinks · 500 ml" title="Frías" icon={<CupSoda size={20} />} items={beverages.cold} accent="red" />
-            <MenuPanel eyebrow="Hot drinks · 250 ml" title="Calientes" icon={<Coffee size={20} />} items={beverages.hot} accent="cream" />
+            <MenuPanel eyebrow="Hot drinks · 300 ml" title="Calientes" icon={<Coffee size={20} />} items={beverages.hot} accent="cream" />
           </div>
 
-          <div className="mt-6 grid overflow-hidden rounded-[1.7rem] border border-[#d9362b]/40 bg-[#d9362b] text-[#171412] lg:grid-cols-[0.85fr_1.15fr]">
+          <div className="mt-6 grid overflow-hidden rounded-[1.7rem] border border-[#d9362b]/40 bg-[#d9362b] text-[#171412] shadow-[0_24px_60px_rgba(217,54,43,0.18)] lg:grid-cols-[0.85fr_1.15fr]">
             <div className="p-7 sm:p-9">
               <p className="text-[10px] font-black uppercase tracking-[0.2em]">Eco-Lagree</p>
               <h2 className="mt-3 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.84] text-white sm:text-8xl">Trae tu<br />termo.</h2>
-              <p className="mt-5 max-w-sm text-xs font-semibold leading-relaxed">Si eres cliente de Nessty o JJ Studio, primero descontamos tu termo y después aplicamos el {beverages.clientDiscountPercent}% de cliente.</p>
+              <p className="mt-5 max-w-sm text-xs font-semibold leading-relaxed">Ahorra ${beverages.ecoDiscount.cold500} en matcha, bebidas frías o shakes y reduce residuos. Si eres cliente de Nessty o JJ Studio, primero descontamos tu termo y después aplicamos el {beverages.clientDiscountPercent}% de cliente.</p>
             </div>
-            <div className="grid grid-cols-2 border-t border-black/20 lg:border-l lg:border-t-0">
-              <EcoPrice size="500 ml" label="Bebidas frías" discount={beverages.ecoDiscount.cold500} />
-              <EcoPrice size="250 ml" label="Bebidas calientes" discount={beverages.ecoDiscount.hot250} border />
+            <div className="border-t border-black/20 p-4 sm:p-6 lg:flex lg:items-center lg:border-l lg:border-t-0 lg:p-8">
+              <div className="relative w-full overflow-hidden rounded-[1.4rem] border border-white/15 bg-[#171412] p-5 text-white shadow-[0_18px_42px_rgba(55,10,8,0.24)] sm:flex sm:items-center sm:gap-6 sm:p-7">
+                <div className="flex items-center gap-3">
+                  <span className="grid size-12 shrink-0 place-items-center rounded-full bg-[#d9362b] text-white"><CupSoda size={22} /></span>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#f04a3e]">Descuento con tu termo</p>
+                    <p className="mt-1 text-xs font-bold text-[#d8cfc5]">Matcha · bebidas frías · shakes</p>
+                  </div>
+                </div>
+                <div className="mt-5 flex items-end justify-between gap-4 border-t border-white/10 pt-5 sm:ml-auto sm:mt-0 sm:block sm:border-l sm:border-t-0 sm:pl-7 sm:pt-0 sm:text-right">
+                  <p className="text-[9px] font-black uppercase tracking-[0.16em] text-[#a99f95]">Ahorra</p>
+                  <p className="mt-1 font-[family-name:var(--font-display)] text-7xl leading-[0.78] text-[#f04a3e] sm:text-8xl">-${beverages.ecoDiscount.cold500}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -174,16 +190,6 @@ function MenuPanel({ eyebrow, title, icon, items, accent }: { eyebrow: string; t
         ))}
       </div>
     </article>
-  )
-}
-
-function EcoPrice({ size, label, discount, border = false }: { size: string; label: string; discount: number; border?: boolean }) {
-  return (
-    <div className={`flex flex-col justify-center p-6 sm:p-9 ${border ? "border-l border-black/20" : ""}`}>
-      <p className="text-[10px] font-black uppercase tracking-[0.16em]">{label}</p>
-      <p className="mt-2 font-[family-name:var(--font-display)] text-5xl leading-none text-white sm:text-7xl">-${discount}</p>
-      <p className="mt-2 text-xs font-bold">en presentación de {size}</p>
-    </div>
   )
 }
 

@@ -146,3 +146,8 @@ vite.config.ts.timestamp-*
 .vercel
 .env*
 !.env.example
+
+# Archivos de trabajo y entregables generados localmente
+output/
+outputs/
+tmp/

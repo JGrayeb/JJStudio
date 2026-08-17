@@ -2,7 +2,7 @@ import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 import test from "node:test"
 import { calculateDrinkPrice } from "../lib/beverage-pricing.js"
-import { getCheckoutReturnOrigin, PURCHASE_PACKAGES } from "../lib/purchase-packages.mjs"
+import { DRINK_ADDONS, getCheckoutReturnOrigin, getDrinkAddon, PURCHASE_PACKAGES } from "../lib/purchase-packages.mjs"
 
 const contentUrl = new URL("../content/site-content.json", import.meta.url)
 const content = JSON.parse(await readFile(contentUrl, "utf8"))
@@ -16,8 +16,8 @@ test("uses the canonical www domain and secure public links", () => {
 })
 
 test("publishes both beverage sizes", () => {
-  assert.deepEqual(content.beverages.sizesMl, [250, 500])
-  assert.match(content.beverages.sizesLabel, /250 ml/)
+  assert.deepEqual(content.beverages.sizesMl, [300, 500])
+  assert.match(content.beverages.sizesLabel, /300 ml/)
   assert.match(content.beverages.sizesLabel, /500 ml/)
 })
 
@@ -30,13 +30,13 @@ test("publishes the exact beverage menu and Eco-Lagree discounts", () => {
     ["Cold Chai", 110, 500],
   ])
   assert.deepEqual(content.beverages.hot.map(({ name, price, sizeMl }) => [name, price, sizeMl]), [
-    ["Hot Espresso", 65, 250],
-    ["Hot Americano", 65, 250],
-    ["Hot Latte", 75, 250],
-    ["Hot Chai", 75, 250],
-    ["Hot Matcha", 85, 250],
+    ["Hot Espresso", 65, 300],
+    ["Hot Americano", 65, 300],
+    ["Hot Latte", 75, 300],
+    ["Hot Chai", 75, 300],
+    ["Hot Matcha", 85, 300],
   ])
-  assert.deepEqual(content.beverages.ecoDiscount, { hot250: 10, cold500: 30 })
+  assert.deepEqual(content.beverages.ecoDiscount, { hot300: 0, cold500: 30, shake: 30 })
   assert.equal(content.beverages.clientDiscountPercent, 20)
 })
 
@@ -86,12 +86,20 @@ test("publishes exact package prices and per-class amounts", () => {
   assert.equal(promo.get("16 clases").nesstyPerClass, "$227.81")
 })
 
-test("uses curated Google reviews without owner names", () => {
-  assert.ok(content.reviews.length >= 3)
+test("publishes the complete review summary and written testimonials without owner names", () => {
+  assert.equal(content.reviewSummary.fitpass.count, 239)
+  assert.equal(content.reviewSummary.fitpass.fiveStarCount, 235)
+  assert.equal(content.reviewSummary.google.count, 10)
+  assert.equal(content.reviewSummary.totalCount, 249)
+  assert.equal(content.reviewSummary.fiveStarCount, 245)
+  assert.ok(content.reviews.length >= 12)
   for (const review of content.reviews) {
-    assert.equal(review.rating, 5)
+    assert.ok([4, 5].includes(review.rating))
+    assert.ok(["Google", "Fitpass"].includes(review.source))
+    assert.ok(review.text.length > 0)
     assert.doesNotMatch(review.author, /Juan Grayeb|Javier Garc/i)
   }
+  assert.ok(content.reviews.filter((review) => review.rating === 5).length >= 11)
 })
 
 test("gift flow is limited to package choices", () => {
@@ -106,13 +114,54 @@ test("gift promotion applies only the transfer prices configured for eligible pa
   assert.equal(promotion.get("Unlimited"), "$3,900")
 })
 
-test("keeps secure Stripe amounts aligned with the direct package prices", () => {
-  const directPrices = new Map(content.promotion.packages.map((item) => [item.name, Number(item.frontDesk.replace(/[$,]/g, ""))]))
+test("keeps every Stripe package and server-side amount explicit", () => {
+  assert.deepEqual(
+    PURCHASE_PACKAGES.map((item) => [item.id, item.regularAmount, item.nesstyAmount, item.stripeAmount]),
+    [
+      ["1-muestra", 245, 245, 245],
+      ["3-muestra", 720, 720, 720],
+      ["1-clase", 360, 360, 350],
+      ["4-clases", 1390, 1390, 1350],
+      ["8-clases", 2550, 2550, 2450],
+      ["12-clases", 3360, 3024, 3000],
+      ["16-clases", 4050, 3645, 3600],
+      ["unlimited", 4450, 4005, 3900],
+    ],
+  )
 
   for (const item of PURCHASE_PACKAGES) {
-    assert.equal(item.stripeAmount, directPrices.get(item.name))
-    assert.ok(item.stripeAmount < item.nesstyAmount)
+    assert.ok(item.stripeAmount > 0)
+    assert.ok(item.stripeAmount <= item.nesstyAmount)
+    assert.ok(item.nesstyAmount <= item.regularAmount)
+    assert.ok(Number.isInteger(item.includedDrinks))
+    assert.ok(item.includedDrinks >= 0)
   }
+})
+
+test("publishes the exact prepaid drink add-ons", () => {
+  assert.deepEqual(
+    DRINK_ADDONS.map((item) => [item.id, item.quantity, item.amount, item.perDrink]),
+    [
+      ["none", 0, 0, null],
+      ["1-bebida", 1, 132, 132],
+      ["3-bebidas", 3, 390, 130],
+      ["5-bebidas", 5, 625, 125],
+      ["8-bebidas", 8, 960, 120],
+      ["10-bebidas", 10, 1150, 115],
+    ],
+  )
+
+  for (const addon of DRINK_ADDONS) {
+    assert.equal(getDrinkAddon(addon.id), addon)
+    assert.equal(addon.amount, addon.quantity * (addon.perDrink ?? 0))
+  }
+
+  assert.equal(getDrinkAddon("invalid"), null)
+})
+
+test("publishes the promotion code required by the Stripe confirmation", () => {
+  assert.equal(content.promotion.code, "AGOSTOJJ")
+  assert.match(content.promotion.code, /^[A-Z0-9]+$/)
 })
 
 test("returns Stripe customers to the canonical domain in production", () => {

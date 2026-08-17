@@ -123,8 +123,8 @@ export default function SobreNosotros() {
         <div className="mx-auto max-w-4xl text-center">
           <p className="text-[11px] font-bold uppercase tracking-[0.22em]">Tu siguiente clase empieza aquí</p>
           <h2 className="mt-5 font-[family-name:var(--font-display)] text-6xl uppercase leading-[0.82] sm:text-7xl">Encuentra a tu<br />mejor versión.</h2>
-          <PurchaseButton ariaLabel="Elegir entre Nessty o Stripe" className="mt-9 inline-flex items-center gap-2 rounded-full bg-[#1a1816] px-7 py-4 text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:bg-white hover:text-[#1a1816]">
-            Nessty o Stripe <ArrowUpRight size={15} strokeWidth={2.5} />
+          <PurchaseButton ariaLabel="Abrir opciones de compra" className="mt-9 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#1a1816] px-7 py-4 text-xs font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-[#1a1816]">
+            Opciones de compra <ArrowUpRight size={15} strokeWidth={2.5} />
           </PurchaseButton>
         </div>
       </section>

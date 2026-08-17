@@ -1,7 +1,10 @@
 import "./globals.css"
 import Script from "next/script"
+import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Inter } from "next/font/google"
 import siteContent from "@/content/site-content.json"
+import MobileActionBar from "@/components/MobileActionBar"
 import { PurchaseProvider } from "@/components/PurchaseFlow"
 
 const inter = Inter({
@@ -63,11 +66,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "SportsActivityLocation",
+    "@type": ["HealthClub", "SportsActivityLocation"],
     name: "JJ Studio",
     url: siteUrl,
     logo: `${siteUrl}/images/logo.png`,
-    image: `${siteUrl}/opengraph-image`,
+    image: [`${siteUrl}/opengraph-image`, `${siteUrl}/images/seo/estudio-interior.jpg`],
     description: "Estudio de Lagree en Querétaro con clases de fuerza, resistencia y control sobre Megaformer.",
     sameAs: ["https://www.instagram.com/jj_lagree_experience/"],
     address: {
@@ -79,6 +82,17 @@ export default function RootLayout({ children }) {
       addressCountry: "MX",
     },
     hasMap: siteContent.links.maps,
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 20.634130901213975,
+      longitude: -100.34342662385824,
+    },
+    areaServed: ["Querétaro", "Juriquilla", "El Refugio", "Zibatá", "Lomas del Marqués"],
+    amenityFeature: {
+      "@type": "LocationFeatureSpecification",
+      name: "Estacionamiento gratuito en la plaza",
+      value: true,
+    },
     openingHoursSpecification: [
       { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "08:15", closes: "12:15" },
       { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "17:15", closes: "21:15" },
@@ -106,7 +120,14 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body><PurchaseProvider>{children}</PurchaseProvider></body>
+      <body>
+        <PurchaseProvider>
+          {children}
+          <MobileActionBar />
+        </PurchaseProvider>
+        <Analytics />
+        <SpeedInsights />
+      </body>
     </html>
   )
 }
