@@ -4,7 +4,8 @@ export const dynamic = "force-dynamic"
 
 export async function GET() {
   const checks = {
-    stripe: Boolean(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET),
+    stripeCheckout: Boolean(process.env.STRIPE_SECRET_KEY),
+    stripeWebhook: Boolean(process.env.STRIPE_WEBHOOK_SECRET),
     activations: Boolean(process.env.GOOGLE_ACTIVATION_URL && process.env.GOOGLE_ACTIVATION_SECRET),
   }
   const healthy = Object.values(checks).every(Boolean)
