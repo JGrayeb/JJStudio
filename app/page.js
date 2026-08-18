@@ -7,6 +7,7 @@ import { track } from "@vercel/analytics"
 import { ArrowDown, ArrowUp, ArrowUpRight, CalendarDays, ChevronDown, CreditCard, Gift, MapPin, MessageCircle, Pause, Phone, Play, Star, X } from "lucide-react"
 import { Bebas_Neue, Inter } from "next/font/google"
 import siteContent from "@/content/site-content.json"
+import { normalizePublicPromotion } from "@/lib/site-promotion.mjs"
 import { PurchaseButton } from "@/components/PurchaseFlow"
 
 const HomeMinimalContent = dynamic(() => import("@/components/HomeMinimalContent"), {
@@ -119,7 +120,6 @@ const NAV_SECTION_BY_ID = {
 
 const HERO_TITLE_LINES = ["Trust", "the Process."]
 
-const formatPromoPrice = (value) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: Number(value) % 1 ? 2 : 0, maximumFractionDigits: 2 }).format(Number(value))
 const isPromotionCurrentlyActive = (promotion) => {
   if (!promotion || promotion.active === false) return false
   const now = Date.now()
@@ -378,23 +378,7 @@ export default function Home() {
         if (!payload || payload.stale) return
         const data = payload?.promotion
         if (!data) { setPromotion(null); return }
-        setPromotion({
-          name: data.name,
-          code: data.code,
-          active: data.active,
-          startsAt: data.starts_at,
-          discountLabel: `${data.discount_percent}% en Nessty`,
-          endsAt: data.ends_at,
-          trialClass: { name: "Clase de muestra", price: formatPromoPrice(data.trial_price), guestLabel: data.trial_guest_label },
-          packages: data.packages.map((item) => ({
-            name: item.name,
-            nessty: formatPromoPrice(item.nessty),
-            nesstyPerClass: item.nesstyPerClass == null ? null : formatPromoPrice(item.nesstyPerClass),
-            frontDesk: formatPromoPrice(item.frontDesk),
-            frontDeskPerClass: item.frontDeskPerClass == null ? null : formatPromoPrice(item.frontDeskPerClass),
-            drinks: `${item.drinks} bebidas`,
-          })),
-        })
+        setPromotion(normalizePublicPromotion(data, siteContent.promotion))
       })
       .catch((error) => {
         if (error?.name !== "AbortError") console.warn("No fue posible actualizar la promoción.")
