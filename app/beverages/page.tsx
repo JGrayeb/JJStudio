@@ -5,6 +5,7 @@ import DrinkBuilder from "@/components/DrinkBuilder"
 import siteContent from "@/content/site-content.json"
 import { applyBeveragePrices } from "@/lib/beverage-settings.mjs"
 import { getBeveragePrices } from "@/lib/supabase/server"
+import MatchaStartButton from "@/components/MatchaStartButton"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", variable: "--font-display" })
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" })
@@ -54,12 +55,13 @@ export default async function BeveragesPage() {
                 <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#d6cec4]"><CupSoda size={14} /> 500 ml</span>
                 <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-[#d6cec4]"><BadgePercent size={14} /> Clientes -{beverages.clientDiscountPercent}%</span>
               </div>
+              <MatchaStartButton />
             </div>
           </div>
 
           <div id="arma-tu-bebida" className="mt-9 scroll-mt-24">
             <div className="mb-4 flex items-center justify-between gap-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.19em] text-white">Arma el tuyo paso a paso</p>
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-white sm:text-sm">Arma tu matcha de 500 ml</p>
               <p className="hidden text-[9px] font-bold uppercase tracking-[0.15em] text-[#8f867d] sm:block">La imagen cambia con tu elección</p>
             </div>
             <DrinkBuilder beverages={beverages} />

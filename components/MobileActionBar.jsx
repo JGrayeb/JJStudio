@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 import siteContent from "@/content/site-content.json"
 import { readLocalPreference } from "@/lib/local-preferences"
+import { trackMetaEvent } from "@/lib/meta-pixel"
 import { usePurchaseFlow } from "@/components/PurchaseFlow"
 
 const DRINK_PREFERENCE_KEY = "jjstudio:drink-builder:v1"
@@ -108,9 +109,9 @@ export default function MobileActionBar() {
   if (pathname.startsWith("/beverages")) {
     actions = (
       <>
-        <ButtonAction primary icon={<CupSoda size={20} />} label={hasDrinkDraft ? "Continuar" : "Pedir bebida"} onClick={() => scrollToSection("arma-tu-bebida")} />
+        <ButtonAction primary icon={<CupSoda size={20} />} label={hasDrinkDraft ? "Continuar" : "Arma matcha"} onClick={() => { if (!hasDrinkDraft) track("matcha_cta_clicked", { location: "beverage_mobile_bar" }); scrollToSection("arma-tu-bebida") }} />
         <ButtonAction icon={<List size={20} />} label="Ver carta" onClick={() => scrollToSection("carta-bebidas")} />
-        <ExternalAction href={siteContent.links.whatsapp} icon={<MessageCircle size={20} />} label="WhatsApp" onActivate={() => { showActionFeedback("Abriendo WhatsApp…"); track("whatsapp_clicked", { context: "beverage_bar", path: pathname }) }} />
+        <ExternalAction href={siteContent.links.whatsapp} icon={<MessageCircle size={20} />} label="WhatsApp" onActivate={() => { showActionFeedback("Abriendo WhatsApp…"); track("whatsapp_clicked", { context: "beverage_bar", path: pathname }); trackMetaEvent("Contact", { contact_method: "whatsapp", context: "beverage_bar" }) }} />
       </>
     )
   } else if (pathname === "/" && homePurchaseContext) {
@@ -119,7 +120,7 @@ export default function MobileActionBar() {
         {hasSavedPurchase
           ? <ButtonAction primary icon={<RotateCcw size={20} />} label="Continuar compra" onClick={resumePurchase} />
           : <ButtonAction primary icon={<CreditCard size={20} />} label="Comprar" onClick={() => openPurchase()} />}
-        <ExternalAction href={PACKAGE_HELP_WHATSAPP_URL} icon={<MessageCircle size={20} />} label="Ayuda" onActivate={() => { showActionFeedback("Abriendo ayuda…"); track("whatsapp_clicked", { context: "package_help_bar", path: pathname }) }} />
+        <ExternalAction href={PACKAGE_HELP_WHATSAPP_URL} icon={<MessageCircle size={20} />} label="Ayuda" onActivate={() => { showActionFeedback("Abriendo ayuda…"); track("whatsapp_clicked", { context: "package_help_bar", path: pathname }); trackMetaEvent("Contact", { contact_method: "whatsapp", context: "package_help_bar" }) }} />
         <InternalAction href="/regalos" icon={<Gift size={20} />} label="Regalar" />
       </>
     )
@@ -127,7 +128,7 @@ export default function MobileActionBar() {
     actions = (
       <>
         <ButtonAction primary icon={<CalendarDays size={20} />} label="Ver clases" onClick={() => scrollToSection("calendario-en-vivo")} />
-        <ExternalAction href={RESERVATION_WHATSAPP_URL} icon={<MessageCircle size={20} />} label="WhatsApp" onActivate={() => { showActionFeedback("Abriendo WhatsApp…"); track("whatsapp_clicked", { context: "schedule_bar", path: pathname }) }} />
+        <ExternalAction href={RESERVATION_WHATSAPP_URL} icon={<MessageCircle size={20} />} label="WhatsApp" onActivate={() => { showActionFeedback("Abriendo WhatsApp…"); track("whatsapp_clicked", { context: "schedule_bar", path: pathname }); trackMetaEvent("Contact", { contact_method: "whatsapp", context: "schedule_bar" }) }} />
         <ExternalAction href={siteContent.links.maps} icon={<MapPin size={20} />} label="Cómo llegar" onActivate={() => { showActionFeedback("Abriendo Maps…"); track("maps_clicked", { context: "schedule_bar", path: pathname }) }} />
       </>
     )
@@ -137,7 +138,7 @@ export default function MobileActionBar() {
         {pathname === "/" && hasSavedPurchase
           ? <ButtonAction primary icon={<RotateCcw size={20} />} label="Continuar compra" onClick={resumePurchase} />
           : <InternalAction primary href="/horarios" icon={<CalendarDays size={20} />} label="Reservar" />}
-        <ExternalAction href={RESERVATION_WHATSAPP_URL} icon={<MessageCircle size={20} />} label="WhatsApp" onActivate={() => { showActionFeedback("Abriendo WhatsApp…"); track("whatsapp_clicked", { context: "mobile_bar", path: pathname }) }} />
+        <ExternalAction href={RESERVATION_WHATSAPP_URL} icon={<MessageCircle size={20} />} label="WhatsApp" onActivate={() => { showActionFeedback("Abriendo WhatsApp…"); track("whatsapp_clicked", { context: "mobile_bar", path: pathname }); trackMetaEvent("Contact", { contact_method: "whatsapp", context: "mobile_bar" }) }} />
         <ExternalAction href={siteContent.links.maps} icon={<MapPin size={20} />} label="Cómo llegar" onActivate={() => { showActionFeedback("Abriendo Maps…"); track("maps_clicked", { context: "mobile_bar", path: pathname }) }} />
       </>
     )

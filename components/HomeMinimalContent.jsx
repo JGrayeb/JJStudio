@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { track } from "@vercel/analytics"
 import { ArrowUpRight, CalendarDays, Check, CreditCard, Gift, MapPin, MessageCircle, Phone, Star } from "lucide-react"
 import siteContent from "@/content/site-content.json"
+import { trackMetaEvent } from "@/lib/meta-pixel"
 import PackageFinder from "@/components/PackageFinder"
 import { PurchaseButton } from "@/components/PurchaseFlow"
 
@@ -51,9 +52,9 @@ const EXPERIENCE_LINKS = [
   },
   {
     eyebrow: "Después del shake",
-    title: "Matcha, café y proteína",
-    description: "Arma tu bebida y aplica tus beneficios de cliente.",
-    href: "/beverages",
+    title: "Arma tu matcha de 500 ml",
+    description: "Elige sabor, leche y extras; la imagen cambia contigo.",
+    href: "/beverages#arma-tu-bebida",
   },
 ]
 
@@ -229,7 +230,7 @@ function StudioSection() {
 
         <div className="mt-4 grid gap-px overflow-hidden rounded-[1.5rem] bg-white/10 md:grid-cols-3">
           {EXPERIENCE_LINKS.map((item) => (
-            <a key={item.href} href={item.href} className="group bg-[#1d1a18] p-6 transition hover:bg-[#292421] sm:p-7">
+            <a key={item.href} href={item.href} onClick={() => { if (item.href.startsWith("/beverages")) track("matcha_cta_clicked", { location: "experience_links" }) }} className="group bg-[#1d1a18] p-6 transition hover:bg-[#292421] sm:p-7">
               <p className="text-xs font-black uppercase tracking-[0.12em] text-[#f04a3e]">{item.eyebrow}</p>
               <h3 className="mt-3 text-base font-black uppercase tracking-[0.06em]">{item.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-[#aaa198]">{item.description}</p>
@@ -305,7 +306,7 @@ function FaqContactSection({ faqItems }) {
               </summary>
               <div className="max-w-xl pb-6 pr-9 text-sm leading-relaxed text-[#bcb4aa]">
                 {item.answer}{" "}
-                {item.href && <a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} className="font-bold text-[#f04a3e] underline underline-offset-4">{item.linkLabel} <ArrowUpRight className="inline" size={13} /></a>}
+                {item.href && <a href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined} onClick={() => { if (item.href.startsWith("/beverages")) track("matcha_cta_clicked", { location: "faq" }) }} className="font-bold text-[#f04a3e] underline underline-offset-4">{item.linkLabel} <ArrowUpRight className="inline" size={13} /></a>}
               </div>
             </details>
           ))}
@@ -325,7 +326,7 @@ function FaqContactSection({ faqItems }) {
           </div>
           <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
             <PurchaseButton className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#d9362b] px-6 py-3 text-xs font-black uppercase tracking-[0.13em] transition hover:bg-[#f04a3e]">Opciones de compra <CreditCard size={15} /></PurchaseButton>
-            <a href={whatsappHelp} target="_blank" rel="noreferrer" onClick={() => track("whatsapp_clicked", { context: "minimal_home" })} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-3 text-xs font-black uppercase tracking-[0.13em] transition hover:bg-white hover:text-[#151312]">WhatsApp <MessageCircle size={15} /></a>
+            <a href={whatsappHelp} target="_blank" rel="noreferrer" onClick={() => { track("whatsapp_clicked", { context: "minimal_home" }); trackMetaEvent("Contact", { contact_method: "whatsapp", context: "minimal_home" }) }} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-3 text-xs font-black uppercase tracking-[0.13em] transition hover:bg-white hover:text-[#151312]">WhatsApp <MessageCircle size={15} /></a>
             <a href="/regalos" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-3 text-xs font-black uppercase tracking-[0.13em] transition hover:bg-white hover:text-[#151312]">Regalar <Gift size={15} /></a>
           </div>
         </div>

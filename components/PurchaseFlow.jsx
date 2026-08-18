@@ -5,6 +5,7 @@ import { track } from "@vercel/analytics"
 import { ArrowUpRight, Check, CreditCard, LoaderCircle, ShieldCheck, X } from "lucide-react"
 import siteContent from "@/content/site-content.json"
 import { readLocalPreference, writeLocalPreference } from "@/lib/local-preferences"
+import { trackMetaEvent } from "@/lib/meta-pixel"
 import { DEFAULT_PURCHASE_PACKAGE_ID, DRINK_ADDONS, formatMxn, getDrinkAddon, getPurchasePackage, PURCHASE_PACKAGES } from "@/lib/purchase-packages.mjs"
 
 const PurchaseContext = createContext(null)
@@ -119,6 +120,7 @@ export function PurchaseProvider({ children }) {
 
   const openPurchase = useCallback((packageId = DEFAULT_PURCHASE_PACKAGE_ID) => {
     const nextPackageId = getPurchasePackage(packageId) ? packageId : DEFAULT_PURCHASE_PACKAGE_ID
+    const nextPackage = getPurchasePackage(nextPackageId)
     setSelectedPackageId(nextPackageId)
     setPromotionAccepted(true)
     setMobileStep(1)
@@ -128,6 +130,13 @@ export function PurchaseProvider({ children }) {
     previousFocusRef.current = document.activeElement
     setIsOpen(true)
     track("purchase_modal_opened", { package: nextPackageId })
+    trackMetaEvent("ViewContent", {
+      content_ids: [nextPackageId],
+      content_name: nextPackage?.name || nextPackageId,
+      content_type: "product",
+      currency: "MXN",
+      value: nextPackage?.stripeAmount || 0,
+    })
   }, [])
 
   const closePurchase = useCallback(() => {
@@ -259,6 +268,14 @@ export function PurchaseProvider({ children }) {
       package: selectedPackage.id,
       drink_addon: selectedDrinkAddon.id,
       amount: checkoutTotal,
+    })
+    trackMetaEvent("InitiateCheckout", {
+      content_ids: [selectedPackage.id],
+      content_name: selectedPackage.name,
+      content_type: "product",
+      currency: "MXN",
+      num_items: 1,
+      value: checkoutTotal,
     })
 
     try {

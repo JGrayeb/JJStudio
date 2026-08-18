@@ -40,7 +40,7 @@ export default async function PagoExitoso({ searchParams }) {
 
   return (
     <main className="grid min-h-screen place-items-center bg-[#151312] px-6 py-16 text-[#f8f3eb]">
-      {paid && <PaymentSuccessAnalytics packageId={packageId} amount={session.amount_total ? session.amount_total / 100 : 0} drinks={drinks} />}
+      {paid && <PaymentSuccessAnalytics packageId={packageId} amount={session.amount_total ? session.amount_total / 100 : 0} drinks={drinks} reference={reference} />}
       <section className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#1d1917] shadow-[0_35px_100px_rgba(0,0,0,0.5)]">
         <div className={`${paid ? "bg-[#d9362b]" : "bg-[#2a2522]"} px-7 py-10 text-center sm:px-10`}>
           <div className="mx-auto grid size-16 place-items-center rounded-full bg-[#151312] text-white">

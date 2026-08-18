@@ -5,6 +5,7 @@ import { track } from "@vercel/analytics"
 import { Gift, MessageCircle, Minus, Plus } from "lucide-react"
 import siteContent from "@/content/site-content.json"
 import { readLocalPreference, writeLocalPreference } from "@/lib/local-preferences"
+import { trackMetaEvent } from "@/lib/meta-pixel"
 
 const formatMoney = (value) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(value)
 const amount = (value) => Number(String(value).replace(/[$,]/g, ""))
@@ -118,7 +119,7 @@ export default function GiftBuilder() {
           <span className="text-[10px] font-black uppercase tracking-[0.16em]">Total</span>
           <strong className="text-4xl leading-none">{formatMoney(total)}</strong>
         </div>
-        <a href={selected.length ? `${siteContent.links.whatsapp}?text=${encodeURIComponent(message)}` : undefined} aria-disabled={!selected.length} target={selected.length ? "_blank" : undefined} rel="noreferrer" onClick={() => selected.length && track("gift_whatsapp_clicked", { packages: selected.length, total, promotion: promotionApplied })} className={`mt-7 flex items-center justify-center gap-2 rounded-full px-6 py-4 text-xs font-black uppercase tracking-[0.14em] transition ${selected.length ? "bg-[#151312] text-white hover:bg-white hover:text-[#151312]" : "cursor-not-allowed bg-[#151312]/25 text-[#151312]/45"}`}>
+        <a href={selected.length ? `${siteContent.links.whatsapp}?text=${encodeURIComponent(message)}` : undefined} aria-disabled={!selected.length} target={selected.length ? "_blank" : undefined} rel="noreferrer" onClick={() => { if (!selected.length) return; track("gift_whatsapp_clicked", { packages: selected.length, total, promotion: promotionApplied }); trackMetaEvent("Contact", { contact_method: "whatsapp", context: "gift_order", value: total, currency: "MXN" }) }} className={`mt-7 flex items-center justify-center gap-2 rounded-full px-6 py-4 text-xs font-black uppercase tracking-[0.14em] transition ${selected.length ? "bg-[#151312] text-white hover:bg-white hover:text-[#151312]" : "cursor-not-allowed bg-[#151312]/25 text-[#151312]/45"}`}>
           Continuar por WhatsApp <MessageCircle size={16} />
         </a>
         <p className="mt-5 text-[10px] font-semibold leading-relaxed text-[#151312]/70">La promoción usa precios de caja/transferencia y no agrega bebidas al regalo. Confirmamos el pago y después asignamos un folio único JJG-0001 a JJG-0050.</p>

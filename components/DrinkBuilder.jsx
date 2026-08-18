@@ -7,6 +7,7 @@ import { track } from "@vercel/analytics"
 import siteContent from "@/content/site-content.json"
 import { calculateDrinkPrice } from "@/lib/beverage-pricing"
 import { readLocalPreference, writeLocalPreference } from "@/lib/local-preferences"
+import { trackMetaEvent } from "@/lib/meta-pixel"
 
 const DRINK_PREFERENCE_KEY = "jjstudio:drink-builder:v1"
 const formatMoney = (value) => new Intl.NumberFormat("es-MX", {
@@ -48,6 +49,7 @@ export default function DrinkBuilder({ beverages = siteContent.beverages }) {
   const [orderFeedback, setOrderFeedback] = useState(false)
   const [storageReady, setStorageReady] = useState(false)
   const orderFeedbackTimerRef = useRef(null)
+  const matchaBuilderStartedRef = useRef(false)
 
   useEffect(() => {
     const saved = readLocalPreference(DRINK_PREFERENCE_KEY)
@@ -130,12 +132,20 @@ export default function DrinkBuilder({ beverages = siteContent.beverages }) {
   const total = price.total
   const baseVisual = baseVisuals[base]
 
-  const updateSelection = (setter, value) => {
+  const markMatchaBuilderStarted = (source, nextCategory = category) => {
+    if (nextCategory !== "matcha" || matchaBuilderStartedRef.current) return
+    matchaBuilderStartedRef.current = true
+    track("matcha_builder_started", { source })
+  }
+
+  const updateSelection = (setter, value, source = "selection") => {
+    markMatchaBuilderStarted(source)
     setter(value)
     setDraftActive(true)
   }
 
   const changeCategory = (nextCategory) => {
+    markMatchaBuilderStarted("category", nextCategory)
     setCategory(nextCategory)
     setDraftActive(true)
     setOwnCup(false)
@@ -148,6 +158,7 @@ export default function DrinkBuilder({ beverages = siteContent.beverages }) {
     track("drink_category_selected", { category: nextCategory })
   }
   const chooseMatchaMode = (nextMode) => {
+    markMatchaBuilderStarted("mode")
     setMatchaMode(nextMode)
     setDraftActive(true)
     if (nextMode === "quick") {
@@ -159,6 +170,7 @@ export default function DrinkBuilder({ beverages = siteContent.beverages }) {
     track("matcha_mode_selected", { mode: nextMode })
   }
   const toggleExtra = (id) => {
+    markMatchaBuilderStarted("boost")
     setDraftActive(true)
     setSelectedExtras((current) => current.includes(id)
       ? current.filter((item) => item !== id)
@@ -208,6 +220,7 @@ export default function DrinkBuilder({ beverages = siteContent.beverages }) {
       own_cup: ownCup,
       client_discount: isClient,
     })
+    trackMetaEvent("Contact", { contact_method: "whatsapp", context: "drink_order", value: total, currency: "MXN" })
   }
   const previewProps = {
     category,
@@ -292,7 +305,7 @@ export default function DrinkBuilder({ beverages = siteContent.beverages }) {
                 </legend>
                 <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3">
                   {drinks.matchaFlavors.map((item) => (
-                    <FlavorButton key={item.id} item={item} price={selectedGrade.price} active={matchaFlavorId === item.id} onClick={() => updateSelection(setMatchaFlavorId, item.id)} />
+                    <FlavorButton key={item.id} item={item} price={selectedGrade.price} active={matchaFlavorId === item.id} onClick={() => updateSelection(setMatchaFlavorId, item.id, "flavor")} />
                   ))}
                 </div>
               </fieldset>
@@ -304,7 +317,7 @@ export default function DrinkBuilder({ beverages = siteContent.beverages }) {
               <>
                 <ChoiceGroup label="2. Elige el grado de matcha">
                   {drinks.matchaGrades.map((item) => (
-                    <ChoiceButton key={item.id} active={matchaGradeId === item.id} onClick={() => updateSelection(setMatchaGradeId, item.id)} title={item.name} detail={formatMoney(item.price)} icon={<Sparkles size={15} />} />
+                    <ChoiceButton key={item.id} active={matchaGradeId === item.id} onClick={() => updateSelection(setMatchaGradeId, item.id, "grade")} title={item.name} detail={formatMoney(item.price)} icon={<Sparkles size={15} />} />
                   ))}
                 </ChoiceGroup>
 
@@ -314,7 +327,7 @@ export default function DrinkBuilder({ beverages = siteContent.beverages }) {
                     {drinks.bases.map((item) => {
                       const visual = baseVisuals[item]
                       return (
-                        <button key={item} type="button" onClick={() => updateSelection(setBase, item)} aria-pressed={base === item} className={`flex min-h-14 items-center gap-3 rounded-xl border p-3 text-left transition active:scale-[0.99] ${base === item ? "border-[#d9362b] bg-[#d9362b]/10 text-white" : "border-white/15 text-[#d8d0c7] hover:border-white/30"}`}>
+                        <button key={item} type="button" onClick={() => updateSelection(setBase, item, "base")} aria-pressed={base === item} className={`flex min-h-14 items-center gap-3 rounded-xl border p-3 text-left transition active:scale-[0.99] ${base === item ? "border-[#d9362b] bg-[#d9362b]/10 text-white" : "border-white/15 text-[#d8d0c7] hover:border-white/30"}`}>
                           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/10 text-[9px] font-black text-[#29231e]" style={{ backgroundColor: visual.swatch }}>{visual.short}</span>
                           <span className="text-xs font-bold leading-tight">{item}</span>
                           {base === item && <Check className="ml-auto shrink-0 text-[#f04a3e]" size={15} />}
@@ -326,7 +339,7 @@ export default function DrinkBuilder({ beverages = siteContent.beverages }) {
 
                 <ChoiceGroup label="4. Endulza a tu gusto">
                   {drinks.sweeteners.map((item) => (
-                    <ChoiceButton key={item} active={sweetener === item} onClick={() => updateSelection(setSweetener, item)} title={item} detail="Sin costo" compact />
+                    <ChoiceButton key={item} active={sweetener === item} onClick={() => updateSelection(setSweetener, item, "sweetener")} title={item} detail="Sin costo" compact />
                   ))}
                 </ChoiceGroup>
               </>

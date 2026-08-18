@@ -8,6 +8,7 @@ import { ArrowDown, ArrowUp, ArrowUpRight, CalendarDays, ChevronDown, CreditCard
 import { Bebas_Neue, Inter } from "next/font/google"
 import siteContent from "@/content/site-content.json"
 import { normalizePublicPromotion } from "@/lib/site-promotion.mjs"
+import { trackMetaEvent } from "@/lib/meta-pixel"
 import { PurchaseButton } from "@/components/PurchaseFlow"
 
 const HomeMinimalContent = dynamic(() => import("@/components/HomeMinimalContent"), {
@@ -100,7 +101,7 @@ const NAV_SECTIONS = [
     label: "Compra",
     links: [
       ["Precios", "#precios", "Paquetes y promociones"],
-      ["Bebidas", "/beverages", "Matcha, café y shakes"],
+      ["Arma tu matcha", "/beverages#arma-tu-bebida", "500 ml · elige sabor, leche y extras"],
       ["Regalos", "/regalos", "Regala clases Lagree"],
       ["Ayuda para elegir", "#paquete-ideal", "Encuentra tu paquete"],
     ],
@@ -176,8 +177,8 @@ const FAQ_ITEMS = [
   {
     question: "¿Qué bebidas ofrecen después de clase?",
     answer: `Tenemos bebidas de ${siteContent.beverages.sizesLabel}. Puedes consultar la carta actualizada en nuestra sección de bebidas.`,
-    href: "/beverages",
-    linkLabel: "Ver bebidas",
+    href: "/beverages#arma-tu-bebida",
+    linkLabel: "Arma tu matcha",
   },
   {
     question: "¿Puedo llevar mi propia botella de agua?",
@@ -332,18 +333,19 @@ function AnimatedHeroTitle() {
 function BeverageLaunchNudge() {
   return (
     <a
-      href="/beverages"
+      href="/beverages#arma-tu-bebida"
+      onClick={() => track("matcha_cta_clicked", { location: "hero_nudge" })}
       className="beverage-nudge group absolute right-3 top-[4.25rem] z-20 flex w-[10.5rem] items-center gap-1.5 overflow-hidden rounded-xl border border-white/20 bg-[#151312]/92 p-1.5 pr-2 text-left text-white shadow-[0_20px_55px_rgba(0,0,0,0.5)] backdrop-blur-md transition hover:border-[#f04a3e] hover:bg-[#1d1917] sm:right-8 sm:top-28 sm:w-[17rem] sm:gap-3 sm:rounded-[1.35rem] sm:p-3 sm:pr-4 lg:right-10"
-      aria-label="Conoce las bebidas y aplica tu descuento de cliente"
+      aria-label="Arma tu matcha de 500 mililitros"
     >
       <span className="absolute inset-y-0 left-0 w-20 bg-[radial-gradient(circle_at_45%_45%,rgba(217,54,43,0.36),transparent_67%)]" aria-hidden="true" />
       <span className="beverage-nudge-cup relative h-11 w-8 shrink-0 sm:h-20 sm:w-14">
         <Image src="/images/bebidas/matcha-original.png" alt="" fill sizes="56px" className="object-contain drop-shadow-[0_12px_10px_rgba(0,0,0,0.38)]" />
       </span>
       <span className="relative min-w-0 flex-1">
-        <span className="hidden text-[8px] font-black uppercase tracking-[0.18em] text-[#f04a3e] sm:block">Beneficio clientes</span>
-        <strong className="block text-[10px] font-black uppercase leading-tight sm:mt-1 sm:text-sm">20% en bebidas</strong>
-        <span className="mt-0.5 block text-[7px] font-bold uppercase tracking-[0.1em] text-[#cfc6bc] sm:mt-1 sm:text-[9px] sm:tracking-[0.11em]"><span className="sm:hidden">Abrir carta</span><span className="hidden sm:inline">Arma la tuya aquí</span></span>
+        <span className="hidden text-[8px] font-black uppercase tracking-[0.18em] text-[#f04a3e] sm:block">Matcha de medio litro</span>
+        <strong className="block text-[9px] font-black uppercase leading-tight sm:mt-1 sm:text-sm">Arma tu matcha</strong>
+        <span className="mt-0.5 block text-[7px] font-bold uppercase tracking-[0.1em] text-[#cfc6bc] sm:mt-1 sm:text-[9px] sm:tracking-[0.11em]"><span className="sm:hidden">500 ml · empezar</span><span className="hidden sm:inline">Sabor, leche y extras · clientes -20%</span></span>
       </span>
       <ArrowUpRight className="relative shrink-0 text-[#f04a3e] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" size={18} />
     </a>
@@ -509,7 +511,7 @@ export default function Home() {
                       </a>
                     )}
                     {section.links.map(([label, href, description, featured], index) => (
-                      <a key={href} href={href} role="menuitem" style={{ transitionDelay: `${80 + (index * 45)}ms` }} className={`group/link flex translate-y-2 items-center justify-between gap-4 rounded-xl px-3 py-3 opacity-0 transition duration-300 ease-out focus-visible:outline-none group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 ${featured ? "mb-1 border border-[#f04a3e]/40 bg-[#d9362b]/15 hover:bg-[#d9362b] focus-visible:bg-[#d9362b]" : "hover:bg-[#d9362b] focus-visible:bg-[#d9362b]"}`}>
+                      <a key={href} href={href} role="menuitem" onClick={() => { if (href.startsWith("/beverages")) track("matcha_cta_clicked", { location: "desktop_menu" }) }} style={{ transitionDelay: `${80 + (index * 45)}ms` }} className={`group/link flex translate-y-2 items-center justify-between gap-4 rounded-xl px-3 py-3 opacity-0 transition duration-300 ease-out focus-visible:outline-none group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 ${featured ? "mb-1 border border-[#f04a3e]/40 bg-[#d9362b]/15 hover:bg-[#d9362b] focus-visible:bg-[#d9362b]" : "hover:bg-[#d9362b] focus-visible:bg-[#d9362b]"}`}>
                         <span>
                           <span className="block text-[11px] font-black uppercase tracking-[0.12em] text-white">{label}</span>
                           <span className="mt-1 block text-[9px] font-semibold text-[#978e85] transition group-hover/link:text-white/70 group-focus-visible/link:text-white/70">{description}</span>
@@ -580,7 +582,7 @@ export default function Home() {
                             </a>
                           )}
                           {section.links.map(([label, href, description, featured]) => (
-                            <a key={href} href={href} onClick={closeMenu} className={`flex min-h-14 items-center justify-between gap-4 rounded-xl px-3 py-3 transition active:bg-[#d9362b] ${featured ? "mb-1 border border-[#f04a3e]/45 bg-[#d9362b]/15" : ""}`}>
+                            <a key={href} href={href} onClick={() => { if (href.startsWith("/beverages")) track("matcha_cta_clicked", { location: "mobile_menu" }); closeMenu() }} className={`flex min-h-14 items-center justify-between gap-4 rounded-xl px-3 py-3 transition active:bg-[#d9362b] ${featured ? "mb-1 border border-[#f04a3e]/45 bg-[#d9362b]/15" : ""}`}>
                               <span>
                                 <span className="block text-[13px] font-black uppercase tracking-[0.1em] text-white">{label}</span>
                                 <span className="mt-1 block text-[11px] font-semibold leading-relaxed text-[#a89f96]">{description}</span>
@@ -986,8 +988,8 @@ export default function Home() {
               </figure>
             ))}
           </div>
-          <a href="/beverages" className="group mt-16 inline-flex items-center gap-3 rounded-full bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#f0e9df] shadow-lg shadow-[#1a1816]/15 transition hover:-translate-y-0.5 hover:bg-[#c83228] hover:shadow-xl lg:mt-20">
-            Conoce nuestras bebidas <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          <a href="/beverages#arma-tu-bebida" onClick={() => track("matcha_cta_clicked", { location: "studio_gallery" })} className="group mt-16 inline-flex min-h-12 items-center gap-3 rounded-full bg-[#1a1816] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#f0e9df] shadow-lg shadow-[#1a1816]/15 transition hover:-translate-y-0.5 hover:bg-[#c83228] hover:shadow-xl lg:mt-20">
+            Arma tu matcha de 500 ml <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         </div>
       </section>
@@ -1011,8 +1013,8 @@ export default function Home() {
               ))}
             </div>
 
-            <a href="/beverages" className="group mt-9 inline-flex items-center gap-3 rounded-full bg-[#f8f3eb] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#1a1816] shadow-lg shadow-black/25 transition hover:-translate-y-0.5 hover:bg-[#f04a3e] hover:text-white hover:shadow-xl">
-              Conoce las bebidas <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <a href="/beverages#arma-tu-bebida" onClick={() => track("matcha_cta_clicked", { location: "first_class" })} className="group mt-9 inline-flex min-h-12 items-center gap-3 rounded-full bg-[#f8f3eb] px-6 py-3 text-xs font-bold uppercase tracking-[0.16em] text-[#1a1816] shadow-lg shadow-black/25 transition hover:-translate-y-0.5 hover:bg-[#f04a3e] hover:text-white hover:shadow-xl">
+              Arma tu matcha <ArrowUpRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           </div>
 
@@ -1101,7 +1103,7 @@ export default function Home() {
           <div className="mt-9"><BookingButton className="px-8 py-4" /></div>
           <div className="mt-14 flex flex-col justify-center gap-3 text-xs font-bold uppercase tracking-[0.14em] text-[#a69d93] sm:flex-row sm:gap-8">
             <a href="tel:+524423947704" className="transition hover:text-white">+52 442 394 7704</a>
-            <a href={RESERVATION_WHATSAPP_URL} target="_blank" rel="noreferrer" onClick={() => track("whatsapp_clicked", { context: "contact" })} className="transition hover:text-white">WhatsApp</a>
+            <a href={RESERVATION_WHATSAPP_URL} target="_blank" rel="noreferrer" onClick={() => { track("whatsapp_clicked", { context: "contact" }); trackMetaEvent("Contact", { contact_method: "whatsapp", context: "contact" }) }} className="transition hover:text-white">WhatsApp</a>
             <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className="transition hover:text-white">Instagram</a>
             <a href="mailto:administracion@jjstudio.mx" className="normal-case tracking-normal transition hover:text-white">administracion@jjstudio.mx</a>
           </div>
