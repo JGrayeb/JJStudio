@@ -8,8 +8,19 @@ import siteContent from "@/content/site-content.json"
 const FALLBACK_POSTS = [
   { id: "studio", image: "/images/seo/estudio-interior.jpg", alt: "Interior de JJ Studio con iluminación roja" },
   { id: "megaformer", image: "/images/seo/megaformer-lagree.jpg", alt: "Megaformer dentro de JJ Studio Querétaro" },
-  { id: "detalle", image: "/images/seo/megaformer-detalle.jpg", alt: "Detalle del equipo Lagree de JJ Studio" },
+  { id: "entrada", image: "/images/seo/entrada-xentric.jpg", alt: "Letrero de JJ Studio Experience Lagree en Xentric Lomas Norte" },
 ]
+
+function selectUniquePosts(items, limit = 3) {
+  const seen = new Set()
+
+  return items.filter((item) => {
+    const identity = String(item.image || item.href || item.id || "").split("?")[0]
+    if (!identity || seen.has(identity)) return false
+    seen.add(identity)
+    return true
+  }).slice(0, limit)
+}
 
 export default function InstagramHighlights() {
   const [posts, setPosts] = useState(FALLBACK_POSTS)
@@ -21,13 +32,15 @@ export default function InstagramHighlights() {
       .then((response) => response.ok ? response.json() : null)
       .then((payload) => {
         if (!payload?.items?.length) return
-        setPosts(payload.items.slice(0, 3).map((item) => ({
+        const instagramPosts = payload.items.map((item) => ({
           id: item.id,
           image: item.thumbnailUrl || item.mediaUrl,
           alt: item.caption ? item.caption.slice(0, 120) : "Publicación de JJ Studio en Instagram",
           href: item.permalink,
           remote: true,
-        })))
+        }))
+
+        setPosts(selectUniquePosts([...instagramPosts, ...FALLBACK_POSTS]))
       })
       .catch(() => {})
 
