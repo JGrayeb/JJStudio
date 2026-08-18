@@ -622,11 +622,13 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#1a1816] via-transparent to-transparent" />
         </div>
 
+        <BeverageLaunchNudge />
+
         <button
           type="button"
           onClick={toggleHeroVideo}
           aria-label={heroVideoPlaying ? "Pausar video de fondo" : "Reproducir video de fondo"}
-          className="absolute right-6 top-[5.8rem] z-20 flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-[#151312]/80 px-3 text-xs font-black uppercase tracking-[0.08em] text-white backdrop-blur-md transition active:scale-[0.97] sm:right-8 sm:top-auto sm:bottom-6"
+          className="absolute right-6 top-[8.5rem] z-20 flex min-h-11 items-center gap-2 rounded-full border border-white/20 bg-[#151312]/80 px-3 text-xs font-black uppercase tracking-[0.08em] text-white backdrop-blur-md transition active:scale-[0.97] sm:right-8 sm:top-auto sm:bottom-6"
         >
           {heroVideoPlaying ? <Pause size={16} aria-hidden="true" /> : <Play size={16} aria-hidden="true" />}
           {heroVideoPlaying ? "Pausar video" : "Ver video"}
