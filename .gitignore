@@ -143,3 +143,11 @@ vite.config.ts.timestamp-*
 .vite/
 
 /lib/generated/prisma
+.vercel
+.env*
+!.env.example
+
+# Archivos de trabajo y entregables generados localmente
+output/
+outputs/
+tmp/

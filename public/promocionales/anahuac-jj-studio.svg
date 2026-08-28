@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-labelledby="title description">
+  <title id="title">Beneficio exclusivo para la Comunidad Anáhuac Querétaro</title>
+  <desc id="description">15 por ciento adicional en todos los paquetes de JJ Studio al mostrar una credencial Anáhuac vigente. No aplica en clase de muestra.</desc>
+  <rect width="1080" height="1350" fill="#f3ece1"/>
+  <rect x="72" y="74" width="936" height="1" fill="#26211f" opacity=".35"/>
+  <text x="72" y="144" fill="#211d1b" font-family="Arial Narrow, Arial, sans-serif" font-size="29" font-weight="700" letter-spacing="7">JJ STUDIO · LAGREE QUERÉTARO</text>
+
+  <text x="72" y="251" fill="#211d1b" font-family="Arial Narrow, Arial, sans-serif" font-size="43" font-weight="400" letter-spacing="6">BENEFICIO EXCLUSIVO PARA LA</text>
+  <text x="72" y="310" fill="#211d1b" font-family="Arial Narrow, Arial, sans-serif" font-size="43" font-weight="400" letter-spacing="6">COMUNIDAD ANÁHUAC QUERÉTARO</text>
+  <rect x="72" y="358" width="250" height="4" fill="#df392d"/>
+
+  <text x="72" y="542" fill="#df392d" font-family="Arial Narrow, Arial, sans-serif" font-size="182" font-weight="800" letter-spacing="-9">15%</text>
+  <text x="72" y="672" fill="#211d1b" font-family="Arial Narrow, Arial, sans-serif" font-size="118" font-weight="800" letter-spacing="-4">ADICIONAL</text>
+  <text x="72" y="735" fill="#df392d" font-family="Arial, sans-serif" font-size="23" font-weight="700" letter-spacing="5">BENEFICIO PARA SIEMPRE</text>
+
+  <text x="72" y="823" fill="#211d1b" font-family="Arial, sans-serif" font-size="34" font-weight="400">Muestra tu credencial Anáhuac vigente y recibe</text>
+  <text x="72" y="873" fill="#211d1b" font-family="Arial, sans-serif" font-size="34" font-weight="400">un 15% adicional en todos los paquetes.</text>
+  <text x="72" y="940" fill="#685e58" font-family="Arial, sans-serif" font-size="25" font-style="italic">No aplica en clase de muestra.</text>
+
+  <rect x="72" y="1021" width="936" height="1" fill="#26211f" opacity=".35"/>
+  <text x="72" y="1085" fill="#df392d" font-family="Arial Narrow, Arial, sans-serif" font-size="47" font-weight="800" letter-spacing="5">AGENDA YA</text>
+  <text x="72" y="1133" fill="#211d1b" font-family="Arial, sans-serif" font-size="28">Escanea el código o escríbenos por WhatsApp.</text>
+  <text x="72" y="1186" fill="#211d1b" font-family="Arial, sans-serif" font-size="27">442 394 7704 · @jj_lagree_experience</text>
+
+  <rect x="782" y="1010" width="226" height="226" rx="4" fill="#fff"/>
+  <image href="qr-jjstudio.svg" x="796" y="1024" width="198" height="198" preserveAspectRatio="none"/>
+  <text x="895" y="1274" text-anchor="middle" fill="#211d1b" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="3">ESCANEA Y RESERVA</text>
+
+  <rect x="72" y="1305" width="936" height="1" fill="#26211f" opacity=".35"/>
+  <text x="72" y="1332" fill="#685e58" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">TRUST THE PROCESS.</text>
+</svg>
