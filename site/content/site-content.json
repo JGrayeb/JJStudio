@@ -1,0 +1,177 @@
+{
+  "siteUrl": "https://www.jjstudio.mx",
+  "links": {
+    "nessty": "https://nessty.mx/%40jjstudio/jjstudio-xentric-lomas",
+    "schedule": "https://nessty.mx/%40jjstudio/jjstudio-xentric-lomas",
+    "facebook": "https://www.facebook.com/jjstudio.lagree",
+    "instagram": "https://www.instagram.com/jj_lagree_experience/",
+    "tiktok": "https://www.tiktok.com/@jj.studio.lagree",
+    "whatsapp": "https://wa.me/524423947704",
+    "maps": "https://maps.app.goo.gl/mBrxHJePpTkEMZNy5",
+    "mapsEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3733.8705925223153!2d-100.34342662385824!3d20.634130901213975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d34f251da9d817%3A0xb4c15d32004991d5!2sJJStudio!5e0!3m2!1sen!2sca!4v1785927350771!5m2!1sen!2sca"
+  },
+  "promotion": {
+    "active": true,
+    "name": "Primera clase Lagree",
+    "code": "",
+    "discountLabel": "Primera clase · $245",
+    "startsAt": null,
+    "endsAt": null,
+    "trialClass": {
+      "name": "Primera clase Lagree",
+      "price": "$245",
+      "guestLabel": "Open Level · no necesitas experiencia"
+    },
+    "packages": []
+  },
+  "pricing": {
+    "currency": "MXN",
+    "validityDays": 30,
+    "trial": [
+      { "name": "1 muestra", "classes": 1, "price": "$245", "perClass": "$245" },
+      { "name": "Intro · 3 clases", "classes": 3, "price": "$720", "perClass": "$240" }
+    ],
+    "normal": [
+      { "name": "1 clase", "classes": 1, "price": "$360", "perClass": "$360" },
+      { "name": "4 clases", "classes": 4, "price": "$1,390", "perClass": "$347.50" },
+      { "name": "8 clases", "classes": 8, "price": "$2,550", "perClass": "$318.75" },
+      { "name": "12 clases", "classes": 12, "price": "$3,360", "perClass": "$280" },
+      { "name": "16 clases", "classes": 16, "price": "$4,050", "perClass": "$253.13" },
+      { "name": "Unlimited", "classes": null, "price": "$4,450", "perClass": null }
+    ]
+  },
+  "reviewSummary": {
+    "asOf": "2026-09-01",
+    "totalCount": 376,
+    "average": 4.98,
+    "fiveStarCount": 370,
+    "fitpass": { "count": 363, "average": 4.98, "fiveStarCount": 357 },
+    "google": { "count": 13, "average": 5, "fiveStarCount": 13 }
+  },
+  "reviews": [
+    {
+      "author": "Ivan Rc",
+      "source": "Google",
+      "rating": 5,
+      "text": "Excelente experiencia en JJ Studio. El lugar está muy bonito, limpio y siempre se siente un ambiente agradable y profesional. Los instructores son muy atentos y explican muy bien los ejercicios."
+    },
+    {
+      "author": "Lucero EC",
+      "source": "Google",
+      "rating": 5,
+      "text": "Clases donde trabajas tooodooo, muy completas, con música muy padre y los coaches explican súper bien."
+    },
+    {
+      "author": "lili dena",
+      "source": "Google",
+      "rating": 5,
+      "text": "¡Increíble clase! Salí encantada; trabajamos mucha fuerza en abdomen y pierna. El mejor ejercicio que he hecho definitivamente."
+    },
+    {
+      "author": "Cinthya Rivera",
+      "source": "Google",
+      "rating": 5,
+      "text": "Excelente lugar para entrenar, se trabaja todo y sin impacto. Los coaches están muy capacitados, con disposición de apoyarte, explicarte y sacar lo mejor de ti."
+    },
+    {
+      "author": "saida grayeb pereira",
+      "source": "Google",
+      "rating": 5,
+      "text": "Me parece que el lugar está increíble."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "Excelente experiencia, la volvería a repetir. La coach súper preparada. ¡Felicidades!"
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "Estuvo súper bien la paciencia, el nivel de intensidad y la preparación de la coach. Volveré y recomendaré el lugar."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 4,
+      "text": "La clase duró 35 minutos nada más."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "¡Muy buena instructora!"
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "Me encantó la exigencia de la clase y el coach, súper respetuoso siempre."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "¡Muchas gracias y mucho éxito! Ojalá no lo quiten de Fitpass Classic."
+    },
+    {
+      "author": "Cliente Fitpass",
+      "source": "Fitpass",
+      "rating": 5,
+      "text": "Es la clase de pilates más exigente y la que más me ha gustado."
+    }
+  ],
+  "giftPackages": [
+    { "name": "1 clase", "classes": 1, "price": 360 },
+    { "name": "4 clases", "classes": 4, "price": 1390 },
+    { "name": "8 clases", "classes": 8, "price": 2550 },
+    { "name": "12 clases", "classes": 12, "price": 3360 },
+    { "name": "16 clases", "classes": 16, "price": 4050 },
+    { "name": "Unlimited", "classes": null, "price": 4450 }
+  ],
+  "beverages": {
+    "sizesMl": [300, 500],
+    "sizesLabel": "300 ml calientes · 500 ml frías",
+    "ecoDiscount": {
+      "hot300": 0,
+      "cold500": 0,
+      "shake": 0
+    },
+    "matchaGrades": [
+      { "id": "premium", "name": "No ceremonial", "price": 80 },
+      { "id": "ceremonial", "name": "Ceremonial", "price": 99 }
+    ],
+    "matchaFlavors": [
+      { "id": "original", "name": "Matcha", "detail": "Original", "image": "/images/bebidas/matcha-original.png" },
+      { "id": "espresso", "name": "Espresso Matcha", "detail": "Matcha + espresso", "image": "/images/bebidas/espresso-matcha.png" },
+      { "id": "cloud", "name": "Cloud Matcha", "detail": "Cold foam", "image": "/images/bebidas/cloud-matcha.png" },
+      { "id": "coconut-cloud", "name": "Coconut Cloud Matcha", "detail": "Coco + matcha", "image": "/images/bebidas/coco-matcha.png" }
+    ],
+    "cold": [
+      { "id": "cold-latte", "name": "Cold Latte", "detail": "Espresso + leche", "price": 89, "sizeMl": 500, "allowsBase": true, "image": "/images/bebidas/cold-latte.png" },
+      { "id": "cold-americano", "name": "Cold Americano", "detail": "Espresso + agua + hielo", "price": 80, "sizeMl": 500, "allowsBase": false, "image": "/images/bebidas/cold-americano.png" },
+      { "id": "cold-chai", "name": "Cold Chai", "detail": "Chai + base a elegir", "price": 89, "sizeMl": 500, "allowsBase": true, "image": "/images/bebidas/cold-chai.png" }
+    ],
+    "hot": [
+      { "id": "hot-espresso", "name": "Hot Espresso", "detail": "Espresso recién extraído", "price": 65, "sizeMl": 300, "allowsBase": false, "image": "/images/bebidas/hot-espresso.png" },
+      { "id": "hot-americano", "name": "Hot Americano", "detail": "Espresso + agua caliente", "price": 65, "sizeMl": 300, "allowsBase": false, "image": "/images/bebidas/hot-americano.png" },
+      { "id": "hot-latte", "name": "Hot Latte", "detail": "Espresso + leche", "price": 75, "sizeMl": 300, "allowsBase": true, "image": "/images/bebidas/hot-latte.png" },
+      { "id": "hot-chai", "name": "Hot Chai", "detail": "Chai + base a elegir", "price": 75, "sizeMl": 300, "allowsBase": true, "image": "/images/bebidas/hot-chai.png" },
+      { "id": "hot-matcha", "name": "Hot Matcha", "detail": "Matcha + base a elegir", "price": 85, "sizeMl": 300, "allowsBase": true, "image": "/images/bebidas/hot-matcha.png" }
+    ],
+    "bases": ["Coco", "Soya", "Avena", "Leche deslactosada"],
+    "sweeteners": ["Sin endulzante", "Miel", "Stevia"],
+    "extras": [
+      { "id": "espresso-shot", "name": "Shot de espresso", "price": 10 },
+      { "id": "protein", "name": "Scoop de proteína", "price": 20 },
+      { "id": "creatine", "name": "Creatina monohidratada ELEMENTAL", "price": 15 },
+      { "id": "caramel", "name": "Caramel drizzle", "price": 5 }
+    ],
+    "proteinShake": { "id": "protein-shake", "name": "Protein Shake", "price": 65, "image": "/images/bebidas/protein-shake.png" }
+  },
+  "socks": {
+    "onePair": "$150",
+    "twoPairs": "$250"
+  }
+}
