@@ -1,0 +1,32 @@
+name: Verify JJStudio
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canonical:
+    name: Validación canónica
+    uses: ./.github/workflows/site-validation.yml
+
+  verify:
+    # Keep the historical required-check context; do not publish a green check
+    # when validation failed, was skipped, or was cancelled.
+    name: verify
+    needs: canonical
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Exigir validación completa y correcta
+        env:
+          VALIDATION_RESULT: ${{ needs.canonical.result }}
+        run: |
+          if [ "$VALIDATION_RESULT" != "success" ]; then
+            echo "La validación canónica no terminó correctamente."
+            exit 1
+          fi

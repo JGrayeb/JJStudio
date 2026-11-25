@@ -1,0 +1,1437 @@
+{
+  "schemaVersion": 1,
+  "sourcePath": "site",
+  "target": {
+    "projectId": "prj_rrKx2yBYJb9Uoo1f2gtzFjnFdePM",
+    "teamId": "team_DBehXwhISvWA7AVhQ5CBL7pS",
+    "projectName": "jj-studio",
+    "teamSlug": "jjs-tudio-s-projects",
+    "rootDirectory": "site"
+  },
+  "sourceSha256": "562f54ec87b68a322c89fa52097cbb63566684760ef4d3436eab94d9a40987c7",
+  "deploySha256": "72769f83d0e5589df1867df11cb504c7a3f29d9343f1c86a8c5a1be521d0ced6",
+  "files": [
+    {
+      "path": ".vercelignore",
+      "bytes": 305,
+      "sha256": "5c22f0c1d40be52a76a66191298c3123dd3ee0881a65822ddcc2f7ca8a2dafa9",
+      "deploy": true
+    },
+    {
+      "path": "app/admin/admin.css",
+      "bytes": 21474,
+      "sha256": "7c37d5bd3e7cd1036eedba79ccab4e1df53485f69cf7512884c61aeca453055e",
+      "deploy": true
+    },
+    {
+      "path": "app/admin/page.js",
+      "bytes": 1395,
+      "sha256": "d92b9c58968dee4f200ceee88c7ccd4d1f27f004da5ce44430a1a82eec59938e",
+      "deploy": true
+    },
+    {
+      "path": "app/admin/prueba-suscripciones/page.js",
+      "bytes": 1256,
+      "sha256": "129d452883b03feab9aa680d0129d2fb9d5b97b0df14463612c6d625e199c00c",
+      "deploy": true
+    },
+    {
+      "path": "app/api/admin/accounts/route.js",
+      "bytes": 421,
+      "sha256": "e9d71b661ac3e6d15e4e157959dafdf05b65e5b49078affda927c65103aa5b42",
+      "deploy": true
+    },
+    {
+      "path": "app/api/admin/import-review/route.js",
+      "bytes": 692,
+      "sha256": "e806bb5f6e91fa220913e9bbdd96700437dd5a91194f88270c3decee956a5ef6",
+      "deploy": true
+    },
+    {
+      "path": "app/api/health/route.js",
+      "bytes": 660,
+      "sha256": "a637f73867920e94eeb8dff23175f848ba3c8a0accb66320b175354881190ed7",
+      "deploy": true
+    },
+    {
+      "path": "app/api/instagram/route.js",
+      "bytes": 1733,
+      "sha256": "544f6707f0a8f2ec23365efac5ce8c19b68d020ca6b8fe9381a85287238a2c4a",
+      "deploy": true
+    },
+    {
+      "path": "app/api/site-settings/route.js",
+      "bytes": 1330,
+      "sha256": "e0d2d71fe5bd020c406b7d7dbbf72597d22f9bf0de0d886e07f686426dce3930",
+      "deploy": true
+    },
+    {
+      "path": "app/api/stripe/checkout/route.js",
+      "bytes": 7134,
+      "sha256": "59c88c91dde8cde0f269ec173dff4e93b656e305cde18aa3c1245e25480e63a0",
+      "deploy": true
+    },
+    {
+      "path": "app/api/stripe/webhook/route.js",
+      "bytes": 3767,
+      "sha256": "01a590c484b99495f2739c818131b4c3095fc0f3d76e4437bd93aa34a0c2d373",
+      "deploy": true
+    },
+    {
+      "path": "app/api/subscriptions/account/route.js",
+      "bytes": 265,
+      "sha256": "0774425fb04209a9e830a3aefd1caffde5c3cdded9496c39628dc48a58a218e4",
+      "deploy": true
+    },
+    {
+      "path": "app/api/subscriptions/admin/private-probe/route.js",
+      "bytes": 5949,
+      "sha256": "e3051f83cc0e496dc28e1770463593767e36d198c37057e0a99ab76ed3e03d89",
+      "deploy": true
+    },
+    {
+      "path": "app/api/subscriptions/admin/route.js",
+      "bytes": 388,
+      "sha256": "78a9d5df3a39dcea7df3d2a774013f54dfd885a5d65e772668c90e2885dd9d5e",
+      "deploy": true
+    },
+    {
+      "path": "app/api/subscriptions/cancel/route.js",
+      "bytes": 258,
+      "sha256": "e49714e4e3341f82d02e7e9f3ef6111c6f5f4bc48a25be5e3e9982c09389adfe",
+      "deploy": true
+    },
+    {
+      "path": "app/api/subscriptions/checkout/route.js",
+      "bytes": 274,
+      "sha256": "8b2ce1ba9caab081984bfdf60846cfd16abb60f2fbada7725f36517a5f863f5b",
+      "deploy": true
+    },
+    {
+      "path": "app/api/subscriptions/config/route.js",
+      "bytes": 256,
+      "sha256": "afc624a4b6b7a557d977fca74e15f394cc5b16f994db15ea389a45089e2ea8ef",
+      "deploy": true
+    },
+    {
+      "path": "app/api/subscriptions/portal/route.js",
+      "bytes": 270,
+      "sha256": "5081f7f03b5726b12f787f7a239ed891f68f3f81587e181bcfcde769453f2038",
+      "deploy": true
+    },
+    {
+      "path": "app/api/subscriptions/reminders/route.js",
+      "bytes": 405,
+      "sha256": "74432bf5ce30d927103ea6cb24bed4dc0e6652ff632a70b4d5e39709409007ea",
+      "deploy": true
+    },
+    {
+      "path": "app/api/subscriptions/webhook/route.js",
+      "bytes": 274,
+      "sha256": "8d64a71c79f1ad1e62967ed3cf6293010dbbafac8fe2df631f7be1dd1f3240ba",
+      "deploy": true
+    },
+    {
+      "path": "app/aviso-de-privacidad/page.js",
+      "bytes": 5550,
+      "sha256": "3cee4dfdcd482a8d6febe9420946c5a6e717839912635175f251b07728c99734",
+      "deploy": true
+    },
+    {
+      "path": "app/beverages/page.tsx",
+      "bytes": 15498,
+      "sha256": "1e8ab651a256fea5905d7f733a2aa67155c1c67aaba1dee69df1b105cf22ae94",
+      "deploy": true
+    },
+    {
+      "path": "app/concepto-premium/page.jsx",
+      "bytes": 15998,
+      "sha256": "883618c2934dbb551c8027fbed2eaa8cc7b00c2cc3ba5527315c696a93507e2c",
+      "deploy": true
+    },
+    {
+      "path": "app/concepto-premium/premium.module.css",
+      "bytes": 707,
+      "sha256": "c11e592e360cd8b909eda8f11605dcd669944ab5abf7e354cd4258f0e35d6e4c",
+      "deploy": true
+    },
+    {
+      "path": "app/condiciones-suscripciones/page.js",
+      "bytes": 2141,
+      "sha256": "687b3b4eb8d0635bf3adbdf84dd820b985e5d0a169621b9f8ea2c376c28c8705",
+      "deploy": true
+    },
+    {
+      "path": "app/cuantas-clases-lagree-por-semana/page.js",
+      "bytes": 5508,
+      "sha256": "87b703ab2d7495f095f5dd3adb27fb3e6b29b46230e19d9c6426f18953b86aab",
+      "deploy": true
+    },
+    {
+      "path": "app/error.js",
+      "bytes": 1084,
+      "sha256": "c81eadbe8cca168fd4e468871d473fcad9f15a792091b6f02dc729c16a0504ec",
+      "deploy": true
+    },
+    {
+      "path": "app/evidencia-lagree/page.js",
+      "bytes": 18064,
+      "sha256": "4f2b09feb311126703583a68a3744c83c522bd35ae40c4a5183776bd440f5461",
+      "deploy": true
+    },
+    {
+      "path": "app/global-error.js",
+      "bytes": 921,
+      "sha256": "fb46a45b0fced94cbf55bf6c11676a5dafcbbe876cd66bce56a2307da14b0579",
+      "deploy": true
+    },
+    {
+      "path": "app/globals.css",
+      "bytes": 1011,
+      "sha256": "25eed8768b0e45fc88368051d906415f71d950d3b1f2928770db687686a78a47",
+      "deploy": true
+    },
+    {
+      "path": "app/horarios/page.js",
+      "bytes": 7146,
+      "sha256": "6479346e6d4763c5fe5753a5bcaf88856525f00ad111e0fd99418cc1cd73e7ea",
+      "deploy": true
+    },
+    {
+      "path": "app/icon.svg",
+      "bytes": 425,
+      "sha256": "e2ae26ff5500e679dcb6f218409a0c3cadadfdb2452bf7bbf6626ae14ce2d11c",
+      "deploy": true
+    },
+    {
+      "path": "app/lagree-mayores-de-40/page.js",
+      "bytes": 6255,
+      "sha256": "3e01c8ced3b11aad293c2aeba96626bf1a85cbc201b948f9f96eafb1f4ceb5eb",
+      "deploy": true
+    },
+    {
+      "path": "app/lagree-vs-pilates/page.js",
+      "bytes": 4586,
+      "sha256": "975decf2eac99b4f787bbca97cb7342356352df652b377963bbba1dca16160c9",
+      "deploy": true
+    },
+    {
+      "path": "app/layout.js",
+      "bytes": 5986,
+      "sha256": "9f142314d7fe58ef1e461a520e59e29b449670a782e96ecddcd1c4833ddc9284",
+      "deploy": true
+    },
+    {
+      "path": "app/lib/i18n.js",
+      "bytes": 10731,
+      "sha256": "c4ff72313f64525436074df3d9b91591e9456fb93549d69572633fbad1e81d66",
+      "deploy": true
+    },
+    {
+      "path": "app/metodo-lagree/page.js",
+      "bytes": 6371,
+      "sha256": "41f9114180c464d2eac7ce6259f17bf658d349a6dea09a4be5b200451fe84b2e",
+      "deploy": true
+    },
+    {
+      "path": "app/mi-cuenta/page.js",
+      "bytes": 2264,
+      "sha256": "e76d6eee150e754eeeb11481dec305b5eb488095b94d8127e88805a5a00c5732",
+      "deploy": true
+    },
+    {
+      "path": "app/not-found.js",
+      "bytes": 2825,
+      "sha256": "f2e22652f1616a99fdf9da057c9362e7cbe68151c3612a49143ea9aa7241b065",
+      "deploy": true
+    },
+    {
+      "path": "app/opengraph-image.js",
+      "bytes": 1339,
+      "sha256": "15fa6a7f49b0454f3ee0ed4e2455e813a8269f93f632fa9c01dc0325e58bce96",
+      "deploy": true
+    },
+    {
+      "path": "app/page.js",
+      "bytes": 82508,
+      "sha256": "72116f08c9508874a15bd2265f1fb0c23783b2e9f620233195b7231e57675f07",
+      "deploy": true
+    },
+    {
+      "path": "app/pago-exitoso/page.js",
+      "bytes": 6163,
+      "sha256": "21b0eccfdaa2ae004629bd36beae5cef604c8654f219db06bacef7c60087b9e1",
+      "deploy": true
+    },
+    {
+      "path": "app/primera-clase-lagree/page.js",
+      "bytes": 5061,
+      "sha256": "0ff45a87cfe918d19fd1cbb9177ecd42e0e88ffb30ca3f0bd624d5b6b3f26b7d",
+      "deploy": true
+    },
+    {
+      "path": "app/regalos/page.js",
+      "bytes": 3028,
+      "sha256": "c10c1cbdfa61079c5e81599ddf0efd74d16f3d3d0fbf2621d9b24713326e10fb",
+      "deploy": true
+    },
+    {
+      "path": "app/robots.js",
+      "bytes": 270,
+      "sha256": "c6c45f02811589b47a0ac53547e7e715619df4b0bf1d1c54455fa8041284932f",
+      "deploy": true
+    },
+    {
+      "path": "app/sitemap.js",
+      "bytes": 1432,
+      "sha256": "ef0ca215286557ac4940d0f53627413f605d3457acd353e8a08b9e8289883ef6",
+      "deploy": true
+    },
+    {
+      "path": "app/sobre-nosotros/page.js",
+      "bytes": 7029,
+      "sha256": "e50443ab5dd57b5764edd15d6786827430d2b6d157e6e5c6dcad9c64f076ccad",
+      "deploy": true
+    },
+    {
+      "path": "app/terminos-y-condiciones/page.js",
+      "bytes": 5441,
+      "sha256": "b820f55393279088ce939991fc1f29e9e9598a38b867de0495faa327a1304818",
+      "deploy": true
+    },
+    {
+      "path": "components/ConversionTracking.jsx",
+      "bytes": 2140,
+      "sha256": "7c7d9d59be32486ffa811ac76d7760a6fce9ba43cced5c997818e0f2bc6436fe",
+      "deploy": true
+    },
+    {
+      "path": "components/CustomerAccount.jsx",
+      "bytes": 12083,
+      "sha256": "745e3ba939f38a34225c360b126e8d4a58eff8dbc3716745792ee74932214e7c",
+      "deploy": true
+    },
+    {
+      "path": "components/DrinkBuilder.jsx",
+      "bytes": 30142,
+      "sha256": "35858d91954cb78ecc669258ef69db81849939e3036d787a6cbc43389004417d",
+      "deploy": true
+    },
+    {
+      "path": "components/GiftBuilder.jsx",
+      "bytes": 6102,
+      "sha256": "747e38c1a80b860d2429da320866a5eacd63f06646f0fdb1615e59696011faa7",
+      "deploy": true
+    },
+    {
+      "path": "components/GuidedHelpChat.jsx",
+      "bytes": 15271,
+      "sha256": "2d636eb1333dbe1e7da460a31bfedfa97e5a82be893d2af9d70c56cabf0e2cbf",
+      "deploy": true
+    },
+    {
+      "path": "components/HomeMinimalContent.jsx",
+      "bytes": 21675,
+      "sha256": "4ba9260d04ddda39f2bb206119ba99688ec3d2ba33522b26360ecafd02a912f8",
+      "deploy": true
+    },
+    {
+      "path": "components/InstagramHighlights.jsx",
+      "bytes": 5443,
+      "sha256": "ef095501f0a1a9518f3bec10faf48b9ecf6d0576d1777a978695bd57e9605a67",
+      "deploy": true
+    },
+    {
+      "path": "components/MatchaStartButton.jsx",
+      "bytes": 827,
+      "sha256": "4852b7c51a0d1dd7c5ed4d565760166c8a26fd82581dcef290ad719b10464e8f",
+      "deploy": true
+    },
+    {
+      "path": "components/MetaPixel.jsx",
+      "bytes": 649,
+      "sha256": "3a3e3d5e9b7835191a0e011014701b980653e3573350efc517323b8209cfd6d3",
+      "deploy": true
+    },
+    {
+      "path": "components/MobileActionBar.jsx",
+      "bytes": 9204,
+      "sha256": "851717f54396aa931d5a5a23c31cdab3bb6ca158413b2f7f957b0672e740a381",
+      "deploy": true
+    },
+    {
+      "path": "components/NesstyCalendar.jsx",
+      "bytes": 4060,
+      "sha256": "fb7a7dd37726728bb932abff24b14d3df3a39c3f241f2aa235989ac807234dbf",
+      "deploy": true
+    },
+    {
+      "path": "components/PackageFinder.jsx",
+      "bytes": 6378,
+      "sha256": "4a0100fd62d8288a7f74775f45cf7633a68c1fd85ae45cea09943e18768b1556",
+      "deploy": true
+    },
+    {
+      "path": "components/PaymentSuccessAnalytics.jsx",
+      "bytes": 494,
+      "sha256": "ce4b513b55290f42e3cd07adb24e4cf88b530807b90218592fbaa44e91d9dcda",
+      "deploy": true
+    },
+    {
+      "path": "components/PremiumConceptNav.jsx",
+      "bytes": 4594,
+      "sha256": "e89fdc10fa54dd057a869659d790f9b973e5d9a23535aae5b05836eb98041db1",
+      "deploy": true
+    },
+    {
+      "path": "components/PremiumHeroMedia.jsx",
+      "bytes": 2332,
+      "sha256": "b3e793a2ba35cc1cedc76c72600a27a8fe74ff9f5e30bd8269990775cda0a8ce",
+      "deploy": true
+    },
+    {
+      "path": "components/PremiumPackages.jsx",
+      "bytes": 6570,
+      "sha256": "40b3210393548801d235e03c4ca03caae7afa8577547156d663c628d06f4daea",
+      "deploy": true
+    },
+    {
+      "path": "components/PromotionAdmin.jsx",
+      "bytes": 31121,
+      "sha256": "0f435f1a72148b389e07ec672b076a86a39d77f87f1367f35b892e07aed36f0e",
+      "deploy": true
+    },
+    {
+      "path": "components/PurchaseFlow.jsx",
+      "bytes": 51936,
+      "sha256": "9d496b9cb75f94d9ce0c806f0016abb4b0f95642695b52bfca1748eb6a7e470f",
+      "deploy": true
+    },
+    {
+      "path": "components/SeoBreadcrumbs.jsx",
+      "bytes": 1287,
+      "sha256": "622cbb77394b3060773401e40d4ec1cb8dcf8366532e2e2398f54e5588cc6ae7",
+      "deploy": true
+    },
+    {
+      "path": "components/SubscriptionAdmin.jsx",
+      "bytes": 11316,
+      "sha256": "c8739ec9b14972088dca2f9b3212648b6b532a44b02af07c9c635b4471784d18",
+      "deploy": true
+    },
+    {
+      "path": "components/SubscriptionPrivateProbe.jsx",
+      "bytes": 12546,
+      "sha256": "b807f5b6656c2cab266bf22b17cd194543814eb4fe3acbbbedfa9efdf607bd98",
+      "deploy": true
+    },
+    {
+      "path": "components/TermsAcceptance.jsx",
+      "bytes": 2424,
+      "sha256": "1816754f3b2f177aaab59972e89161273c7a017347137dc4fc1b4c07a266bd89",
+      "deploy": true
+    },
+    {
+      "path": "components/UnlimitedBenefits.jsx",
+      "bytes": 996,
+      "sha256": "1d913b97158633662a5e0a204c20a5851a70d239d96c51f0f93b121335e8452e",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountBillingNotice.jsx",
+      "bytes": 324,
+      "sha256": "207fde1471ff510652614dc3a2c9370e527d386a4a6febca449077c5aa051342",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountClassAdmin.jsx",
+      "bytes": 8124,
+      "sha256": "ad129a551b9e7974817adfde956aaa096a03160f79d0b6fd6a8b4d9809c2d2d9",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountClassDetail.jsx",
+      "bytes": 13759,
+      "sha256": "c1bacbda0c91b4e88a78915f495b8cee914de59008c510f248665737345db33d",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountClassForm.jsx",
+      "bytes": 7998,
+      "sha256": "97050406b470353d2f19516e6baac6c485573b5e7fa608e50e34ff94bbd95b20",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountContractedPackages.jsx",
+      "bytes": 2259,
+      "sha256": "f76fe20a72e031c688a3951f604c6bca57284e2cd6bcccd2735e7c41b1cab3db",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountDirectoryViews.jsx",
+      "bytes": 2594,
+      "sha256": "1f5f8084ea4cc11d558a63e671516d5e0b35d82a701cc8c29f8fb750980dcb93",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountHistoryPanel.jsx",
+      "bytes": 1905,
+      "sha256": "a1f5fe89dedcf7ba522055523aad84a92fad6e50098c8c70364ba7b99482ae3f",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountListCard.jsx",
+      "bytes": 4376,
+      "sha256": "d6495d3e7a437c00a8910d94bb179180488f892edef75a166f2546a8d2ec6483",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountPackagePanel.jsx",
+      "bytes": 4032,
+      "sha256": "196523036b299d92f4351a3a99a9ad66516c52c321591c7be45f7a04ce54893e",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountPaymentPanel.jsx",
+      "bytes": 3962,
+      "sha256": "e898791e6fc32aba5600fe665c5613352c401e4fa1e6b0fdd829898c9427f4fb",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountSubscriptionPanel.jsx",
+      "bytes": 2621,
+      "sha256": "a8131ff79db8e0b1df0f4c54a180fb1f9c971eeb6652f0e382710a9c1d02a6e1",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/AccountSummaryPanel.jsx",
+      "bytes": 2944,
+      "sha256": "549fa4f4620864650eb4b0bfb580b159d775b4e4ef1aeb698ff7efeee9238a99",
+      "deploy": true
+    },
+    {
+      "path": "components/accounts/account-class-ui.js",
+      "bytes": 5204,
+      "sha256": "d49dfe18f73064b426b8b1fcb06e7590655abb0c94baeaa47a95b53773117817",
+      "deploy": true
+    },
+    {
+      "path": "components/admin/AdminSessionMenu.jsx",
+      "bytes": 1559,
+      "sha256": "4091b5c0d60ab710d5d5c4c3d17780cf97dc86dbcf7fa1fadf3895cb3efbd94c",
+      "deploy": true
+    },
+    {
+      "path": "components/admin/AdminSidebar.jsx",
+      "bytes": 3867,
+      "sha256": "1d2e2ce2d629d4d55a79360b6b6eb658c4b4f0cf02d2d2b2acaf96b8e7b28c91",
+      "deploy": true
+    },
+    {
+      "path": "components/private-review/IdentityReviewChecklist.jsx",
+      "bytes": 2399,
+      "sha256": "b04f5ea5e3ef83bc94f94181245cf38a6e5be909f76fcfdf417388d9537d18e9",
+      "deploy": true
+    },
+    {
+      "path": "components/private-review/PrivateReviewPanel.jsx",
+      "bytes": 4207,
+      "sha256": "65061615278863845e6bcd08c442927a8522f995ea27bbd4dac8f7e2eede23ec",
+      "deploy": true
+    },
+    {
+      "path": "components/private-review/ReviewChrome.jsx",
+      "bytes": 3117,
+      "sha256": "25296c30e57b897f06baf625efa3d257b417a1e5161ed9199fe812e24ec47816",
+      "deploy": true
+    },
+    {
+      "path": "components/private-review/ReviewDirectory.jsx",
+      "bytes": 5505,
+      "sha256": "663be7b073de1239b464a461405033a93b2ba394026361c64dec833a72dbf823",
+      "deploy": true
+    },
+    {
+      "path": "components/private-review/ReviewRecordDetail.jsx",
+      "bytes": 6461,
+      "sha256": "217abb50127ca4d5f5a1da4760f7cb13fe9ac5f3f49b7dac7baf0ed231f9fac6",
+      "deploy": true
+    },
+    {
+      "path": "components/private-review/review-format.mjs",
+      "bytes": 4221,
+      "sha256": "58728e27daf8961903632ee21dfd5390b9b255669b36b329701f7a11e2efb478",
+      "deploy": true
+    },
+    {
+      "path": "components/private-review/review.css",
+      "bytes": 18805,
+      "sha256": "30ccc9cd1dd9d68a0d77b4f580b37284a913d92665b0cb0e097ee484515cd7b7",
+      "deploy": true
+    },
+    {
+      "path": "components/private-review/use-review-request.js",
+      "bytes": 1727,
+      "sha256": "f33b519455b1bac53c133c5bbc8a6d1240b66c80cacb17a27bab0d6a17a8bba8",
+      "deploy": true
+    },
+    {
+      "path": "components/purchase/GuestPaymentChoice.jsx",
+      "bytes": 9354,
+      "sha256": "36d8629952bde23e3e0c831bd0bc23cc40e0318f50e09d8417e0c296d176563e",
+      "deploy": true
+    },
+    {
+      "path": "components/subscriptions/AccountAccessForm.jsx",
+      "bytes": 4353,
+      "sha256": "f597b2dbca35ae45dc1e8e4f11f756128695559fa2cd53cfd03014401bfabbf5",
+      "deploy": true
+    },
+    {
+      "path": "components/subscriptions/SubscriptionChooser.jsx",
+      "bytes": 8074,
+      "sha256": "304ada74470ae8d6d9268a9b0d521fa888f6467bb7860489ec00be4c38cb3ab2",
+      "deploy": true
+    },
+    {
+      "path": "components/subscriptions/SubscriptionOverview.jsx",
+      "bytes": 4884,
+      "sha256": "f87cf5048f3554b31359d423cc0fe5b8f6394f55a561f0b546b799914bcb94bd",
+      "deploy": true
+    },
+    {
+      "path": "components/subscriptions/account-ui.js",
+      "bytes": 4580,
+      "sha256": "d51c491450f65293429580822fac3ec8ff3acef1b2f4fa6a7c1fd182a9a9e307",
+      "deploy": true
+    },
+    {
+      "path": "content/site-content.json",
+      "bytes": 7976,
+      "sha256": "9003c27fb57bb208a0844cae3cfd8785b2fc375fe99ee38956596fb740c417a7",
+      "deploy": true
+    },
+    {
+      "path": "content/studio-privacy.mjs",
+      "bytes": 9281,
+      "sha256": "a7e77fea1df3ed7370d58b1dc7ffd6c3049850c9ff4998485f2910b75ae9ed2c",
+      "deploy": true
+    },
+    {
+      "path": "content/terms-studio-2026-11-09-v2.json",
+      "bytes": 18035,
+      "sha256": "a5248ff1a4bf85c7b20013d6cb875b9bceab4329f3dee25745777aa97e6c2d00",
+      "deploy": true
+    },
+    {
+      "path": "content/terms-studio-2026-11-09.json",
+      "bytes": 13185,
+      "sha256": "f9ac96a22e213c98e7c3673eec8f52ff2b8274142a364983392b10c28d2c8af8",
+      "deploy": true
+    },
+    {
+      "path": "content/terms-studio-2026-11-10-unlimited-v3.json",
+      "bytes": 18382,
+      "sha256": "7b9d2496fb3c819f671ae3474523e8acf84bdb439aaf9ad2342fde81be9b9f7c",
+      "deploy": true
+    },
+    {
+      "path": "content/terms-studio-2026-11-10-v4.json",
+      "bytes": 18674,
+      "sha256": "83033d6e0a8685f53cf7c9457a08f0edc8dff7720410046a4189df4a60c7dbd0",
+      "deploy": true
+    },
+    {
+      "path": "jsconfig.json",
+      "bytes": 182,
+      "sha256": "f9a71fc1f64a1e9970fcda508767ad19f2509d9052025a2158ab0a3f8814dc6e",
+      "deploy": true
+    },
+    {
+      "path": "lib/beverage-pricing.js",
+      "bytes": 365,
+      "sha256": "68ddeb39a4919fdc98ed2fae08a04f3703ce35f7ea8d2812561bffe1c7aab776",
+      "deploy": true
+    },
+    {
+      "path": "lib/beverage-settings.mjs",
+      "bytes": 2513,
+      "sha256": "532b7c34fae702d0b03de52b1704aaee7f71e74cc4adbe439af23bde1ceb937d",
+      "deploy": true
+    },
+    {
+      "path": "lib/class-account-admin-domain.mjs",
+      "bytes": 7007,
+      "sha256": "9e646ed96b044db2c73555276b73a812121b2e23784733617d4d7cbfe55fb5cd",
+      "deploy": true
+    },
+    {
+      "path": "lib/class-account-admin-server.js",
+      "bytes": 13612,
+      "sha256": "6c5f7f1e721453e2a9c913a810fab5767aa5c3ee1396df102979890a62112a82",
+      "deploy": true
+    },
+    {
+      "path": "lib/class-account-directory.mjs",
+      "bytes": 5262,
+      "sha256": "268e3100b32109200328e1936b33091efa948f7cb4138c6d5df0e7379125af50",
+      "deploy": true
+    },
+    {
+      "path": "lib/customer-lifecycle-emails.mjs",
+      "bytes": 15609,
+      "sha256": "30261c1d4053e258b7d9b90fceeca423aceaf093e4749e01d8a812565a72f8d7",
+      "deploy": true
+    },
+    {
+      "path": "lib/embedded-browser.mjs",
+      "bytes": 395,
+      "sha256": "ba9ab035b7b7dc7d7a07d276f16841fa134edc8b9ef9238f47c4c308017b9654",
+      "deploy": true
+    },
+    {
+      "path": "lib/guest-payment-choice.mjs",
+      "bytes": 2362,
+      "sha256": "8cb78cc8abfcef2d66880e7b9e8c97782b1b4f5b5690d058faf766605c087071",
+      "deploy": true
+    },
+    {
+      "path": "lib/identity-review-domain.mjs",
+      "bytes": 7944,
+      "sha256": "090f44cb488a018e1e95100807da4be1377981625c9f5fe1fe60fb1c517a6c94",
+      "deploy": true
+    },
+    {
+      "path": "lib/local-preferences.js",
+      "bytes": 1582,
+      "sha256": "5b69f1567a6b385ca077dabbf5bc6476991f6a4df30a4de2e239ba4bb201fa30",
+      "deploy": true
+    },
+    {
+      "path": "lib/meta-pixel.js",
+      "bytes": 438,
+      "sha256": "45bf171571ee0ad370e04e710030d53d100678b7ae5fa50735e8672fafd5031e",
+      "deploy": true
+    },
+    {
+      "path": "lib/payment-success-analytics.mjs",
+      "bytes": 2329,
+      "sha256": "2df6d3ebe1f3d0a18750ddcd0d416b4da8af00c7ea57ce6a4bca596fd2f88906",
+      "deploy": true
+    },
+    {
+      "path": "lib/private-import-review-domain.mjs",
+      "bytes": 8021,
+      "sha256": "bd790ba4fbd7c5f8524d2b566ffe31f423d7060c04547472c2b92469331f0300",
+      "deploy": true
+    },
+    {
+      "path": "lib/private-import-review-server.js",
+      "bytes": 4030,
+      "sha256": "3063fe72ed6959a3dc6b72265922e3aff0c5e0ed80b2078dbce8fea583084718",
+      "deploy": true
+    },
+    {
+      "path": "lib/private-review-browser.mjs",
+      "bytes": 2505,
+      "sha256": "a6b8bd7f78b4c6142666d0edb2c13053501a8bc692c59b9595b0e49cbafeb4f5",
+      "deploy": true
+    },
+    {
+      "path": "lib/purchase-packages.mjs",
+      "bytes": 8977,
+      "sha256": "f46b8b167cdde00e8aa14f61f96e051f9ef12a0f17a97b4beb2cf6192ed00193",
+      "deploy": true
+    },
+    {
+      "path": "lib/site-promotion.mjs",
+      "bytes": 136,
+      "sha256": "07617e44230144639830b722907809aa31eb0c25fe742f233d247c50730c2091",
+      "deploy": true
+    },
+    {
+      "path": "lib/stripe-activation.mjs",
+      "bytes": 1952,
+      "sha256": "3c475c184196c3c72a15ed0b19c639ebaf153e0d75208700d79e47224e83fcf3",
+      "deploy": true
+    },
+    {
+      "path": "lib/studio-terms.mjs",
+      "bytes": 715,
+      "sha256": "389a85dd8df87e6547778ba688288a07cbc43cfff4149ba2dcbd2616ee7166fc",
+      "deploy": true
+    },
+    {
+      "path": "lib/subscription-notice-preflight.mjs",
+      "bytes": 2009,
+      "sha256": "ff842975c66557fe08de4a90353c169a142bec3722862cc0fde0096215769ba5",
+      "deploy": true
+    },
+    {
+      "path": "lib/subscription-private-portal-probe.mjs",
+      "bytes": 15134,
+      "sha256": "9fdc64f7a55a70d8930dd9090b48ae8e07ed2040d9c1229d5f1e6ef0c694e183",
+      "deploy": true
+    },
+    {
+      "path": "lib/subscription-private-probe.mjs",
+      "bytes": 22270,
+      "sha256": "febeb6dbc791c8ef63034b2d23649d5dabea5ff7a6faf05dad8db7a39bc0b5f5",
+      "deploy": true
+    },
+    {
+      "path": "lib/subscription-terms.mjs",
+      "bytes": 2405,
+      "sha256": "b0d3a70fc3e87cd4bbe686c5c66f9f6e0dbbb9aa840112a156394d909d2e43f0",
+      "deploy": true
+    },
+    {
+      "path": "lib/subscriptions-domain.mjs",
+      "bytes": 9178,
+      "sha256": "d138c4711dfdafd76ea7f2fdcf773b87d82901944d0c4534661f8fa54bf057bb",
+      "deploy": true
+    },
+    {
+      "path": "lib/subscriptions-server.js",
+      "bytes": 43248,
+      "sha256": "efe1a9883c1d013d86334ef098ecfbc7b1e0bc6958b06b81dad5690399c0dc6c",
+      "deploy": true
+    },
+    {
+      "path": "lib/supabase/client.js",
+      "bytes": 328,
+      "sha256": "86ffcc736e622c8430585a7e6aaf4dede11c3139d6f6535d92e25ae1160c8cf9",
+      "deploy": true
+    },
+    {
+      "path": "lib/supabase/config.mjs",
+      "bytes": 896,
+      "sha256": "f3f525f90176c9262201ab534950c5019e805e20fea264d73e3462a864d3905a",
+      "deploy": true
+    },
+    {
+      "path": "lib/supabase/server.js",
+      "bytes": 2837,
+      "sha256": "06173979c3871c8f820e8e9b5b891eec83106ba214cfba0b398c944d7bda03a0",
+      "deploy": true
+    },
+    {
+      "path": "lib/supabase/subscription-server.js",
+      "bytes": 2204,
+      "sha256": "d9652f1ac5bb4e2947c06019eb2005e6f5927c29ce61708efad2c58bc849f20d",
+      "deploy": true
+    },
+    {
+      "path": "lib/unlimited-benefits.mjs",
+      "bytes": 525,
+      "sha256": "012eaee4f91467bf65f256a9f272cb524618e5f7e7d5e4b776828a7fd3b97cfa",
+      "deploy": true
+    },
+    {
+      "path": "next-env.d.ts",
+      "bytes": 247,
+      "sha256": "7b550dda9686c16f36a17bf9051d5dbf31e98555b30d114ac49fc49a1e712651",
+      "deploy": true
+    },
+    {
+      "path": "next.config.js",
+      "bytes": 663,
+      "sha256": "e474dbfd064259cde6a5dfe1d7159659220db97b37b04f6b9ce19657988bb61e",
+      "deploy": true
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 108336,
+      "sha256": "20738520bb045277dccb03b9db186c3f6f0e8f8fe4d4358ab9930a3d61208b03",
+      "deploy": true
+    },
+    {
+      "path": "package.json",
+      "bytes": 1226,
+      "sha256": "2df58c2199e63a497ac242b8efabe22477864789a5a2a36f7a169a46847dc065",
+      "deploy": true
+    },
+    {
+      "path": "postcss.config.js",
+      "bytes": 92,
+      "sha256": "9b6efc6c29ec8638da6d7d7a78adbbe56840c71807104dad8203af2f065ea980",
+      "deploy": true
+    },
+    {
+      "path": "public/aviso-videovigilancia.html",
+      "bytes": 2664,
+      "sha256": "405031072fbbe385fe68cce92e9bd376e87c680aa96b54fe0e8e727db3e62e23",
+      "deploy": true
+    },
+    {
+      "path": "public/images/Coach Dan.JPG",
+      "bytes": 6640418,
+      "sha256": "d6115bafea6461e9b9fc492314d77938b0e57a144072fd7cccf75eb0e0ee3087",
+      "deploy": true
+    },
+    {
+      "path": "public/images/Coach Dani.JPG",
+      "bytes": 3732290,
+      "sha256": "cd1b9a0f2c9f4585f83a34b5998b6bfa0eba2d83984e3109f01e7761e4bbd580",
+      "deploy": true
+    },
+    {
+      "path": "public/images/Coach Erika.JPG",
+      "bytes": 5777391,
+      "sha256": "bcf4e1237b6443a59907ae10784c11938df49671ff455bdcafe922e22393a295",
+      "deploy": true
+    },
+    {
+      "path": "public/images/Coach Javi.JPG",
+      "bytes": 6285707,
+      "sha256": "6b3298e7f648f41702b8ab2b1e9995510497c3dd5adbd73ec11bc74675cd8858",
+      "deploy": true
+    },
+    {
+      "path": "public/images/android-chrome-192x192.png",
+      "bytes": 4519,
+      "sha256": "4991fc39db3da6ba90a87e70fe436832eeb9a2bda33e9641f01a3cd5fb540f19",
+      "deploy": true
+    },
+    {
+      "path": "public/images/android-chrome-512x512.png",
+      "bytes": 12308,
+      "sha256": "222a9bc9faeb6786a6dbf6f2ff5388d2e749be5dcf36e1a5dfe0cf73f1cd0732",
+      "deploy": true
+    },
+    {
+      "path": "public/images/apple-touch-icon.png",
+      "bytes": 4051,
+      "sha256": "f6a17125f04790360235d46894fbb6dd48bfb846ce3da2ddc4019505bb68d7dc",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/cloud-matcha.png",
+      "bytes": 1180009,
+      "sha256": "17dede5820825a24304e7d86541383883d104f98d59da424927fad5fa2a99b05",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/coco-matcha.png",
+      "bytes": 949852,
+      "sha256": "816d1f44fd7c03bd870f1b20b138d6280b10d238555b1325eb942999b1128f03",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/cold-americano.png",
+      "bytes": 1387830,
+      "sha256": "a12990dadf3c191890d9a5a282fa8eb68a48cb994e4db9fb1187a45d59c30986",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/cold-chai.png",
+      "bytes": 1179928,
+      "sha256": "a0c5499aaee79a2b10825faa9eae9d3e02e93e58b071cdb2a5b06bed4c669152",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/cold-latte.png",
+      "bytes": 1139495,
+      "sha256": "61d341be0ed72d1d9f56f05af2780417dddb736918baf3e8e773bff1e4fd8748",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/espresso-matcha.png",
+      "bytes": 782720,
+      "sha256": "31c22ff6717ae59fd64587b047c5df05eb39ff51905b7d9ba75ac096b90c866b",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/hot-americano.png",
+      "bytes": 635015,
+      "sha256": "3f0de759f3cb69f508f5bfba0a00f497b6f31ff9de2d3b0809431a698b0ce2d7",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/hot-chai.png",
+      "bytes": 668025,
+      "sha256": "355f89ba2d9139c037bd66fbc7150fb731838bebc93073535b336529c60c97d6",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/hot-espresso.png",
+      "bytes": 782873,
+      "sha256": "521c5a51f61405d57da2e7b31b84507d43952cec57f8c33300fa1aafccbf700c",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/hot-latte.png",
+      "bytes": 659681,
+      "sha256": "168c585dee8b4499a8e1b7f92d99bc8225890f458fcf593fb7375ecd7b7303ab",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/hot-matcha.png",
+      "bytes": 641965,
+      "sha256": "ca13dcb1f9c521e873f5dd9ea04082e5ee7d2ef7c5167278a814ffdd886c9b82",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/ichigo-matcha.png",
+      "bytes": 942379,
+      "sha256": "8a654943cd6d56cdf5ffb2605c63f6aaef8fb05ffc945722253e49b73bf355af",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/matcha-original.png",
+      "bytes": 1338334,
+      "sha256": "dfceb6a1ad1428f17865171f056c73796cc1bbbb4e2819eb0aa3c99cbde07258",
+      "deploy": true
+    },
+    {
+      "path": "public/images/bebidas/protein-shake.png",
+      "bytes": 1029180,
+      "sha256": "7fe960b6eac05a573b43516a99f2720867e12303f0fee273095db794297fda16",
+      "deploy": true
+    },
+    {
+      "path": "public/images/concepto-premium/bebidas-jjstudio.webp",
+      "bytes": 41780,
+      "sha256": "1cffa8093eacd2a32bc810ea8312d7ed5735aada019c66f3fbb71a441ed09fc1",
+      "deploy": true
+    },
+    {
+      "path": "public/images/concepto-premium/clase-real-wide.webp",
+      "bytes": 47838,
+      "sha256": "820460524fd9c647e381c01f0b94271aa56eec8fde2e0378d2e09beab26ab029",
+      "deploy": true
+    },
+    {
+      "path": "public/images/concepto-premium/clase-real.webp",
+      "bytes": 39472,
+      "sha256": "4b240d0132ea25e1f66c1705604219951cf04620d1403b4a66398bcc62a23858",
+      "deploy": true
+    },
+    {
+      "path": "public/images/concepto-premium/metodo-lagree.webp",
+      "bytes": 48014,
+      "sha256": "f29d44d012eb8744c8a0503178c00b8562f550e88755201919ad7569e4c0860d",
+      "deploy": true
+    },
+    {
+      "path": "public/images/concepto-premium/primera-clase.webp",
+      "bytes": 19306,
+      "sha256": "323fc5b9b1426caff1b1f3c62e6382c7247e054bc5691c2cf548fc57c715d004",
+      "deploy": true
+    },
+    {
+      "path": "public/images/estudio/barra-cafe-matcha-premium.png",
+      "bytes": 2124562,
+      "sha256": "8f9ed1292e3328013b6910b9b8626fa5138790c0bddc8e0eae14e74fc96f0b83",
+      "deploy": true
+    },
+    {
+      "path": "public/images/estudio/barra-matcha.jpg",
+      "bytes": 742745,
+      "sha256": "6603dbb2c0de7b8f926e734175578f75846403e23baed5bef1d289857b0363c6",
+      "deploy": true
+    },
+    {
+      "path": "public/images/estudio/hero-desktop.jpg",
+      "bytes": 60034,
+      "sha256": "6e350595e673a6f15d0631410480eeb4cbc5e2883df7cfd06f0ffaa648df4e11",
+      "deploy": true
+    },
+    {
+      "path": "public/images/estudio/megaformer-trust.jpg",
+      "bytes": 781311,
+      "sha256": "b696599f01572f8bbee299b83087ba9f52f17093240fc9e054dfaa241b6e0dcb",
+      "deploy": true
+    },
+    {
+      "path": "public/images/estudio/salon-azul-premium.png",
+      "bytes": 2024175,
+      "sha256": "34b0f7828c4de057e88e9a922fa133c3d95548c087c4a0b0be1d31c331f8544c",
+      "deploy": true
+    },
+    {
+      "path": "public/images/estudio/salon-lagree.jpg",
+      "bytes": 100355,
+      "sha256": "1370b31b55e9e70bba7ed03b262a4d81518f4a710376a979a8b01089969f5232",
+      "deploy": true
+    },
+    {
+      "path": "public/images/estudio/salon-rojo-premium.png",
+      "bytes": 1951890,
+      "sha256": "50e9532305ea4b088aaecaa71007fb6f4c9f361750dcf4d3c48916f878f88c3b",
+      "deploy": true
+    },
+    {
+      "path": "public/images/estudio/salon-verde-premium.png",
+      "bytes": 1951167,
+      "sha256": "1e42ebc132b14b8c73ba8f02cf63484854dda36c058956a9a613503e81735efe",
+      "deploy": true
+    },
+    {
+      "path": "public/images/favicon-16x16.png",
+      "bytes": 256,
+      "sha256": "cb5929591dcb078345b6462cdef6a5ecdfe636f7291043216d44fbad201198c6",
+      "deploy": true
+    },
+    {
+      "path": "public/images/favicon-32x32.png",
+      "bytes": 450,
+      "sha256": "d556fccd3b943d024c154da137c8f8a644a9dddd6b397a6ea92bf3d8570feeab",
+      "deploy": true
+    },
+    {
+      "path": "public/images/favicon.ico",
+      "bytes": 15406,
+      "sha256": "65a42fda5d1539762a36931509dccc6c34b37e5590dafa0ba452faa0ba016239",
+      "deploy": true
+    },
+    {
+      "path": "public/images/insta-1.jpg",
+      "bytes": 206514,
+      "sha256": "0a1202cedef4c072259b0d7d50c26c9007b64549aac7945cf16b30afc37664ec",
+      "deploy": true
+    },
+    {
+      "path": "public/images/logo.png",
+      "bytes": 69322,
+      "sha256": "c3acd8b69cd338d3ed50aa25cfd7cbc4444e2b94be77d2a0aaf208b76a217cd2",
+      "deploy": true
+    },
+    {
+      "path": "public/images/productos/calcetines-jj-premium.png",
+      "bytes": 1316491,
+      "sha256": "82bea61bedf7ba4c638cfa0cef993e42b8a77d201c3ab0f05674f89ecd8b9a22",
+      "deploy": true
+    },
+    {
+      "path": "public/images/seo/entrada-xentric.jpg",
+      "bytes": 134805,
+      "sha256": "2e4eb7b0a8b98f6e3a72b32e45694d0fb19f50fee17e967ecc5d1a97536192fe",
+      "deploy": true
+    },
+    {
+      "path": "public/images/seo/estudio-interior.jpg",
+      "bytes": 255394,
+      "sha256": "185359e000fc5ec24d4356c6962ef4e15455b6378053a9c0ae485b171c3ccca6",
+      "deploy": true
+    },
+    {
+      "path": "public/images/seo/megaformer-detalle.jpg",
+      "bytes": 122158,
+      "sha256": "db62104a79c1e62843beab60f2d61a25edf421c381aecd484733d0731dde5fc6",
+      "deploy": true
+    },
+    {
+      "path": "public/images/seo/megaformer-lagree.jpg",
+      "bytes": 256912,
+      "sha256": "81c939403738edb0ca1c7bc48af1ca9bb5d8602b1ed072f140148782691a20d4",
+      "deploy": true
+    },
+    {
+      "path": "public/images/site.webmanifest",
+      "bytes": 263,
+      "sha256": "7a9e07ce1f7386689917602ddc5a75750ad842e605ff764f67173529c181bf04",
+      "deploy": true
+    },
+    {
+      "path": "public/promocionales/anahuac-jj-studio.svg",
+      "bytes": 3076,
+      "sha256": "2af2ef5b0f93d95639555ffe09df33c0944d70bd4fc20530db718fe159e01566",
+      "deploy": true
+    },
+    {
+      "path": "public/promocionales/qr-jjstudio.svg",
+      "bytes": 15899,
+      "sha256": "070e574a946c82adc5874d1643cb6f21bfec0f29cdea7edea98b4df43a93d70f",
+      "deploy": true
+    },
+    {
+      "path": "public/research/jj-studio-executive-brief-lagree-evidencia-2026.pdf",
+      "bytes": 400978,
+      "sha256": "c003fd5e7e76e320f91be446cd086970c5265c468f9c5b3703823d5516e47545",
+      "deploy": true
+    },
+    {
+      "path": "public/research/jj-studio-position-paper-lagree-evidencia-2026.pdf",
+      "bytes": 858838,
+      "sha256": "57070e0540a49f6b17441376281e21b724b69fcb6e1ebb21dcd507e1618f76f0",
+      "deploy": true
+    },
+    {
+      "path": "public/research/lagree-evidence-editorial-background.png",
+      "bytes": 1568126,
+      "sha256": "3a16fad64e33982f36355eab6d2824d10aa0865944dc5f1924235d81a9a6645f",
+      "deploy": true
+    },
+    {
+      "path": "public/research/lagree-evidence-share-vertical.png",
+      "bytes": 465754,
+      "sha256": "151457e2809dd0dbe74d956ca231c91f08bb39e068d1f3ba88d2323c7d191aad",
+      "deploy": true
+    },
+    {
+      "path": "public/research/lagree-evidence-social-landscape.png",
+      "bytes": 395513,
+      "sha256": "1dc6011eb482eed5c10c4421b7b0c84c0e6e0f058c9bd8f7f30c9253dff4721a",
+      "deploy": true
+    },
+    {
+      "path": "public/videos/jj-studio-hero-mobile-v2.mp4",
+      "bytes": 2104865,
+      "sha256": "aafff071f5308946e1504d4c0bd98846d2eb6f69fc2bee6163f106fa745646da",
+      "deploy": true
+    },
+    {
+      "path": "public/videos/jj-studio-hero-mobile-v3.mp4",
+      "bytes": 1648720,
+      "sha256": "129cf13bc0d0f505c4f8daf49101aab40d7515c1e3097f06ce6a674edf87b1f6",
+      "deploy": true
+    },
+    {
+      "path": "public/videos/jj-studio-hero-mobile.mp4",
+      "bytes": 1535493,
+      "sha256": "1cd23e37a8081b7305201fb7c93379eed61e9dc473e546df97d4767c72b4a275",
+      "deploy": true
+    },
+    {
+      "path": "public/videos/jj-studio-hero-v2.mp4",
+      "bytes": 2111233,
+      "sha256": "2c798b7c6260a4b729f37954e211e3b1659e8004f131a406946ec9fc378ee290",
+      "deploy": true
+    },
+    {
+      "path": "public/videos/jj-studio-hero-v3.mp4",
+      "bytes": 2614219,
+      "sha256": "98d0caa7044d8a3e857bd68b78eb5165cbf2e6069928b0abc2b373530fbfd3a6",
+      "deploy": true
+    },
+    {
+      "path": "public/videos/jj-studio-hero-v4.mp4",
+      "bytes": 2140478,
+      "sha256": "1c77d65c9251ccc644df133e626f1ce8c5c02f86e9e22db1ad5a449cd154a82b",
+      "deploy": true
+    },
+    {
+      "path": "public/videos/jj-studio-hero.mp4",
+      "bytes": 1706535,
+      "sha256": "88b06bea6813f6af516d13bef2ad6ab1fe1506f4b3e3bb51f7ffdff67fd5e8a4",
+      "deploy": true
+    },
+    {
+      "path": "scripts/release-check.mjs",
+      "bytes": 663,
+      "sha256": "48344f87ce28f5dc4a6f01b73e4caea8a2251ff3de591e348958cb22f22e5a47",
+      "deploy": false
+    },
+    {
+      "path": "scripts/release-manifest.mjs",
+      "bytes": 930,
+      "sha256": "7f643f8cd529da3def2d906858a4266f28de1f12ffeb80c005ca9832c675a8c9",
+      "deploy": false
+    },
+    {
+      "path": "scripts/release-policy.mjs",
+      "bytes": 9035,
+      "sha256": "056867657d7ad0d51900b64ea5439539fa8dd42c9a19df9bc340f56258ec1583",
+      "deploy": false
+    },
+    {
+      "path": "scripts/release-stage-policy.mjs",
+      "bytes": 3818,
+      "sha256": "07b5d04e57ccaea062017c604ae7ecca790b5871bbd800c4110696567c050ac0",
+      "deploy": false
+    },
+    {
+      "path": "scripts/release-stage.mjs",
+      "bytes": 2764,
+      "sha256": "949b39f64fb7c670ec0bbada17e78fad3e465a55b700e7e4cc3bb7a83913f6df",
+      "deploy": false
+    },
+    {
+      "path": "scripts/release-upload-policy.mjs",
+      "bytes": 1417,
+      "sha256": "488042e1795c20f57d387006438980c54513b9d3ffc1a3a1a3fe8a2e54badf6b",
+      "deploy": false
+    },
+    {
+      "path": "scripts/release-verify-stage.mjs",
+      "bytes": 517,
+      "sha256": "6620cc406808d5c3a856f41e8a63f21dda4f4af33ae6546b18b436db634de32e",
+      "deploy": false
+    },
+    {
+      "path": "tailwind.config.js",
+      "bytes": 252,
+      "sha256": "924d1087a257b3d0058808c4b362f1c6c2b38827c46fbc3eed819036d0499e67",
+      "deploy": true
+    },
+    {
+      "path": "tests/account-client-hub.test.mjs",
+      "bytes": 18444,
+      "sha256": "9ef4749dbe24b2b7e9aa5c303c1a6a4e0805b1c6c6e4351272f4ad7678509463",
+      "deploy": false
+    },
+    {
+      "path": "tests/admin-regular-pricing.test.mjs",
+      "bytes": 6056,
+      "sha256": "912ef287ec2fa30f837313b45d515d909488ca62c9cc4e549382713ff0b1c999",
+      "deploy": false
+    },
+    {
+      "path": "tests/admin-sidebar.test.mjs",
+      "bytes": 7581,
+      "sha256": "2ed6428e23b821e2bb539b3b32973c0f8f552789c0c939e034b4af5f97cc679f",
+      "deploy": false
+    },
+    {
+      "path": "tests/class-account-admin-domain.test.mjs",
+      "bytes": 5895,
+      "sha256": "14633585ca3f8ecb76e9d1b86e59f2b2765de36d2375a5faf402f9808eb61c26",
+      "deploy": false
+    },
+    {
+      "path": "tests/class-account-admin-server.test.mjs",
+      "bytes": 28118,
+      "sha256": "4482fc4cf0d79678fe6ea9edea65142b04935647a4317521d877f50597b98a39",
+      "deploy": false
+    },
+    {
+      "path": "tests/class-account-directory.test.mjs",
+      "bytes": 7163,
+      "sha256": "d15b7840b5c3a1bb1ec4d745cbf521588966645d03d0105a10627f8e30a595ef",
+      "deploy": false
+    },
+    {
+      "path": "tests/fixtures/historical/class-account-admin-schema-20261106.sql",
+      "bytes": 10354,
+      "sha256": "54900a9e4345ab63f809e1ce40038e6b280200c5a542fdb1666608c683b3cde6",
+      "deploy": false
+    },
+    {
+      "path": "tests/fixtures/historical/manifest.json",
+      "bytes": 962,
+      "sha256": "80c64a79ee8c0a5e716c4b8caf93e6d21551b9cb5488564fe9d72073e20ae71e",
+      "deploy": false
+    },
+    {
+      "path": "tests/fixtures/historical/subscriptions-server-20261110.js",
+      "bytes": 42380,
+      "sha256": "21755bf8391f64726a6986576a28ad70c9f93d5f66d9a10cbcb0a2ee2e527fe3",
+      "deploy": false
+    },
+    {
+      "path": "tests/fixtures/historical/terms-production-checkout-20261109.js",
+      "bytes": 5886,
+      "sha256": "e0e0096f3d05d27002c697a5fbb9ff63ef770f7c2fc2c2bc5c61480278aa8196",
+      "deploy": false
+    },
+    {
+      "path": "tests/fixtures/private-review-fixtures.mjs",
+      "bytes": 3830,
+      "sha256": "c84ccd690afabfbe52d3546be75dfba50edd4dd299180185a3bce51f965e1f16",
+      "deploy": false
+    },
+    {
+      "path": "tests/guest-payment-choice.test.mjs",
+      "bytes": 13329,
+      "sha256": "9e079a7c0c2b0098f98276346899eca31f3d4732b17fd7749a5f4bd3bb29d7dc",
+      "deploy": false
+    },
+    {
+      "path": "tests/guest-payment-safety.test.mjs",
+      "bytes": 5825,
+      "sha256": "7a794c01447c0b7c12bf19ef3056087b72f8fdd40e584867e2dc2433beab1570",
+      "deploy": false
+    },
+    {
+      "path": "tests/identity-review-domain.test.mjs",
+      "bytes": 7601,
+      "sha256": "bd86cad3b576d7e6f8afbb73af91a256e34ade9a93a550fb4f221db6d045f7e2",
+      "deploy": false
+    },
+    {
+      "path": "tests/identity-review-ui.test.mjs",
+      "bytes": 5382,
+      "sha256": "da4a4c9f537b40b848da97e1fa28cff43b0a4b33f537ce66b6a00d08cf3018a0",
+      "deploy": false
+    },
+    {
+      "path": "tests/private-import-review-domain.test.mjs",
+      "bytes": 6801,
+      "sha256": "0727bdc59779cdfed6dc0fbcfce881ad68c5455f772bb3974c27d3366afb7615",
+      "deploy": false
+    },
+    {
+      "path": "tests/private-import-review-server.test.mjs",
+      "bytes": 7929,
+      "sha256": "f5c3a1c793ad59720d1f68dfdfcdd553b876d09b1da18b09baeb0f25185cac0e",
+      "deploy": false
+    },
+    {
+      "path": "tests/private-review-browser.test.mjs",
+      "bytes": 3287,
+      "sha256": "90654e3cd5a111c7128d229392d109dba54a7bd2443ffd43e05dd2a6b2cce4ea",
+      "deploy": false
+    },
+    {
+      "path": "tests/purchase-terms-ui.test.mjs",
+      "bytes": 10485,
+      "sha256": "295971681d747a7ab5d2c98074f03b62da1fc4065f619375bbe9113f33c82d3d",
+      "deploy": false
+    },
+    {
+      "path": "tests/regular-beverage-prices.test.mjs",
+      "bytes": 5274,
+      "sha256": "c3adc32cf887578bdf8e22aab9a529ff34c4c55bada3288f23856cfb85cc294e",
+      "deploy": false
+    },
+    {
+      "path": "tests/regular-pricing-backend.test.mjs",
+      "bytes": 9551,
+      "sha256": "efc948c038e43cf3744b8ad7ea2a4b9b4c60ad4153418ebec3a6d2bccb967363",
+      "deploy": false
+    },
+    {
+      "path": "tests/regular-pricing-public.test.mjs",
+      "bytes": 3750,
+      "sha256": "1baefdbf029a26278e0e2e1e784fe3170851083c9a61570deb30676d36859868",
+      "deploy": false
+    },
+    {
+      "path": "tests/release-policy.test.mjs",
+      "bytes": 14326,
+      "sha256": "10a37ba4ff6da9b79fa4b7d253c468a031f0b4b41131a7104db032dbf8957eaa",
+      "deploy": false
+    },
+    {
+      "path": "tests/release-upload.test.mjs",
+      "bytes": 2096,
+      "sha256": "fcf1fdaa36c37daa853ea008b377441be762defaa8885ece70fb7f1c8a4edfd2",
+      "deploy": false
+    },
+    {
+      "path": "tests/studio-privacy-release.test.mjs",
+      "bytes": 2549,
+      "sha256": "9c40740103d153c6e7fd12d769c20a8ecb197f17a2bf79cb8042b4cdc63ee337",
+      "deploy": false
+    },
+    {
+      "path": "tests/terms-one-time-route.test.mjs",
+      "bytes": 3635,
+      "sha256": "f8a21d1847be78ea83900720b9d80cfc1110c3da64fc6108d2cbe622ddf1cee2",
+      "deploy": false
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 699,
+      "sha256": "9d3600a3b7d8f1804c1cedab7c18c714e3a68d3ff3ebbd198c66ae4a3762d4ff",
+      "deploy": true
+    },
+    {
+      "path": "vercel.json",
+      "bytes": 110,
+      "sha256": "828995406200c2942d36de7a0863ab100c7158000a2be1531666c059b68d9a6d",
+      "deploy": true
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "purpose": "Immutable source fixtures for regression comparisons. Never imported by application code or deployed.",
+  "files": [
+    {
+      "name": "terms-production-checkout-20261109.js",
+      "source": ".codex_build/terms-production-baseline-verified-20261109-01/app/api/stripe/checkout/route.js",
+      "sha256": "e0e0096f3d05d27002c697a5fbb9ff63ef770f7c2fc2c2bc5c61480278aa8196",
+      "bytes": 5886
+    },
+    {
+      "name": "subscriptions-server-20261110.js",
+      "source": ".codex_build/hero-video-preview-20261110-01/lib/subscriptions-server.js",
+      "sha256": "21755bf8391f64726a6986576a28ad70c9f93d5f66d9a10cbcb0a2ee2e527fe3",
+      "bytes": 42380
+    },
+    {
+      "name": "class-account-admin-schema-20261106.sql",
+      "source": ".codex_build/private-review-panel-20261106-01/artifacts/class-account-admin-schema.sql",
+      "sha256": "54900a9e4345ab63f809e1ce40038e6b280200c5a542fdb1666608c683b3cde6",
+      "bytes": 10354
+    }
+  ]
+}

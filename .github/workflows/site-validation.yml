@@ -1,0 +1,43 @@
+name: Validar fuente oficial de JJStudio
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Fuente, pruebas, tipos y compilación
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: site
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      VERCEL_ENV: production
+    steps:
+      - name: Revisar el commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Node.js igual que la versión revisada
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24.16.0"
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Validar fuente revisada antes de instalar
+        run: node scripts/release-check.mjs
+      - name: Instalar versiones del lockfile
+        run: npm ci --ignore-scripts
+      - name: Pruebas sin conexiones operativas
+        run: npm test
+      - name: Verificar tipos
+        run: npm run typecheck
+      - name: Compilar con configuración Production sin credenciales
+        run: npm run build
+      - name: Comprobar que la compilación no cambió la fuente
+        run: node scripts/release-check.mjs

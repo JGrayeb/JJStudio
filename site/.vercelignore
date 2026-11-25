@@ -1,0 +1,26 @@
+# Release-stage inventory is the allowlist; these are additional exclusions.
+.env
+.env.*
+.git/
+.vercel/
+.next/
+node_modules/
+tests/
+scripts/
+fixtures/
+snapshots/
+artifacts/
+tmp/
+cache/
+output/
+*.tsbuildinfo
+*.log
+*.csv
+*.xlsx
+*.xls
+*.docx
+**/.env
+**/.env.*
+**/fixtures/**
+**/snapshots/**
+**/*.tsbuildinfo

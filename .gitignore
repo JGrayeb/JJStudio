@@ -143,3 +143,13 @@ vite.config.ts.timestamp-*
 .vite/
 
 /lib/generated/prisma
+
+# Private/generated release work is never application source.
+.vercel/
+.release/
+.codex_build/
+.codex-finalizer/
+artifacts/
+tmp/
+snapshots/
+output/

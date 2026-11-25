@@ -1,0 +1,19 @@
+# The canonical application's reviewed hashes must be reproducible on Windows/Linux.
+site/** text=auto eol=lf
+release/** text=auto eol=lf
+docs/** text=auto eol=lf
+.github/** text=auto eol=lf
+
+# Preserve byte-for-byte historical baselines and their integrity hashes.
+site/tests/fixtures/historical/** -text
+
+# Original binary media must never receive newline conversion.
+site/public/**/*.mp4 -text
+site/public/**/*.webm -text
+site/public/**/*.jpg -text
+site/public/**/*.jpeg -text
+site/public/**/*.png -text
+site/public/**/*.webp -text
+site/public/**/*.ico -text
+site/public/**/*.woff -text
+site/public/**/*.woff2 -text
